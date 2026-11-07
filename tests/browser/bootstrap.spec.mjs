@@ -1,11 +1,15 @@
 import {test,expect} from '@playwright/test';
-for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:1920,height:1080},{width:390,height:844}])test(`${locale} ${viewport.width}: real production unavailable UI, focus, no QR or external data`,async({page})=>{
+for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:1920,height:1080},{width:390,height:844}])test(`${locale} ${viewport.width}: real production unavailable UI, focus, no QR or external data`,async({page,browserName})=>{
  await page.setViewportSize(viewport);const external=[];page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:4186'))external.push(r.url());});
  await page.goto('/?url=https://evil.example/');await page.locator('#language').selectOption(locale);
  await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  await expect(page.locator('#qr-panel')).toBeHidden();await expect(page.locator('#state-title')).not.toHaveText('');
  await page.locator('#effects').click();await expect(page.locator('html')).toHaveAttribute('data-effects','solid');
- await expect(page.locator('#effects')).toHaveAttribute('aria-pressed','true');await page.keyboard.press('Tab');await expect(page.locator('#retry')).toBeFocused();await page.keyboard.press('Enter');await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
+ await expect(page.locator('#effects')).toHaveAttribute('aria-pressed','true');
+ // macOS WebKit does not focus a button on click or include it in plain Tab traversal.
+ await page.locator('#effects').focus();
+ await page.keyboard.press(process.platform==='darwin' && browserName==='webkit' ? 'Alt+Tab' : 'Tab');
+ await expect(page.locator('#retry')).toBeFocused();await page.keyboard.press('Enter');await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);expect(external).toEqual([]);expect(page.url()).toBe('http://127.0.0.1:4186/');
 });
 test('security headers and reduced effects',async({page})=>{await page.emulateMedia({reducedMotion:'reduce',contrast:'more'});const r=await page.goto('/');expect(r.headers()['referrer-policy']).toBe('no-referrer');expect(r.headers()['content-security-policy']).toContain("connect-src 'none'");await expect(page.locator('html')).toHaveAttribute('data-effects','solid');expect(await page.locator('#status').getAttribute('role')).toBe('status');});

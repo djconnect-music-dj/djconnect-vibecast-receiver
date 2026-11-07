@@ -7,7 +7,7 @@ export const qa=Object.freeze({product:'vibecast-tv-bootstrap-qa',browser:'https
 export const sourcePins=Object.freeze({
  'bootstrap/src/wire.mjs':'2b89c5a139c02a5267cf2f68cff9c14f1e656ccad6e5ea453449c5bc7d79ec33',
  'bootstrap/src/wire-schema.mjs':'01272335b2b4d5c3ee43b98fae4dfd147bbe971307a88a447580c5a73b5a7700',
- 'bootstrap/src/app.mjs':'9e97418bce5f4210979c36a16fb97a3b9f4f202912dcac48b147b7f84ccbe186',
+ 'bootstrap/src/app.mjs':'72f2e16da90d4b4dd63bf14eddec971b2abf1861cba1ddda63a0a23d1f74a288',
  'bootstrap/public/_headers':'081df3f86740c947fad701419df794cb215ac42ad5837955b81415babf943501'
 });
 const hash=x=>createHash('sha256').update(x).digest('hex');

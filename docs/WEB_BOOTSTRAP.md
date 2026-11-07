@@ -74,17 +74,31 @@ headers over loopback HTTP (not a production HTTPS or physical-TV receipt).
 npm ci --ignore-scripts
 npm test
 npm run build:bootstrap
+npm run build:bootstrap:qa
 npx playwright install chromium webkit
 npm run test:browser
 node scripts/verify_bootstrap.mjs dist/bootstrap "$(git rev-parse HEAD)"
+npm run verify:bootstrap:qa -- dist/bootstrap-qa "$(git rev-parse HEAD)"
 ```
 
-Node24 is the CI runtime. Exact dev dependencies/lock: Playwright1.64.1,
-Wrangler4.151.0; runtime has no npm dependency. Build has no timestamps or machine
-paths. Manifest pins sourceSHA, designPin, unavailable-service disposition and
+The primary CI job uses Node 24; the separate HTTP/UI qualification job uses
+Node 26. `package-lock.json` pins Playwright 1.65.0, Wrangler 4.158.0 and the
+browser adapter's bundled jose 6.2.15. There is no runtime npm install on Pages.
+The wire parser and schema are compiled into the adapter rather than published
+as duplicate standalone modules. Build has no timestamps or machine paths.
+Manifest pins sourceSHA, designPin, unavailable-service disposition and
 all static file hashes; SHA256SUMS also binds the manifest. The hash file does
 not hash itself. Tests compare two builds, deny Cast output, tampering, extra
 members and wrong source, and restore exact bytes as local rollback proof.
+
+Run QA qualification from a clean checkout of the exact commit. The QA manifest
+binds source and installed module bytes, and the production verifier rejects
+the QA artifact. Both builds and the fixture browsers are local evidence;
+neither grants QA admission or device acceptance. On macOS the suite uses the
+full bundled Chromium and WebKit's Option+Tab button traversal. It still checks
+that the next control receives focus and that Enter activates it. Browsers
+without a working 2D canvas show the unsupported state before creating a
+challenge, and reduced effects still take precedence during frame sampling.
 
 Existing required `test` and `validate-projection` job names remain. PR/main CI
 runs Cast plus bootstrap security/state/localization/build regressions, real

@@ -12,6 +12,8 @@ export async function build(output='dist/bootstrap', sourceSHA=execFileSync('git
  const files={};
  for(const directory of ['bootstrap/public','bootstrap/src']) {
   for(const file of (await readdir(directory)).sort()) {
+   // The adapter bundle already contains these private implementation modules.
+   if(directory==='bootstrap/src' && ['wire.mjs','wire-schema.mjs'].includes(file)) continue;
    if(Object.hasOwn(files,file)) throw new Error('Duplicate output');
    const bytes=file==='rendezvous.mjs' ? Buffer.from((await bundle({entryPoints:[path.join(directory,file)],bundle:true,format:'esm',platform:'browser',target:'es2022',write:false,legalComments:'inline'})).outputFiles[0].contents) : await readFile(path.join(directory,file));
    await writeFile(path.join(output,file),bytes);

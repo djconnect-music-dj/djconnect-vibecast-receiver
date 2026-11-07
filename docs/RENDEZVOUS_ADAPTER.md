@@ -9,7 +9,9 @@ qualified live service or actual HA/iPhone/TV acceptance.
 
 ## Implementation and authority
 
-rendezvous.mjs bundles exact jose6.2.12 and qrcode-generator2.0.4 using esbuild0.28.2.
+`rendezvous.mjs` bundles jose 6.2.15 and qrcode-generator 2.0.4 using esbuild 0.28.2.
+The producer's frozen wire profile still records its original jose 6.2.12
+test oracle; the consumer dependency update does not repin that contract.
 No hand-built OAEP/GCM. Each transaction owns a fresh nonextractable RSA2048 key,
 independent32byte claim and RFC7638 thumbprint; private key/claim stay in closure/
 WeakMap context and are dropped at retirement. JS references/abort do not prove
