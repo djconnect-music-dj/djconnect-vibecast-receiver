@@ -1,18 +1,18 @@
 {
   "assignment": "DJC-VIBECAST-TV-BOOTSTRAP-CLOUDFLARE-V1-20261015",
-  "bundle_file": "vendor/core/1.1.3/vibecast-distribution-1.1.3-97a20fa1.tar.gz",
-  "bundle_sha256": "78993d6a1aa2da3f292cfc826c2f62722debc372e2fbbc4bdca643c36f8ea651",
-  "bundle_url": "https://github.com/pcvantol/djconnect-vibecast-receiver/issues/29#issuecomment-6293460473",
-  "manifest_sha256": "cec063af0a3d0238353f227518c6693858c1fcb05d4f2fdd717011294d4f0204",
+  "bundle_file": "vendor/core/1.1.4/vibecast-core-1.1.4.tar.gz",
+  "bundle_sha256": "11c41ab9bbe2f8fe9d2a3bf4aca4eb86c3cd4ab6caafc4fafe8f8239de19e418",
+  "bundle_url": "https://github.com/pcvantol/djconnect-vibecast-receiver/issues/10#issuecomment-6723049558",
+  "manifest_sha256": "cfb608e93bffe6b5d66022879550741bc3da93fc881881f155a057e586f20f10",
   "parent_assignment": "DJC-VIBECAST-CAST-STATUS-ADOPTION-V1-20261010",
-  "renderer_sha256": "ed3d753adf1b1ce6f34bcc2672da95c1262cf95f93e49f70e9dc782f0a96347e",
+  "renderer_sha256": "867f4fcd15432126cd821af95e07acdd02884924f20d7271470fd79ffe4ac463",
   "schema_version": 1,
-  "source_finalization": "e390c5a81e2d2d272a46cc720c83cc4667c355c1",
-  "source_merge": "97a20fa17d60aa32cf92dc106707d70540ee479e",
+  "source_finalization": "799376c76557c8f529a69ef328c8efd91081969e",
+  "source_merge": "c624392c9fb7d8b23bf9a57c6674840c7798b16a",
   "source_repository": "pcvantol/djconnect",
-  "source_revision": "97a20fa17d60aa32cf92dc106707d70540ee479e",
+  "source_revision": "c91ee641da9314ce71a769aed45c7122e4b63aef",
   "status_schema_file": "vendor/core/1.1.0/status.schema.json",
   "status_schema_sha256": "585d4771f2b38aa3228522a1d0f9872a2ee0149e6f1129c804c1e4840e2e83ae",
-  "verifier_file": "vendor/core/1.1.3/build_vibecast.py",
-  "verifier_sha256": "c69f62480a1b1e8866f0d123de839d5b6c13b74a0422276ff618f79ccd189d19"
+  "verifier_file": "vendor/core/1.1.4/build_vibecast.py",
+  "verifier_sha256": "972e9658ba6d658820c233b515bb5dbfdb099407f991aabd3ebf144d07fcb407"
 }

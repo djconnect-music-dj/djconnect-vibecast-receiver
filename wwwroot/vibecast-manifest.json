@@ -1,5 +1,5 @@
 {
-  "build_version": "1.1.3",
+  "build_version": "1.1.4",
   "contracts": {
     "broadcast_transport": "snapshot-event-v1",
     "cast_handoff_versions": [
@@ -14,21 +14,20 @@
     }
   },
   "files": {
-    "cast/index.html": "7dcdb263551bb2e68a0f5dc553f99ef6a6d2241e47fa56d507a86b0fc5220bab",
-    "local/vibecast.html": "e411d86f1451cb0afd9a07e449b43c8a2aa8f273064b4422788879fc589ce134"
+    "cast/index.html": "ecab0e2d491cfcd09856fd2c98dfee4ce8e6f6c9de26fa73035654c18b57ab76",
+    "local/vibecast.html": "5b2745f9cfedf345f24e249bbdca234980edfad10234275fd6754c1308579aa9"
   },
   "private_runtime_data_in_build": false,
   "promotion": "explicit receiver-owner import; no automatic deployment",
-  "renderer_source_sha256": "ed3d753adf1b1ce6f34bcc2672da95c1262cf95f93e49f70e9dc782f0a96347e",
+  "renderer_source_sha256": "867f4fcd15432126cd821af95e07acdd02884924f20d7271470fd79ffe4ac463",
   "schema_version": 1,
-  "source_revision": "97a20fa17d60aa32cf92dc106707d70540ee479e",
+  "source_revision": "c91ee641da9314ce71a769aed45c7122e4b63aef",
   "sources": {
-    "../brand/icon.png": "4e91b019e423f8dd03b87aefc2e2fef04ecc6645f48f5bb8c431f94d2018da3e",
     "../brand/mark-40.png": "b07eb1d01fc37044eef22e3f376635b0f623eec384c18f89046a49c80bb8c257",
     "cast-host.js": "b3b15f607735918f83d130b6afffb460f6d7a808e3c69228ece9b947816be52b",
     "local-host.js": "3ad7033ca34badacaa3b0ca2d52e960fbeb5f130236d49050722441105314975",
-    "renderer.js": "ed3d753adf1b1ce6f34bcc2672da95c1262cf95f93e49f70e9dc782f0a96347e",
-    "style.css": "4565a5bd15d6ededca96e5629a4c35d4ec248feacd1dbe086db012eebc028304",
-    "template.html": "a1b05dd781e4da992a5a1c0633bdcd8c25fdc216d6db1e38465362bb02221d62"
+    "renderer.js": "867f4fcd15432126cd821af95e07acdd02884924f20d7271470fd79ffe4ac463",
+    "style.css": "f70190cd3d938b4f546466bdefe88d3a17b3c84948274bcb06b93cc358f156f5",
+    "template.html": "96e4c661ec687661a710d53679ab8005b2bf8fbd445d74f2ebe071c496b42041"
   }
 }
