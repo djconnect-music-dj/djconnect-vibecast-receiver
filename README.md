@@ -24,7 +24,7 @@ connects directly to the user's reachable Home Assistant instance.
 Cloudflare Pages hosts only this static code. It is intentionally deployed and
 released independently from the DJConnect marketing website.
 
-The current receiver source is an exact import of Core's shared renderer build 1.1.3.
+The current receiver source is an exact import of Core's shared renderer build 1.1.4.
 Run `npm run import:core`, `npm run verify:core` and `npm test` offline.
 See [pinned adoption, compatibility and effect gates](docs/CAST_ADOPTION.md).
 Generated `wwwroot/index.html` must never be hand-edited. Source adoption does
