@@ -84,7 +84,8 @@ button { cursor: pointer; }
 .preferences label { position: absolute; width: 1px; height: 1px; overflow: hidden; }
 #language:focus-visible {
   outline: none;
-  background-color: #526181;
+  background-color: #a9b6d3;
+  color: #151c30;
 }
 
 main {
@@ -193,7 +194,7 @@ canvas { display: block; height: auto; margin: auto; image-rendering: pixelated;
   background: radial-gradient(circle closest-side, currentColor 66%, transparent 78%) left center / calc(100% / 3) 100% repeat-x;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
   .waiting-avatar-dots { animation: waiting-avatar-pulse 1.4s ease-in-out infinite; }
   #screen-status::after { animation: waiting-dots 3s steps(1, end) infinite; }
 }
@@ -273,7 +274,10 @@ html[data-effects=glass] :is(.vibecast-hero, .panel) {
 @keyframes receiver-symbol-sweep {
   to { transform: rotate(1turn); }
 }
+html[data-effects=solid] .hero-symbol-glow { filter: none; }
 @media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
+  .hero-symbol-glow { display: none; }
+  .waiting-avatar-dots, #screen-status::after { animation: none; }
   :root { background: #101323; }
   body { background-image: none; }
   .vibecast-hero, .panel {

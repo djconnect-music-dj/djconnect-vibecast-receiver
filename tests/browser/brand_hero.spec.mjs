@@ -45,8 +45,11 @@ test('the waiting row animates the vector avatar and trailing dots on iPhone wid
 });
 
 test('hero is static and drops transparency/glows for increased contrast',async({page})=>{
- await page.emulateMedia({contrast:'more',reducedMotion:'reduce'});await page.goto('/');
+ await page.emulateMedia({contrast:'more',reducedMotion:'no-preference'});await page.goto('/');
  const style=await page.locator('.vibecast-hero').evaluate(node=>{const s=getComputedStyle(node);return{background:s.backgroundImage,animation:s.animationName,shadow:s.boxShadow};});
  expect(style).toEqual({background:'none',animation:'none',shadow:'none'});
+ await expect(page.locator('.hero-symbol-glow')).toBeHidden();
+ await expect(page.locator('.waiting-avatar-dots')).toHaveCSS('animation-name','none');
+ await expect.poll(() => page.locator('#screen-status').evaluate(node => getComputedStyle(node,'::after').animationName)).toBe('none');
  await expect(page.getByRole('heading',{level:1,name:'VibeCast',exact:true})).toBeVisible();
 });
