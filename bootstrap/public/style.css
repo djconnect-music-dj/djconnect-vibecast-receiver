@@ -183,7 +183,29 @@ canvas { display: block; height: auto; margin: auto; image-rendering: pixelated;
   font-weight: 750;
   letter-spacing: -.04em;
 }
-.screen-status img { width: clamp(2.5rem, 5.5vw, 7rem); height: auto; flex: none; }
+.waiting-avatar { display: block; flex: none; width: clamp(6rem, 8vw, 7rem); }
+#screen-status::after {
+  content: "";
+  display: inline-block;
+  width: 1.05em;
+  height: .24em;
+  margin-inline-start: .14em;
+  background: radial-gradient(circle closest-side, currentColor 66%, transparent 78%) left center / calc(100% / 3) 100% repeat-x;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .waiting-avatar-dots { animation: waiting-avatar-pulse 1.4s ease-in-out infinite; }
+  #screen-status::after { animation: waiting-dots 3s steps(1, end) infinite; }
+}
+@keyframes waiting-avatar-pulse {
+  0%, 100% { opacity: .45; }
+  50% { opacity: 1; }
+}
+@keyframes waiting-dots {
+  from { clip-path: inset(0 66.6667% 0 0); }
+  33.3333% { clip-path: inset(0 33.3333% 0 0); }
+  66.6667%, to { clip-path: inset(0); }
+}
 
 .bottom-bar {
   display: flex;
@@ -229,6 +251,8 @@ html[data-effects=glass] :is(.vibecast-hero, .panel) {
   #screen-mode { font-size: .66rem; letter-spacing: .06em; }
   .preferences { max-width: 100%; }
   .preferences select { min-width: 0; max-width: 100%; font-size: .72rem; padding-inline: .35rem; }
+  .screen-status { font-size: clamp(1rem, 5vw, 1.4rem); }
+  .waiting-avatar { width: clamp(3.25rem, 16vw, 5.5rem); }
   main { width: 84%; }
   .vibecast-hero, .panel { border-radius: 2rem; }
 }
@@ -270,4 +294,5 @@ html[data-effects=glass] :is(.vibecast-hero, .panel) {
   #qr-panel { background: Canvas; color: CanvasText; border-color: CanvasText; }
   .hero-symbol-strokes { stroke: CanvasText; }
   .hero-symbol-dot { fill: CanvasText; }
+  #screen-status::after { color: CanvasText; forced-color-adjust: none; }
 }
