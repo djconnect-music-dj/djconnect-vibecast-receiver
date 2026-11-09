@@ -5,12 +5,12 @@ test('VibeCast hero and canonical brand marks decode without implying a connecti
  await expect(page.getByRole('heading',{level:1,name:'VibeCast',exact:true})).toBeVisible();
  await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  await expect(page.locator('#qr-panel')).toBeHidden();
- const images=await page.evaluate(async()=>{
-  const header=document.querySelector('.brand-mark');
-  await header.decode();
-  return {header:[header.naturalWidth,header.getBoundingClientRect().width],favicons:[...document.querySelectorAll('link[rel="icon"]')].map(n=>({size:n.sizes.value,type:n.type})),heroHidden:document.querySelector('.hero-symbol').getAttribute('aria-hidden')};
+ const header = page.locator('svg.brand-mark');
+ await expect(header).toBeVisible();
+ await expect(header).toHaveCSS('color', 'rgb(255, 255, 255)');
+ const images=await page.evaluate(()=>{
+  return {favicons:[...document.querySelectorAll('link[rel="icon"]')].map(n=>({size:n.sizes.value,type:n.type})),heroHidden:document.querySelector('.hero-symbol').getAttribute('aria-hidden')};
  });
- expect(images.header).toEqual([40,40]);
  expect(images.favicons).toEqual([{size:'16x16',type:'image/png'},{size:'32x32',type:'image/png'}]);
  expect(images.heroHidden).toBe('true');
  const response=await page.request.get('/brand-mark-32.png');
