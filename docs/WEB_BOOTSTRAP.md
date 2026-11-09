@@ -272,7 +272,9 @@ Run `node scripts/readback_qa_access.mjs` before uploading. It checks the custom
 QA host, the Pages root and a representative wildcard hostname. After a QA
 deployment, pass the eight-character immutable Pages hostname prefix as the
 only argument and repeat the check. Each host must redirect the root, build
-manifest and browser bundle to the account's Cloudflare Access login. The
+manifest, browser bundles, checksums and missing-route probe to the account's
+Cloudflare Access login. The workflow also checks every route in the verified
+artifact inventory. The
 receipt contains hostnames and statuses only.
 
 An anonymous redirect establishes the authentication boundary for the routes

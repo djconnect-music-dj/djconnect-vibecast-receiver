@@ -3,15 +3,23 @@ import { pathToFileURL } from 'node:url';
 const pagesHost = 'vibecast-tv-bootstrap-qa.pages.dev';
 const loginOrigin = 'https://pcvantol.cloudflareaccess.com';
 
-export async function readbackQAAccess(deploymentId, fetcher = fetch) {
+export async function readbackQAAccess(deploymentId, fetcher = fetch, files = []) {
   if (deploymentId !== undefined && !/^[a-f0-9]{8}$/.test(deploymentId)) {
     throw Error('Expected the eight-character immutable QA Pages deployment ID');
   }
 
   const hosts = ['qa.vibecast.tv', pagesHost, `${deploymentId ?? 'test-access'}.${pagesHost}`];
+  const routes = new Set([
+    '/', '/index.html', '/index', '/build-manifest.json', '/SHA256SUMS',
+    '/app.mjs', '/qa-adapter.mjs', '/__vibecast_missing__',
+  ]);
+  for (const file of files) {
+    if (!/^[a-zA-Z0-9_-][a-zA-Z0-9._-]*$/.test(file)) throw Error('Unexpected QA route filename');
+    if (file !== '_headers') routes.add(`/${file}`);
+  }
   const observations = [];
   for (const host of hosts) {
-    for (const route of ['/', '/build-manifest.json', '/app.mjs']) {
+    for (const route of routes) {
       const response = await fetcher(new URL(route, `https://${host}`), {
         redirect: 'manual',
         signal: AbortSignal.timeout(15000),

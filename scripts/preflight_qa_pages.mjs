@@ -45,11 +45,15 @@ async function preflight() {
     await writeFile(archive, zip);
     await mkdir(extracted);
     const members = execFileSync('unzip', ['-Z1', archive], { encoding: 'utf8' }).trimEnd().split('\n');
-    if (members.some(member => !/^[a-zA-Z0-9_-][a-zA-Z0-9._-]*$/.test(member)) ||
+    if (members.length > 64 || members.some(member => !/^[a-zA-Z0-9_-][a-zA-Z0-9._-]*$/.test(member)) ||
         new Set(members).size !== members.length) throw Error('Unexpected QA ZIP member');
-    execFileSync('unzip', ['-q', archive, '-d', extracted]);
-    await verifyQA(extracted, sha);
-    const access = await readbackQAAccess();
+    for (const member of members) {
+      // Stream bounded bytes into a regular file. Never restore archive metadata or symlinks.
+      const bytes = execFileSync('unzip', ['-p', archive, member], { maxBuffer: 1048576 });
+      await writeFile(path.join(extracted, member), bytes, { flag: 'wx' });
+    }
+    const manifest = await verifyQA(extracted, sha);
+    const access = await readbackQAAccess(undefined, fetch, Object.keys(manifest.files));
     if (currentMain() !== sha) throw Error('QA candidate changed during preflight');
     console.log(JSON.stringify({ sourceSHA: sha, runId, artifactId: id, zipDigest: digest, access }));
   } finally {
