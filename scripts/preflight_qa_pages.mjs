@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { api, guardTrustedRun } from './promotion_guard.mjs';
+import { api, guardTrustedRun, isReceiverRepositoryName } from './promotion_guard.mjs';
 import { readbackQAAccess } from './readback_qa_access.mjs';
 import { verifyQA } from './verify_bootstrap_qa.mjs';
 
@@ -22,7 +22,7 @@ export function selectQAArtifact({ artifacts, total_count: totalCount }, sha) {
 export async function withVerifiedQAPackage(usePackage) {
   const { GITHUB_REPOSITORY: repository, GITHUB_REF: branch, GITHUB_SHA: checkoutSHA,
     CANDIDATE_SHA: sha, ARTIFACT_RUN_ID: runId, RUNNER_TEMP: runnerTemp } = process.env;
-  if (repository !== 'pcvantol/djconnect-vibecast-receiver' ||
+  if (!isReceiverRepositoryName(repository) ||
       !/^[1-9][0-9]*$/.test(runId ?? '')) throw Error('Invalid QA repository or CI run ID');
 
   const repositoryPath = `repos/${repository}`;

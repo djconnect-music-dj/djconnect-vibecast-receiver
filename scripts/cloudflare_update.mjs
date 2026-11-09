@@ -3,7 +3,7 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {api,guardSource} from './promotion_guard.mjs';
+import {api,guardSource,receiverRepositoryId} from './promotion_guard.mjs';
 import {target} from './cloudflare_readiness.mjs';
 import {verify} from './verify_bootstrap.mjs';
 import {waitReadback} from './wait_bootstrap.mjs';
@@ -37,7 +37,7 @@ export async function downloadPrior({fetcher=fetch,directory=priorDirectory}={})
  async function bytes(file) {
   // Pages consumes _headers and canonicalizes index.html; neither is a raw file route.
   if(file==='_headers')return execFileSync('gh',['api','-H','Accept: application/vnd.github.raw+json',
-   'repos/pcvantol/djconnect-vibecast-receiver/contents/bootstrap/public/_headers?ref='+baseline.sourceSHA]);
+   `repositories/${receiverRepositoryId}/contents/bootstrap/public/_headers?ref=${baseline.sourceSHA}`]);
   const route=file==='index.html'?'/':file==='404.html'?'/__vibecast_missing__':'/'+file;
   const response=await fetcher(baseline.origin+route,{redirect:'error',signal:AbortSignal.timeout(20000)});
   if(response.status!==(file==='404.html'?404:200))throw Error('Prior artifact unavailable');
@@ -75,7 +75,14 @@ async function main(action) {
   let response,body;try{response=await fetch('https://api.cloudflare.com/client/v4'+endpoint,{method,redirect:'error',headers:{Authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN},signal:AbortSignal.timeout(20000)});body=await response.json();}catch{throw Error('Pages request failed');}
   if(!response.ok||body.success!==true)throw Error('Pages request denied');return body.result;
  };
- const sourceGuard=()=>guardSource({repository:process.env.GITHUB_REPOSITORY,branch:process.env.GITHUB_REF,sha:sourceSHA,checkoutSHA:process.env.GITHUB_SHA,currentMain:api('repos/pcvantol/djconnect-vibecast-receiver/commits/main').sha,run:api('repos/pcvantol/djconnect-vibecast-receiver/actions/runs/'+process.env.ARTIFACT_RUN_ID),environment:api('repos/pcvantol/djconnect-vibecast-receiver/environments/vibecast-production')});
+ const repository=process.env.GITHUB_REPOSITORY;
+ const repositoryPath=`repos/${repository}`;
+ const sourceGuard=()=>guardSource({
+  repository,branch:process.env.GITHUB_REF,sha:sourceSHA,checkoutSHA:process.env.GITHUB_SHA,
+  currentMain:api(`${repositoryPath}/commits/main`).sha,
+  run:api(`${repositoryPath}/actions/runs/${process.env.ARTIFACT_RUN_ID}`),
+  environment:api(`${repositoryPath}/environments/vibecast-production`),
+ });
  if(action==='prepare') {
   sourceGuard();await verify('dist/bootstrap',sourceSHA);
   const prior=deployment(project(await call(route)),baseline);
