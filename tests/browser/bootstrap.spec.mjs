@@ -6,10 +6,9 @@ for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:192
  await page.goto('/?url=https://evil.example/');await page.locator('#language').selectOption(locale);
  await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  await expect(page.locator('#qr-panel')).toBeHidden();await expect(page.locator('#state-title')).not.toHaveText('');
- await page.locator('#effects').click();await expect(page.locator('html')).toHaveAttribute('data-effects','solid');
- await expect(page.locator('#effects')).toHaveAttribute('aria-pressed','true');
- // macOS WebKit does not focus a button on click or include it in plain Tab traversal.
- await page.locator('#effects').focus();
+ await expect(page.locator('#effects')).toHaveCount(0);
+ // macOS WebKit requires Option+Tab to include buttons in keyboard traversal.
+ await page.locator('#language').focus();
  await page.keyboard.press(process.platform==='darwin' && browserName==='webkit' ? 'Alt+Tab' : 'Tab');
  await expect(page.locator('#retry')).toBeFocused();await page.keyboard.press('Enter');await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);expect(external).toEqual([]);expect(page.url()).toBe('http://127.0.0.1:4186/');

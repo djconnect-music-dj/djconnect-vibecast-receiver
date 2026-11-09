@@ -9,7 +9,7 @@ import {verify} from './verify_bootstrap.mjs';
 import {waitReadback} from './wait_bootstrap.mjs';
 
 // Current independently qualified live baseline; never advance this pin automatically.
-export const baseline=Object.freeze({id:'8f5d0fb4-8178-4bd7-a15f-6584daa21cc5',sourceSHA:'57938b72cdfdf7dc269d6dc9f838c79afef12953',origin:'https://8f5d0fb4.vibecast-tv-bootstrap.pages.dev',manifestSHA256:'a5965b1a3945990eb24b46a95fa8a17ba8057ea43c5f42bf919e9cf9245fbe1b'});
+export const baseline=Object.freeze({id:'fe9044bd-01fb-47c8-981b-032022898923',sourceSHA:'1afd9a2c00300f97f55ab611bb8cb3f73be65452',origin:'https://fe9044bd.vibecast-tv-bootstrap.pages.dev',manifestSHA256:'403aad430a5b7e194617fdcc072b78b3726846d7afc294d82ac1845ec2ee8230'});
 const route=`/accounts/${target.account}/pages/projects/${target.project}`;
 const priorDirectory='artifacts/update-prior/bootstrap',receiptPath='update-receipt.json';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -83,11 +83,9 @@ async function main(action) {
   if(domain.name!==target.domain||domain.status!=='active')throw Error('Active fixed domain required');
   const manifest=await downloadPrior();
   await waitReadback(manifest,baseline.origin);await waitReadback(manifest,'https://vibecast.tv');
-  // Permit only the reviewed addition of the fixed production API to connect-src.
   const priorHeaders=await readFile(priorDirectory+'/_headers','utf8');
   const candidateHeaders=await readFile('dist/bootstrap/_headers','utf8');
-  const allowedHeaders=priorHeaders.replace("connect-src 'none';",'connect-src https://api.djconnect.dev;');
-  if(candidateHeaders!==allowedHeaders)throw Error('Unexpected header policy change');
+  if(candidateHeaders!==priorHeaders)throw Error('Unexpected header policy change');
   const current=deployment(project(await call(route)),baseline);
   if(current.id!==prior.id)throw Error('Production changed during preflight');
   await save({schema:1,sourceSHA,runID,account:target.account,project:target.project,prior,stage:'prepared',production:null});return;
