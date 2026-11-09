@@ -3,24 +3,40 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer"><meta name="color-scheme" content="dark">
-<title>VibeCast by DJConnect</title>
+<title>DJConnect VibeCast</title>
 <link rel="icon" type="image/png" sizes="16x16" href="/brand-mark-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/brand-mark-32.png">
 <link rel="stylesheet" href="/style.css"><script type="module" src="/app.mjs"></script>
 </head>
 <body>
-<header><a href="/" class="brand" aria-label="VibeCast by DJConnect"><img class="brand-mark" src="/brand-mark-40.png" width="40" height="40" alt=""><span>VibeCast <small>by DJConnect</small></span></a>
-<div class="preferences"><label for="language" id="language-label">Language</label><select id="language"><option value="en">English</option><option value="nl">Nederlands</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option></select><button id="effects" type="button" aria-pressed="false">Fewer effects</button></div></header>
+<header><a href="/" class="brand"><img class="brand-mark" src="/brand-mark-40.png" width="40" height="40" alt=""><span>DJConnect VibeCast</span></a>
+<div class="preferences"><label for="language" id="language-label">Language</label><select id="language"><option value="en">English</option><option value="nl">Nederlands</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option></select></div></header>
 <main><section class="intro" aria-labelledby="vibecast-title">
 <div class="vibecast-hero">
 <svg class="hero-symbol" viewBox="0 0 96 80" width="96" height="80" aria-hidden="true" focusable="false">
-<defs><linearGradient id="hero-ink" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#62dcff"/><stop offset=".5" stop-color="#8f9aff"/><stop offset="1" stop-color="#cb8fff"/></linearGradient></defs>
-<g fill="none" stroke="url(#hero-ink)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M58 12H17a7 7 0 0 0-7 7v36a7 7 0 0 0 7 7h62a7 7 0 0 0 7-7V43M36 73h24M48 62v11"/><path d="M68 8a23 23 0 0 1 23 23M68 18a13 13 0 0 1 13 13"/></g><circle cx="68" cy="31" r="3" fill="#c5b6ff"/>
+<defs><linearGradient id="hero-ink" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#62dcff"/><stop offset=".5" stop-color="#8f9aff"/><stop offset="1" stop-color="#cb8fff"/></linearGradient>
+<path id="hero-screen" pathLength="100" d="M58 12H17a7 7 0 0 0-7 7v36a7 7 0 0 0 7 7h62a7 7 0 0 0 7-7V43"/>
+<path id="hero-signal" d="M68 8a23 23 0 0 1 23 23M68 18a13 13 0 0 1 13 13"/>
+</defs>
+<g fill="none" stroke="url(#hero-ink)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<use href="#hero-screen"/><path d="M36 73h24M48 62v11"/><use href="#hero-signal"/>
+<use class="hero-shine" href="#hero-screen" stroke="white" stroke-width="3"/>
+</g><circle cx="68" cy="31" r="3" fill="#c5b6ff"/>
 </svg>
-<h1 id="vibecast-title">VibeCast</h1><p id="eyebrow" class="eyebrow">YOUR MUSIC. A SHARED MOMENT.</p>
+<h1 id="vibecast-title">VibeCast</h1>
+<p class="hero-credit"><img src="/brand-mark-40.png" width="40" height="40" alt="">Powered by DJConnect</p>
 </div>
-<h2 id="headline" class="hero-headline">Give your music room to shine.</h2><p id="intro">Bring VibeCast to this screen. Your own Home Assistant stays in control.</p><div id="steps" class="steps" aria-label="Connection steps"><p><b>01</b> <span id="step1">Find your Home Assistant</span></p><p><b>02</b> <span id="step2">Approve this screen separately</span></p></div></section>
+</section>
 <section class="panel" aria-labelledby="state-title"><p id="state-label" class="eyebrow">CONNECT YOUR SCREEN</p><div id="status" role="status" aria-live="polite" aria-atomic="true"><h2 id="state-title">A secure browser is required</h2><p id="state-description">Use a current browser with JavaScript and a secure HTTPS connection.</p></div><div id="qr-panel" hidden><canvas id="qr" role="img"></canvas><p id="expiry"></p></div><button id="retry" type="button" hidden>Try again</button><p id="privacy" class="privacy">No account details or session content are stored here.</p></section></main>
-<footer><span id="footer">Music stays with you.</span><span class="maker"><picture><source media="(max-width:800px)" srcset="/brand-wordmark-compact-dark.png"><img src="/brand-wordmark-primary-dark.png" width="2048" height="512" alt="DJConnect"></picture></span></footer>
 <noscript><p class="noscript">JavaScript is required to connect safely. / JavaScript is nodig om veilig te verbinden.</p></noscript>
+<footer class="bottom-bar">
+ <span>VibeCast versie <!--build-version--></span>
+ <a href="https://djconnect.dev">
+  <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+   <rect x="1.5" y="1.5" width="13" height="13" rx="2"/>
+   <path d="m5.5 10.5 5-5m-4 0h4v4"/>
+  </svg>
+  djconnect.dev
+ </a>
+</footer>
 </body></html>

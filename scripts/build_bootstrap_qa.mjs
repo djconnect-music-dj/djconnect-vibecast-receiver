@@ -7,7 +7,7 @@ export const qa=Object.freeze({product:'vibecast-tv-bootstrap-qa',browser:'https
 export const sourcePins=Object.freeze({
  'bootstrap/src/wire.mjs':'2b89c5a139c02a5267cf2f68cff9c14f1e656ccad6e5ea453449c5bc7d79ec33',
  'bootstrap/src/wire-schema.mjs':'01272335b2b4d5c3ee43b98fae4dfd147bbe971307a88a447580c5a73b5a7700',
- 'bootstrap/src/app.mjs':'b2168f720364b669cb51d236fef448ced188be00b0e84adf8a55a207deb4b3c7',
+ 'bootstrap/src/app.mjs':'bd2729e48cf2f3d9e0487f08df3bb93ced9ab48b30f88b899466db8c45c208f7',
  'bootstrap/public/_headers':'03dcc81641810e473b6e7dccda1011ff91a80a3be7b9155e6cf76bd7efb80930'
 });
 const hash=x=>createHash('sha256').update(x).digest('hex');
@@ -26,6 +26,10 @@ export function transform(file,source){
 }
 export async function buildQA(expectedSourceSHA){
  const sourceSHA=await fixedSourceIdentity(expectedSourceSHA),sourceFiles=await sourceInventory(sourceSHA);
+ const packageBytes=await inputBytes('package.json');
+ if(sha256(packageBytes)!==sourceFiles['package.json'])throw Error('QA package version differs from committed source');
+ const {version}=JSON.parse(packageBytes);
+ if(typeof version!=='string'||!/^\d+\.\d+\.\d+(?:-[\w.-]+)?(?:\+[\w.-]+)?$/.test(version))throw Error('Invalid bootstrap version');
  const output='dist/bootstrap-qa';
  // Check all fixed transforms before any output mutation. No caller-supplied paths/origins.
  const inputs={};for(const file of Object.keys(sourcePins))inputs[file]=transform(file,await readFile(file,'utf8'));
@@ -59,7 +63,10 @@ export async function buildQA(expectedSourceSHA){
   let bytes=await inputBytes('bootstrap/public/'+file);
   if(sha256(bytes)!==sourceFiles['bootstrap/public/'+file])throw Error('QA public input differs from committed source');
   if(file==='_headers')bytes=Buffer.from(inputs['bootstrap/public/_headers']);
-  if(file==='index.html')bytes=Buffer.from(replaceOnce(bytes.toString(),'<body>','<body><aside role="note">VibeCast QA — afzonderlijke testbuild, geen productieverbinding.</aside>'));
+  if(file==='index.html'){
+   const html=replaceOnce(bytes.toString(),'<body>','<body><aside role="note">VibeCast QA — afzonderlijke testbuild, geen productieverbinding.</aside>');
+   bytes=Buffer.from(replaceOnce(html,'<!--build-version-->',`${version} (${sourceSHA.slice(0,8)})`));
+  }
   await put(file,bytes);
  }
  await put('app.mjs',app);await put('qa-adapter.mjs',adapter);

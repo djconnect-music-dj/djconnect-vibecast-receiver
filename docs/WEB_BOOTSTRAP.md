@@ -56,7 +56,7 @@ acceptance; unknown versions fail closed. No credentials enter logs/history/stor
 One responsive composition covers landscape TV/desktop and portrait/mobile.
 Solid is the initial safe tier. A bounded 45-frame local observation plus actual
 CSS support allows Soft/Glass; unavailable features, reduced motion/transparency,
-high contrast and the accessible fewer-effects toggle force Solid. No UA gating,
+and high contrast force Solid. No UA gating,
 telemetry, persistent device identity or looping benchmark. Current sampling is
 initial qualification only; thermal/long-running older-TV qualification remains
 NOT_RUN. No native Liquid Glass claim.

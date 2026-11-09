@@ -3,8 +3,7 @@ export function renderState(document, language, current) {
  const byId = id => document.getElementById(id);
  const copy = locales[language]; document.documentElement.lang = language;
  byId('language').value = language;
- for (const key of ['eyebrow','headline','intro','step1','step2','privacy','footer','retry','effects']) byId(key).textContent = copy[key];
- byId('steps').setAttribute('aria-label',copy.step1+'; '+copy.step2);
+ for (const key of ['privacy','retry']) byId(key).textContent = copy[key];
  byId('language-label').textContent = copy.language; byId('state-label').textContent = copy.stateLabel;
  byId('state-title').textContent = copy[current.state][0]; byId('state-description').textContent = copy[current.state][1];
  byId('retry').hidden = current.retryAllowed===false || !['unavailable','expired','recovering','unknown','unsafe'].includes(current.state);

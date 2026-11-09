@@ -16,7 +16,7 @@ async function sampleFrames(win = window) {
 }
 
 // Share one measurement across preference changes. Apply the result using the
-// current preferences, including a reduced-effects choice made mid-sample.
+// current preferences, including system preference changes made mid-sample.
 export function createEffectsUpdater({ readPreferences, apply, sample = sampleFrames }) {
   let frames = null, sampling = false;
   function update() {
