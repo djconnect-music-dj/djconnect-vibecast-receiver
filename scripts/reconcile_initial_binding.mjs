@@ -1,6 +1,6 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {api,guardSource} from './promotion_guard.mjs';
+import {api,guardSource,isReceiverRepositoryName,receiverRepositoryId} from './promotion_guard.mjs';
 import {rollbackDomain} from './cloudflare_domain.mjs';
 import {target,safeReadFailure} from './cloudflare_readiness.mjs';
 
@@ -10,7 +10,7 @@ export const recoveries=Object.freeze({'restore-run38933359799':recovery,'restor
 export function guardRecovery(run,raw,recoveryPin=recovery) {
  if(!Object.values(recoveries).includes(recoveryPin))throw Error('Unknown fixed recovery');
  const recovery=recoveryPin;
- if(String(run.id)!==recovery.runID||run.repository?.full_name!=='pcvantol/djconnect-vibecast-receiver'||run.head_sha!==recovery.sourceSHA||run.head_branch!=='main'||run.event!=='workflow_dispatch'||run.path!=='.github/workflows/bootstrap-publish.yml'||run.status!=='completed'||run.conclusion!=='failure')throw Error('Untrusted failed publication');
+ if(String(run.id)!==recovery.runID||run.repository?.id!==receiverRepositoryId||!isReceiverRepositoryName(run.repository.full_name)||run.head_sha!==recovery.sourceSHA||run.head_branch!=='main'||run.event!=='workflow_dispatch'||run.path!=='.github/workflows/bootstrap-publish.yml'||run.status!=='completed'||run.conclusion!=='failure')throw Error('Untrusted failed publication');
  if(createHash('sha256').update(raw).digest('hex')!==recovery.receiptSHA256)throw Error('Recovery receipt hash mismatch');
  const receipt=JSON.parse(raw);
  if(receipt.sourceSHA!==recovery.sourceSHA||receipt.runID!==recovery.runID||receipt.createdRecordID!==recovery.recordID||receipt.createdDomainID!==null||receipt.initialDomainID!==null||receipt.pendingMutation!==null||receipt.complete!==false||receipt.stage!=='dns-before-association'||!Array.isArray(receipt.initialAddresses)||receipt.initialAddresses.length!==0)throw Error('Unexpected recovery scope');

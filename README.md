@@ -9,6 +9,10 @@
 
 Central VibeCast.tv bootstrap and independently pinned Google Cast receiver distribution.
 
+Publication workflows use GitHub repository ID `1324916521` so the same
+repository can retain its deployment checks when it moves to
+`djconnect-music-dj/djconnect-vibecast-receiver`.
+
 The bootstrap lives in `bootstrap/` and builds to `dist/bootstrap`; Cast remains
 in `wwwroot`. See [bootstrap build, contracts, tests and publication gates](docs/WEB_BOOTSTRAP.md).
 The fixed API implementation.1 adapter is implemented for source qualification;

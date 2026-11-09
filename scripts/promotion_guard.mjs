@@ -1,7 +1,18 @@
 import {execFileSync} from 'node:child_process';
+
+export const receiverRepositoryId = 1324916521;
+const receiverNames = new Set([
+ 'pcvantol/djconnect-vibecast-receiver',
+ 'djconnect-music-dj/djconnect-vibecast-receiver',
+]);
+
+export function isReceiverRepositoryName(name) {
+ return receiverNames.has(name);
+}
+
 export function guardTrustedRun({repository,branch,sha,checkoutSHA,currentMain,run}) {
- if(repository!=='pcvantol/djconnect-vibecast-receiver'||branch!=='refs/heads/main'||!/^[a-f0-9]{40}$/.test(sha)||sha!==currentMain||sha!==checkoutSHA)throw Error('Wrong repository, branch or stale candidate');
- if(run.head_sha!==sha||run.head_branch!=='main'||run.event!=='push'||run.conclusion!=='success'||run.path!=='.github/workflows/ci.yml'||run.repository?.full_name!==repository)throw Error('Untrusted or failed artifact run');
+ if(!isReceiverRepositoryName(repository)||branch!=='refs/heads/main'||!/^[a-f0-9]{40}$/.test(sha)||sha!==currentMain||sha!==checkoutSHA)throw Error('Wrong repository, branch or stale candidate');
+ if(run.head_sha!==sha||run.head_branch!=='main'||run.event!=='push'||run.conclusion!=='success'||run.path!=='.github/workflows/ci.yml'||run.repository?.id!==receiverRepositoryId||run.repository.full_name!==repository)throw Error('Untrusted or failed artifact run');
 }
 export function guardSource(input) {
  guardTrustedRun(input);

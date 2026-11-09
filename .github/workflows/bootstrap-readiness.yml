@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   inspect:
-    if: github.repository == 'pcvantol/djconnect-vibecast-receiver' && github.ref == 'refs/heads/main'
+    if: github.repository_id == '1324916521' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: vibecast-production
     steps:

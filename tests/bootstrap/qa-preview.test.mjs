@@ -67,10 +67,15 @@ test('requires an owner-confirmed Access review for the exact SHA and digest in 
       'Stop: deny and verify exact preview hosts, then revoke QA sessions',
     ].join('\n'),
   };
-  assert.doesNotThrow(() => requireAccessReview(comment, sha, digest));
-  assert.throws(() => requireAccessReview(comment, 'e'.repeat(40), digest), /exact owner/);
-  assert.throws(() => requireAccessReview({ ...comment, issue_url: comment.issue_url + '0' }, sha, digest), /issue 10/);
-  assert.throws(() => requireAccessReview({ ...comment, user: { id: 2 } }, sha, digest), /exact owner/);
+  const repository = 'pcvantol/djconnect-vibecast-receiver';
+  const transferred = 'djconnect-music-dj/djconnect-vibecast-receiver';
+  const transferredComment = { ...comment, issue_url: `https://api.github.com/repos/${transferred}/issues/10` };
+  assert.doesNotThrow(() => requireAccessReview(comment, sha, digest, repository));
+  assert.doesNotThrow(() => requireAccessReview(transferredComment, sha, digest, transferred));
+  assert.throws(() => requireAccessReview(comment, sha, digest, transferred), /issue 10/);
+  assert.throws(() => requireAccessReview(comment, 'e'.repeat(40), digest, repository), /exact owner/);
+  assert.throws(() => requireAccessReview({ ...comment, issue_url: comment.issue_url + '0' }, sha, digest, repository), /issue 10/);
+  assert.throws(() => requireAccessReview({ ...comment, user: { id: 2 } }, sha, digest, repository), /exact owner/);
 });
 
 test('rejects Pages Functions, provider control files and unexpected output members', () => {

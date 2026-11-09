@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-import { api, guardSource } from './promotion_guard.mjs';
+import { api, guardSource, isReceiverRepositoryName } from './promotion_guard.mjs';
 import { withVerifiedQAPackage } from './preflight_qa_pages.mjs';
 import { readbackQAAccess } from './readback_qa_access.mjs';
 
@@ -49,10 +49,10 @@ export function requireStaticQAOutput(files, sourceFiles) {
   }
 }
 
-export function requireAccessReview(comment, sha, digest) {
+export function requireAccessReview(comment, sha, digest, repository) {
   const lines = new Set(comment?.body?.split(/\r?\n/) ?? []);
-  if (comment?.user?.id !== 19624891 ||
-      comment.issue_url !== 'https://api.github.com/repos/pcvantol/djconnect-vibecast-receiver/issues/10' ||
+  if (!isReceiverRepositoryName(repository) || comment?.user?.id !== 19624891 ||
+      comment.issue_url !== `https://api.github.com/repos/${repository}/issues/10` ||
       !lines.has('VibeCast QA preview Access reviewed') ||
       !lines.has(`Source: ${sha}`) || !lines.has(`Artifact: ${digest}`) ||
       !lines.has('Scope: qa.vibecast.tv, vibecast-tv-bootstrap-qa.pages.dev, *.vibecast-tv-bootstrap-qa.pages.dev') ||
@@ -67,7 +67,7 @@ async function publish() {
     CANDIDATE_SHA: sha, ARTIFACT_RUN_ID: runId, GITHUB_RUN_ID: uploadId,
     GITHUB_RUN_ATTEMPT: attempt, QA_ARTIFACT_DIGEST: approvedDigest,
     QA_ACCESS_REVIEW_ID: accessReviewId, CLOUDFLARE_API_TOKEN: token } = env;
-  if (repository !== 'pcvantol/djconnect-vibecast-receiver' ||
+  if (!isReceiverRepositoryName(repository) ||
       ![runId, uploadId, accessReviewId].every(value => /^[1-9][0-9]*$/.test(value ?? '')) || attempt !== '1' ||
       !/^sha256:[0-9a-f]{64}$/.test(approvedDigest ?? '') || !token) {
     throw Error('Exact QA run, artifact digest, Access review and dedicated credential required');
@@ -79,7 +79,7 @@ async function publish() {
     environment: api(`${repositoryPath}/environments/vibecast-qa`),
   });
   const checkAccessReview = () => requireAccessReview(
-    api(`${repositoryPath}/issues/comments/${accessReviewId}`), sha, approvedDigest,
+    api(`${repositoryPath}/issues/comments/${accessReviewId}`), sha, approvedDigest, repository,
   );
   checkApprovalPolicy();
   checkAccessReview();
