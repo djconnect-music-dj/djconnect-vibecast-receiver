@@ -278,3 +278,9 @@ receipt contains hostnames and statuses only.
 An anonymous redirect establishes the authentication boundary for the routes
 probed. Qualify allowed and denied identities separately. For an allowed
 identity, verify the deployed artifact bytes, headers and 404 response.
+
+On protected main, the manual **Verify isolated VibeCast QA candidate**
+workflow joins that Access check to the exact successful main CI run. It
+verifies the GitHub ZIP digest, the QA artifact's source and file inventory,
+and that main still matches the selection when the checks end. This workflow
+uses read-only GitHub permissions and has no upload step or Cloudflare secret.

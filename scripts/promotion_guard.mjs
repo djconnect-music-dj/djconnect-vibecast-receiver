@@ -1,7 +1,11 @@
 import {execFileSync} from 'node:child_process';
-export function guardSource({repository,branch,sha,checkoutSHA,currentMain,run,environment}) {
+export function guardTrustedRun({repository,branch,sha,checkoutSHA,currentMain,run}) {
  if(repository!=='pcvantol/djconnect-vibecast-receiver'||branch!=='refs/heads/main'||!/^[a-f0-9]{40}$/.test(sha)||sha!==currentMain||sha!==checkoutSHA)throw Error('Wrong repository, branch or stale candidate');
  if(run.head_sha!==sha||run.head_branch!=='main'||run.event!=='push'||run.conclusion!=='success'||run.path!=='.github/workflows/ci.yml'||run.repository?.full_name!==repository)throw Error('Untrusted or failed artifact run');
+}
+export function guardSource(input) {
+ guardTrustedRun(input);
+ const {environment}=input;
  if(!environment.protection_rules?.some(rule=>rule.type==='required_reviewers'&&rule.reviewers?.length===1&&rule.reviewers[0].type==='User'&&rule.reviewers[0].reviewer?.login==='pcvantol'&&rule.reviewers[0].reviewer?.id===19624891&&typeof rule.prevent_self_review==='boolean')||environment.can_admins_bypass!==false||environment.deployment_branch_policy?.protected_branches!==true||environment.deployment_branch_policy?.custom_branch_policies!==false)throw Error('Protected non-bypassable owner reviewer environment required');
 }
 export function guard(input) {
