@@ -286,3 +286,51 @@ workflow joins that Access check to the exact successful main CI run. It
 verifies the GitHub ZIP digest, the QA artifact's source and file inventory,
 and that main still matches the selection when the checks end. This workflow
 uses read-only GitHub permissions and has no upload step or Cloudflare secret.
+
+### Protected QA preview upload
+
+The manual **Publish isolated VibeCast QA preview** workflow is an
+infrastructure qualification step. Run it from protected main only after
+reviewing the exact SHA, main CI run, artifact ZIP digest and allowed QA
+effect. The `vibecast-qa` job requires explicit owner approval. GitHub permits
+owner self-review here, with protected branches and admin bypass disabled.
+Use only the separate environment secret `VIBECAST_QA_PAGES_TOKEN` with
+account-scoped Cloudflare Pages Edit permission. Never store the production
+token, DNS permissions or local Wrangler OAuth in this environment.
+
+The workflow re-verifies the artifact, confirms that the QA Worker is closed,
+and uploads only the committed static file inventory to a unique preview branch in the pinned Direct Upload
+project with an empty production slot. It checks Access before upload and
+again on the immutable URL and branch alias. The preview origin cannot run the
+receiver's rendezvous adapter, which is bound to the custom QA hostname.
+The preview receipt is an anonymous access check. A permitted tester still
+needs to verify HTTPS, bytes, headers and 404 after signing in, and a denied
+identity must fail.
+
+Before approving the upload, verify the Cloudflare Access configuration for
+all three scopes, including the full wildcard and any overlapping app or
+path exceptions. Confirm the permitted identity, deny-by-default behavior,
+and the manual stop procedure. Record the review in an owner-authored
+comment on receiver issue #10 and pass its ID to the workflow. Use the
+following exact lines, substituting the reviewed SHA and ZIP digest:
+
+```text
+VibeCast QA preview Access reviewed
+Source: <40-character main SHA>
+Artifact: sha256:<64-character digest>
+Scope: qa.vibecast.tv, vibecast-tv-bootstrap-qa.pages.dev, *.vibecast-tv-bootstrap-qa.pages.dev
+Stop: deny and verify exact preview hosts, then revoke QA sessions
+```
+
+The owner attestation covers the policy, including the future immutable host
+that cannot be probed before creation. On a failed or ambiguous upload, inspect the exact run
+branch and SHA in Cloudflare. Apply an explicit deny policy on the immutable
+preview and branch alias, check unauthenticated requests on the failing route
+and revoke QA sessions. Retain the Access application itself. If an exact
+policy cannot intercept the exposed route, keep the incident open and
+escalate to the owner for containment of the dedicated QA Pages project. Do not retry on the assumption that a failed command had
+no effect. There is no prior QA production deployment for rollback, and Pages
+can refuse deletion of a branch's latest preview. Custom-domain publication,
+Worker activation and the Apple, HA and Pi trial need separate qualification.
+
+[Cloudflare preview deployments](https://developers.cloudflare.com/pages/configuration/preview-deployments/)

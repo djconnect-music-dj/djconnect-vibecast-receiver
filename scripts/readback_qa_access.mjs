@@ -3,12 +3,16 @@ import { pathToFileURL } from 'node:url';
 const pagesHost = 'vibecast-tv-bootstrap-qa.pages.dev';
 const loginOrigin = 'https://pcvantol.cloudflareaccess.com';
 
-export async function readbackQAAccess(deploymentId, fetcher = fetch, files = []) {
+export async function readbackQAAccess(deploymentId, fetcher = fetch, files = [], previewBranch) {
   if (deploymentId !== undefined && !/^[a-f0-9]{8}$/.test(deploymentId)) {
     throw Error('Expected the eight-character immutable QA Pages deployment ID');
   }
 
   const hosts = ['qa.vibecast.tv', pagesHost, `${deploymentId ?? 'test-access'}.${pagesHost}`];
+  if (previewBranch !== undefined) {
+    if (!/^qa-preview-[1-9][0-9]*-[1-9][0-9]*$/.test(previewBranch)) throw Error('Invalid QA preview branch');
+    hosts.push(`${previewBranch}.${pagesHost}`);
+  }
   const routes = new Set([
     '/', '/index.html', '/index', '/build-manifest.json', '/SHA256SUMS',
     '/app.mjs', '/qa-adapter.mjs', '/__vibecast_missing__',

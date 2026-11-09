@@ -19,7 +19,7 @@ export function selectQAArtifact({ artifacts, total_count: totalCount }, sha) {
   return artifact;
 }
 
-async function preflight() {
+export async function withVerifiedQAPackage(usePackage) {
   const { GITHUB_REPOSITORY: repository, GITHUB_REF: branch, GITHUB_SHA: checkoutSHA,
     CANDIDATE_SHA: sha, ARTIFACT_RUN_ID: runId, RUNNER_TEMP: runnerTemp } = process.env;
   if (repository !== 'pcvantol/djconnect-vibecast-receiver' ||
@@ -54,13 +54,21 @@ async function preflight() {
     }
     const manifest = await verifyQA(extracted, sha);
     const access = await readbackQAAccess(undefined, fetch, Object.keys(manifest.files));
-    if (currentMain() !== sha) throw Error('QA candidate changed during preflight');
-    console.log(JSON.stringify({ sourceSHA: sha, runId, artifactId: id, zipDigest: digest, access }));
+    const assertCurrentMain = () => {
+      if (currentMain() !== sha) throw Error('QA candidate changed during preflight');
+    };
+    assertCurrentMain();
+    return await usePackage({
+      artifact: { sourceSHA: sha, runId, artifactId: id, zipDigest: digest },
+      access, directory: extracted, files: Object.keys(manifest.files),
+      sourceFiles: manifest.provenance.sourceFiles, assertCurrentMain,
+    });
   } finally {
     await rm(scratch, { recursive: true, force: true });
   }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  await preflight();
+  const receipt = await withVerifiedQAPackage(({ artifact, access }) => ({ ...artifact, access }));
+  console.log(JSON.stringify(receipt));
 }
