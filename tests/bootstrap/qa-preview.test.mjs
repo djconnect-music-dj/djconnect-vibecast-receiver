@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { requireEmptyQAProduction, selectQAPreview } from '../../scripts/publish_qa_preview.mjs';
+import { requireAccessReview, requireEmptyQAProduction, selectQAPreview } from '../../scripts/publish_qa_preview.mjs';
 import { readbackQAAccess } from '../../scripts/readback_qa_access.mjs';
 
 const host = 'vibecast-tv-bootstrap-qa.pages.dev';
@@ -54,4 +54,21 @@ test('preview branch alias is checked independently of the immutable preview URL
     'qa.vibecast.tv', host, `abcd1234.${host}`, `${branch}.${host}`,
   ]);
   await assert.rejects(readbackQAAccess(undefined, request, [], 'main'), /Invalid QA preview branch/);
+});
+
+test('requires an owner-confirmed Access review for the exact SHA and digest in issue 10', () => {
+  const digest = `sha256:${'a'.repeat(64)}`;
+  const comment = {
+    issue_url: 'https://api.github.com/repos/pcvantol/djconnect-vibecast-receiver/issues/10',
+    user: { id: 19624891 },
+    body: [
+      'VibeCast QA preview Access reviewed', `Source: ${sha}`, `Artifact: ${digest}`,
+      'Scope: qa.vibecast.tv, vibecast-tv-bootstrap-qa.pages.dev, *.vibecast-tv-bootstrap-qa.pages.dev',
+      'Stop: close QA Access and revoke sessions',
+    ].join('\n'),
+  };
+  assert.doesNotThrow(() => requireAccessReview(comment, sha, digest));
+  assert.throws(() => requireAccessReview(comment, 'e'.repeat(40), digest), /exact owner/);
+  assert.throws(() => requireAccessReview({ ...comment, issue_url: comment.issue_url + '0' }, sha, digest), /issue 10/);
+  assert.throws(() => requireAccessReview({ ...comment, user: { id: 2 } }, sha, digest), /exact owner/);
 });

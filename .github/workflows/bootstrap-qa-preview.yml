@@ -14,9 +14,14 @@ on:
         description: Exact reviewed provider ZIP digest including sha256 prefix
         required: true
         type: string
+      access_review_comment_id:
+        description: Owner comment ID in receiver issue 10 recording verified Access policy and stop procedure
+        required: true
+        type: string
 permissions:
   contents: read
   actions: read
+  issues: read
 concurrency:
   group: vibecast-qa-preview
   cancel-in-progress: false
@@ -39,6 +44,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
           ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          QA_ACCESS_REVIEW_ID: ${{ inputs.access_review_comment_id }}
           QA_ARTIFACT_DIGEST: ${{ inputs.artifact_digest }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.VIBECAST_QA_PAGES_TOKEN }}
         run: node scripts/publish_qa_preview.mjs

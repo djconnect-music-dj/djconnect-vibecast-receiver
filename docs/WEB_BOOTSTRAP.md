@@ -307,8 +307,23 @@ The preview receipt is an anonymous access check. A permitted tester still
 needs to verify HTTPS, bytes, headers and 404 after signing in, and a denied
 identity must fail.
 
-Before approving the first upload, confirm the manual stop procedure for the
-QA Access application. On a failed or ambiguous upload, inspect the exact run
+Before approving the upload, verify the Cloudflare Access configuration for
+all three scopes, including the full wildcard and any overlapping app or
+path exceptions. Confirm the permitted identity, deny-by-default behavior,
+and the manual stop procedure. Record the review in an owner-authored
+comment on receiver issue #10 and pass its ID to the workflow. Use the
+following exact lines, substituting the reviewed SHA and ZIP digest:
+
+```text
+VibeCast QA preview Access reviewed
+Source: <40-character main SHA>
+Artifact: sha256:<64-character digest>
+Scope: qa.vibecast.tv, vibecast-tv-bootstrap-qa.pages.dev, *.vibecast-tv-bootstrap-qa.pages.dev
+Stop: close QA Access and revoke sessions
+```
+
+The owner attestation covers the policy, including the future immutable host
+that cannot be probed before creation. On a failed or ambiguous upload, inspect the exact run
 branch and SHA in Cloudflare and close access to the QA app, revoking its
 sessions if needed. Do not retry on the assumption that a failed command had
 no effect. There is no prior QA production deployment for rollback, and Pages

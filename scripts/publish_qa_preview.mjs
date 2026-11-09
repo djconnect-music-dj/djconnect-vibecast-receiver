@@ -36,16 +36,28 @@ export function selectQAPreview(deployments, branch, sha, origin, priorIds) {
   return preview;
 }
 
+export function requireAccessReview(comment, sha, digest) {
+  const lines = new Set(comment?.body?.split(/\r?\n/) ?? []);
+  if (comment?.user?.id !== 19624891 ||
+      comment.issue_url !== 'https://api.github.com/repos/pcvantol/djconnect-vibecast-receiver/issues/10' ||
+      !lines.has('VibeCast QA preview Access reviewed') ||
+      !lines.has(`Source: ${sha}`) || !lines.has(`Artifact: ${digest}`) ||
+      !lines.has('Scope: qa.vibecast.tv, vibecast-tv-bootstrap-qa.pages.dev, *.vibecast-tv-bootstrap-qa.pages.dev') ||
+      !lines.has('Stop: close QA Access and revoke sessions')) {
+    throw Error('Missing exact owner QA Access and stop-procedure review in receiver issue 10');
+  }
+}
+
 async function publish() {
   const env = process.env;
   const { GITHUB_REPOSITORY: repository, GITHUB_REF: branch, GITHUB_SHA: checkoutSHA,
     CANDIDATE_SHA: sha, ARTIFACT_RUN_ID: runId, GITHUB_RUN_ID: uploadId,
     GITHUB_RUN_ATTEMPT: attempt, QA_ARTIFACT_DIGEST: approvedDigest,
-    CLOUDFLARE_API_TOKEN: token } = env;
+    QA_ACCESS_REVIEW_ID: accessReviewId, CLOUDFLARE_API_TOKEN: token } = env;
   if (repository !== 'pcvantol/djconnect-vibecast-receiver' ||
-      ![runId, uploadId].every(value => /^[1-9][0-9]*$/.test(value ?? '')) || attempt !== '1' ||
+      ![runId, uploadId, accessReviewId].every(value => /^[1-9][0-9]*$/.test(value ?? '')) || attempt !== '1' ||
       !/^sha256:[0-9a-f]{64}$/.test(approvedDigest ?? '') || !token) {
-    throw Error('Exact QA run, approved artifact digest and dedicated credential required');
+    throw Error('Exact QA run, artifact digest, Access review and dedicated credential required');
   }
   const repositoryPath = `repos/${repository}`;
   const checkApprovalPolicy = () => guardSource({
@@ -53,7 +65,11 @@ async function publish() {
     run: api(`${repositoryPath}/actions/runs/${runId}`),
     environment: api(`${repositoryPath}/environments/vibecast-qa`),
   });
+  const checkAccessReview = () => requireAccessReview(
+    api(`${repositoryPath}/issues/comments/${accessReviewId}`), sha, approvedDigest,
+  );
   checkApprovalPolicy();
+  checkAccessReview();
 
   const call = async route => {
     const response = await fetch('https://api.cloudflare.com/client/v4' + route, {
@@ -90,15 +106,16 @@ async function publish() {
       throw Error('QA preview branch already exists');
     }
     await readbackQAAccess(undefined, fetch, files, previewBranch);
-    const receipt = { ...artifact, previewBranch, serviceSHA: service.release_sha, state: 'upload-pending' };
+    const receipt = { ...artifact, accessReviewId, previewBranch, serviceSHA: service.release_sha, state: 'upload-pending' };
     await save(receipt);
     checkApprovalPolicy();
+    checkAccessReview();
     assertCurrentMain();
 
     const { GH_TOKEN, GITHUB_TOKEN, ...wranglerEnv } = env;
     const output = execFileSync('node_modules/.bin/wrangler', [
       'pages', 'deploy', directory, `--project-name=${projectName}`, `--branch=${previewBranch}`,
-      `--commit-hash=${sha}`, '--commit-dirty=false',
+      `--commit-hash=${sha}`, '--commit-dirty=false', '--commit-message=VibeCast isolated QA preview',
     ], {
       encoding: 'utf8', timeout: 180000, stdio: ['ignore', 'pipe', 'pipe'],
       env: { ...wranglerEnv, CLOUDFLARE_ACCOUNT_ID: account, WRANGLER_SEND_METRICS: 'false' },
