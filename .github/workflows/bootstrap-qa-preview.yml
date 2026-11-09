@@ -1,0 +1,51 @@
+name: Publish isolated VibeCast QA preview
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact reviewed protected main SHA
+        required: true
+        type: string
+      artifact_run_id:
+        description: Successful Verify receiver push run for that SHA
+        required: true
+        type: string
+      artifact_digest:
+        description: Exact reviewed provider ZIP digest including sha256 prefix
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: vibecast-qa-preview
+  cancel-in-progress: false
+jobs:
+  preview:
+    if: github.repository == 'pcvantol/djconnect-vibecast-receiver' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: vibecast-qa
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify exact package and publish preview only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          QA_ARTIFACT_DIGEST: ${{ inputs.artifact_digest }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.VIBECAST_QA_PAGES_TOKEN }}
+        run: node scripts/publish_qa_preview.mjs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: qa-preview-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qa-preview-receipt.json
+          if-no-files-found: ignore
+          retention-days: 2
