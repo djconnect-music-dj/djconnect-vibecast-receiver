@@ -265,3 +265,16 @@ Own public-web Finalization is prepared after measured publication; its exact
 review/docs-merge/final-main receipts belong in owning10 after execution.
 This does not close the integration dependency or establish shared guest/real
 CAF/Apple/Cast/LG acceptance.
+
+### Anonymous Access check for the separate QA project
+
+Run `node scripts/readback_qa_access.mjs` before uploading. It checks the custom
+QA host, the Pages root and a representative wildcard hostname. After a QA
+deployment, pass the eight-character immutable Pages hostname prefix as the
+only argument and repeat the check. Each host must redirect the root, build
+manifest and browser bundle to the account's Cloudflare Access login. The
+receipt contains hostnames and statuses only.
+
+An anonymous redirect establishes the authentication boundary for the routes
+probed. Qualify allowed and denied identities separately. For an allowed
+identity, verify the deployed artifact bytes, headers and 404 response.
