@@ -44,12 +44,12 @@ jobs:
       - name: Qualify exact prior artifact, bound project and protected candidate
         run: node scripts/cloudflare_update.mjs prepare
       - run: node scripts/readback_cast.mjs
-      - name: Upload same tested bytes to isolated preview
-        run: npx --no-install wrangler pages deploy dist/bootstrap --project-name=vibecast-tv-bootstrap --branch="qualification-${CANDIDATE_SHA:0:12}" --commit-hash="$CANDIDATE_SHA" > bootstrap-preview.log
+      - name: Upload all tested bytes to isolated preview
+        run: npx --no-install wrangler pages deploy dist/bootstrap --skip-caching --project-name=vibecast-tv-bootstrap --branch="qualification-${CANDIDATE_SHA:0:12}" --commit-hash="$CANDIDATE_SHA" > bootstrap-preview.log
       - name: Verify preview and recheck production ownership and stale-main fence
         run: node scripts/cloudflare_update.mjs begin
       - name: Publish identical artifact to production
-        run: npx --no-install wrangler pages deploy dist/bootstrap --project-name=vibecast-tv-bootstrap --branch=main --commit-hash="$CANDIDATE_SHA" > bootstrap-production.log
+        run: npx --no-install wrangler pages deploy dist/bootstrap --skip-caching --project-name=vibecast-tv-bootstrap --branch=main --commit-hash="$CANDIDATE_SHA" > bootstrap-production.log
       - name: Confirm production identity and qualify immutable and root HTTPS hashes/headers
         run: node scripts/cloudflare_update.mjs adopt
       - run: node scripts/readback_cast.mjs
