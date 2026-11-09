@@ -1,6 +1,6 @@
 {
   "name": "djconnect-vibecast-receiver",
-  "version": "0.1.0",
+  "version": "4.0.0",
   "private": true,
   "scripts": {
     "test": "python3 scripts/import_vibecast.py --check && node scripts/verify_brand.mjs && node --test && python3 -m unittest discover -s tests -p \"*_test.py\"",
