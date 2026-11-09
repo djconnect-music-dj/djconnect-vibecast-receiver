@@ -2,7 +2,7 @@
 <html lang="en" data-effects="solid">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#191938">
+<meta name="theme-color" content="#191b3a">
 <meta name="referrer" content="no-referrer"><meta name="color-scheme" content="dark">
 <title>DJConnect VibeCast</title>
 <link rel="icon" type="image/png" sizes="16x16" href="/brand-mark-16.png">
@@ -21,24 +21,59 @@
 <main><section class="intro" aria-labelledby="vibecast-title">
 <div class="vibecast-hero">
 <svg class="hero-symbol" viewBox="0 0 96 80" width="96" height="80" aria-hidden="true" focusable="false">
-<defs><linearGradient id="hero-ink" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#62dcff"/><stop offset=".5" stop-color="#8f9aff"/><stop offset="1" stop-color="#cb8fff"/></linearGradient>
-<path id="hero-screen" pathLength="100" d="M58 12H17a7 7 0 0 0-7 7v36a7 7 0 0 0 7 7h62a7 7 0 0 0 7-7V43"/>
-<path id="hero-stem" pathLength="100" d="M48 62v11"/>
-<path id="hero-foot" pathLength="100" d="M36 73h24"/>
-<path id="hero-signal-outer" pathLength="100" d="M68 8a23 23 0 0 1 23 23"/>
-<path id="hero-signal-inner" pathLength="100" d="M68 18a13 13 0 0 1 13 13"/>
-</defs>
-<g fill="none" stroke="url(#hero-ink)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-<use href="#hero-screen"/><use href="#hero-stem"/><use href="#hero-foot"/>
-<use href="#hero-signal-outer"/><use href="#hero-signal-inner"/>
-<g stroke="white" stroke-width="3">
- <use class="hero-shine" href="#hero-screen"/>
- <use class="hero-shine hero-shine-stem" href="#hero-stem"/>
- <use class="hero-shine hero-shine-foot" href="#hero-foot"/>
- <use class="hero-shine hero-shine-signal" href="#hero-signal-outer"/>
- <use class="hero-shine hero-shine-signal-inner" href="#hero-signal-inner"/>
-</g>
-</g><circle cx="68" cy="31" r="3" fill="#c5b6ff"/>
+  <defs>
+    <linearGradient id="receiver-symbol-gradient" x1="10" y1="8" x2="87" y2="73" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#62d8f2"/><stop offset=".55" stop-color="#8aa7ff"/><stop offset="1" stop-color="#c392ff"/>
+    </linearGradient>
+    <g id="receiver-symbol-strokes" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M58 12H17a7 7 0 0 0-7 7v36a7 7 0 0 0 7 7h62a7 7 0 0 0 7-7V43"/>
+      <path d="M36 73h24M48 62v11"/>
+      <path d="M68 8a23 23 0 0 1 23 23M68 18a13 13 0 0 1 13 13"/>
+    </g>
+    <circle id="receiver-symbol-dot" cx="68" cy="31" r="3"/>
+    <path id="receiver-symbol-light-sector" d="M48 40L127.936 36.789A80 80 0 0 1 127.936 43.211Z"/>
+    <mask id="receiver-symbol-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="96" height="80">
+      <use href="#receiver-symbol-strokes" stroke="white"/>
+      <use href="#receiver-symbol-dot" fill="white"/>
+    </mask>
+    <filter id="receiver-symbol-bloom" filterUnits="userSpaceOnUse" x="0" y="0" width="96" height="80">
+      <feGaussianBlur stdDeviation="2"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".45"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <use class="hero-symbol-strokes" href="#receiver-symbol-strokes" stroke="url(#receiver-symbol-gradient)"/>
+  <use class="hero-symbol-dot" href="#receiver-symbol-dot" fill="#c6b5ff"/>
+  <g class="hero-symbol-glow" filter="url(#receiver-symbol-bloom)">
+    <g mask="url(#receiver-symbol-mask)">
+      <g class="hero-symbol-light" fill="white">
+        <use href="#receiver-symbol-light-sector" transform="rotate(254.25 48 40)" opacity="0.003"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(258.75 48 40)" opacity="0.009"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(263.25 48 40)" opacity="0.016"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(267.75 48 40)" opacity="0.022"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(272.25 48 40)" opacity="0.028"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(276.75 48 40)" opacity="0.034"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(281.25 48 40)" opacity="0.042"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(285.75 48 40)" opacity="0.064"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(290.25 48 40)" opacity="0.086"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(294.75 48 40)" opacity="0.108"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(299.25 48 40)" opacity="0.130"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(303.75 48 40)" opacity="0.152"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(308.25 48 40)" opacity="0.173"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(312.75 48 40)" opacity="0.195"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(317.25 48 40)" opacity="0.217"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(321.75 48 40)" opacity="0.239"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(326.25 48 40)" opacity="0.309"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(330.75 48 40)" opacity="0.428"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(335.25 48 40)" opacity="0.547"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(339.75 48 40)" opacity="0.666"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(344.25 48 40)" opacity="0.784"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(348.75 48 40)" opacity="0.596"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(353.25 48 40)" opacity="0.276"/>
+        <use href="#receiver-symbol-light-sector" transform="rotate(357.75 48 40)" opacity="0.075"/>
+      </g>
+    </g>
+  </g>
 </svg>
 <p class="hero-brand">DJConnect</p>
 <h1 id="vibecast-title">VibeCast</h1>

@@ -1,10 +1,8 @@
 :root {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #f7f8ff;
-  background:
-    radial-gradient(ellipse at 13% 50%, #174b9473, transparent 59%),
-    radial-gradient(ellipse at 94% 3%, #4c1c795c, transparent 62%),
-    linear-gradient(135deg, #10253e, #151a42 55%, #1b153b);
+  /* Safari extends the solid canvas color behind its system bars. */
+  background-color: #191b3a;
   color-scheme: dark;
   font-synthesis: none;
   --muted: #c6cce4;
@@ -21,6 +19,10 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  background-image:
+    radial-gradient(ellipse at 13% 50%, #174b9473, transparent 59%),
+    radial-gradient(ellipse at 94% 3%, #4c1c795c, transparent 62%),
+    linear-gradient(135deg, #10253e, #151a42 55%, #1b153b);
 }
 
 a { color: inherit; text-decoration: none; }
@@ -80,6 +82,10 @@ button { cursor: pointer; }
 #screen-mode { font-size: .84rem; letter-spacing: .09em; text-transform: uppercase; }
 .preferences { display: flex; align-items: center; gap: .5rem; font-size: .85rem; }
 .preferences label { position: absolute; width: 1px; height: 1px; overflow: hidden; }
+#language:focus-visible {
+  outline: none;
+  background-color: #526181;
+}
 
 main {
   width: min(76%, 100rem);
@@ -105,7 +111,13 @@ main {
   padding: clamp(1.6rem, 1.95vw, 2.55rem) clamp(1rem, 2.2vw, 2.85rem) clamp(1.35rem, 1.6vw, 2.2rem);
   text-align: center;
 }
-.hero-symbol { display: block; flex: none; width: clamp(78px, 5.15vw, 106px); height: auto; margin-bottom: clamp(1.25rem, 2.3vw, 3rem); }
+.hero-symbol { display: block; flex: none; width: 96px; height: 80px; margin-bottom: clamp(1.25rem, 2.3vw, 3rem); }
+@media (max-width: 600px) {
+  .hero-symbol { width: 80px; height: 67px; }
+}
+@media (max-height: 700px) and (orientation: landscape) {
+  .hero-symbol { width: 72px; height: 60px; }
+}
 .hero-brand, .vibecast-hero h1 {
   margin: 0;
   font-weight: 750;
@@ -115,7 +127,7 @@ main {
 .hero-brand { font-size: clamp(2rem, 3.05vw, 3.9rem); }
 .vibecast-hero h1 { font-size: clamp(2.9rem, 4.35vw, 5.55rem); margin-top: .08em; }
 #hero-tagline { margin: clamp(.85rem, 1.3vw, 1.7rem) 0 0; font-size: clamp(1rem, 1.25vw, 1.6rem); }
-.hero-shine { visibility: hidden; }
+.hero-symbol-glow { display: none; }
 
 .panel {
   display: flex;
@@ -213,7 +225,7 @@ html[data-effects=glass] :is(.vibecast-hero, .panel) {
   .screen-clock { display: contents; }
   #screen-time { grid-area: 1 / 2; font-size: clamp(2rem, 8.4vw, 2.8rem); text-align: center; color: #dedaf0; }
   #screen-date { grid-area: 2 / 1 / auto / -1; text-align: center; font-size: .95rem; margin-top: .2rem; }
-  .screen-controls { grid-area: 1 / 3; min-width: 0; gap: 0; }
+  .screen-controls { grid-area: 1 / 3; min-width: 0; gap: .35rem; align-self: start; }
   #screen-mode { font-size: .66rem; letter-spacing: .06em; }
   .preferences { max-width: 100%; }
   .preferences select { min-width: 0; max-width: 100%; font-size: .72rem; padding-inline: .35rem; }
@@ -226,27 +238,20 @@ html[data-effects=glass] :is(.vibecast-hero, .panel) {
   .bottom-bar { font-size: .72rem; column-gap: .5rem; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .hero-shine {
-    stroke-dasharray: 18 82;
-    filter: drop-shadow(0 0 2px white) drop-shadow(0 0 5px #fff9);
-    animation: hero-shine var(--shine-duration, 2.2s) linear var(--shine-delay, .2s);
+@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  .hero-symbol-glow { display: block; }
+  .hero-symbol-light {
+    transform-box: view-box;
+    transform-origin: center;
+    animation: receiver-symbol-sweep 12s linear infinite;
   }
-  .hero-shine-stem { --shine-duration: .35s; --shine-delay: 1.55s; }
-  .hero-shine-foot { --shine-duration: .65s; --shine-delay: 1.75s; }
-  .hero-shine-signal { --shine-duration: .7s; --shine-delay: 2.25s; }
-  .hero-shine-signal-inner { --shine-duration: .55s; --shine-delay: 2.45s; }
 }
-@keyframes hero-shine {
-  0% { visibility: visible; stroke-dashoffset: 18; opacity: 0; }
-  15%, 80% { opacity: 1; }
-  100% { visibility: visible; stroke-dashoffset: -100; opacity: 0; }
-}
-@media (prefers-contrast: more), (prefers-reduced-transparency: reduce), (forced-colors: active) {
-  .hero-shine { animation: none; }
+@keyframes receiver-symbol-sweep {
+  to { transform: rotate(1turn); }
 }
 @media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
   :root { background: #101323; }
+  body { background-image: none; }
   .vibecast-hero, .panel {
     background: #20283d;
     border: 2px solid white;
@@ -259,8 +264,10 @@ html[data-effects=glass] :is(.vibecast-hero, .panel) {
 }
 @media (forced-colors: active) {
   :root, .vibecast-hero, .panel { background: Canvas; }
+  body { background-image: none; }
   .vibecast-hero, .panel, button, select { border: 2px solid CanvasText; box-shadow: none; }
+  #language:focus-visible { outline: 2px solid Highlight; }
   #qr-panel { background: Canvas; color: CanvasText; border-color: CanvasText; }
-  .hero-symbol g { stroke: CanvasText; }
-  .hero-symbol circle { fill: CanvasText; }
+  .hero-symbol-strokes { stroke: CanvasText; }
+  .hero-symbol-dot { fill: CanvasText; }
 }
