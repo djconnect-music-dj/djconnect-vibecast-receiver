@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import path from 'node:path';
 import { writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { api, guardSource } from './promotion_guard.mjs';
@@ -36,6 +37,18 @@ export function selectQAPreview(deployments, branch, sha, origin, priorIds) {
   return preview;
 }
 
+export function requireStaticQAOutput(files, sourceFiles) {
+  const prefix = 'bootstrap/public/';
+  const expected = [
+    ...Object.keys(sourceFiles).filter(file => file.startsWith(prefix)).map(file => file.slice(prefix.length)),
+    'app.mjs', 'qa-adapter.mjs',
+  ].sort();
+  if (expected.some(file => file !== '_headers' && !/^[a-zA-Z0-9-]+\.(?:css|html|json|mjs|png)$/.test(file)) ||
+      JSON.stringify([...files].sort()) !== JSON.stringify(expected)) {
+    throw Error('Expected only the committed static QA output inventory');
+  }
+}
+
 export function requireAccessReview(comment, sha, digest) {
   const lines = new Set(comment?.body?.split(/\r?\n/) ?? []);
   if (comment?.user?.id !== 19624891 ||
@@ -43,7 +56,7 @@ export function requireAccessReview(comment, sha, digest) {
       !lines.has('VibeCast QA preview Access reviewed') ||
       !lines.has(`Source: ${sha}`) || !lines.has(`Artifact: ${digest}`) ||
       !lines.has('Scope: qa.vibecast.tv, vibecast-tv-bootstrap-qa.pages.dev, *.vibecast-tv-bootstrap-qa.pages.dev') ||
-      !lines.has('Stop: close QA Access and revoke sessions')) {
+      !lines.has('Stop: deny and verify exact preview hosts, then revoke QA sessions')) {
     throw Error('Missing exact owner QA Access and stop-procedure review in receiver issue 10');
   }
 }
@@ -90,7 +103,8 @@ async function publish() {
   };
   const save = receipt => writeFile('qa-preview-receipt.json', JSON.stringify(receipt, null, 2) + '\n');
 
-  await withVerifiedQAPackage(async ({ artifact, directory, files, assertCurrentMain }) => {
+  await withVerifiedQAPackage(async ({ artifact, directory, files, sourceFiles, assertCurrentMain }) => {
+    requireStaticQAOutput(files, sourceFiles);
     if (artifact.zipDigest !== approvedDigest) throw Error('QA digest does not match reviewed selection');
     const health = await fetch('https://api-vibecast-qa.djconnect.dev/health', {
       redirect: 'error', signal: AbortSignal.timeout(15000),
@@ -113,11 +127,11 @@ async function publish() {
     assertCurrentMain();
 
     const { GH_TOKEN, GITHUB_TOKEN, ...wranglerEnv } = env;
-    const output = execFileSync('node_modules/.bin/wrangler', [
+    const output = execFileSync(path.resolve('node_modules/.bin/wrangler'), [
       'pages', 'deploy', directory, `--project-name=${projectName}`, `--branch=${previewBranch}`,
       `--commit-hash=${sha}`, '--commit-dirty=false', '--commit-message=VibeCast isolated QA preview',
     ], {
-      encoding: 'utf8', timeout: 180000, stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: path.dirname(directory), encoding: 'utf8', timeout: 180000, stdio: ['ignore', 'pipe', 'pipe'],
       env: { ...wranglerEnv, CLOUDFLARE_ACCOUNT_ID: account, WRANGLER_SEND_METRICS: 'false' },
     });
     const [origin, ...other] = new Set(output.match(/https:\/\/[a-f0-9]{8}\.vibecast-tv-bootstrap-qa\.pages\.dev\b/g));

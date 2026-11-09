@@ -60,7 +60,8 @@ export async function withVerifiedQAPackage(usePackage) {
     assertCurrentMain();
     return await usePackage({
       artifact: { sourceSHA: sha, runId, artifactId: id, zipDigest: digest },
-      access, directory: extracted, files: Object.keys(manifest.files), assertCurrentMain,
+      access, directory: extracted, files: Object.keys(manifest.files),
+      sourceFiles: manifest.provenance.sourceFiles, assertCurrentMain,
     });
   } finally {
     await rm(scratch, { recursive: true, force: true });

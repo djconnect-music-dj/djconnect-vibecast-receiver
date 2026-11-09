@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { requireAccessReview, requireEmptyQAProduction, selectQAPreview } from '../../scripts/publish_qa_preview.mjs';
+import { requireAccessReview, requireEmptyQAProduction, requireStaticQAOutput, selectQAPreview } from '../../scripts/publish_qa_preview.mjs';
 import { readbackQAAccess } from '../../scripts/readback_qa_access.mjs';
 
 const host = 'vibecast-tv-bootstrap-qa.pages.dev';
@@ -64,11 +64,23 @@ test('requires an owner-confirmed Access review for the exact SHA and digest in 
     body: [
       'VibeCast QA preview Access reviewed', `Source: ${sha}`, `Artifact: ${digest}`,
       'Scope: qa.vibecast.tv, vibecast-tv-bootstrap-qa.pages.dev, *.vibecast-tv-bootstrap-qa.pages.dev',
-      'Stop: close QA Access and revoke sessions',
+      'Stop: deny and verify exact preview hosts, then revoke QA sessions',
     ].join('\n'),
   };
   assert.doesNotThrow(() => requireAccessReview(comment, sha, digest));
   assert.throws(() => requireAccessReview(comment, 'e'.repeat(40), digest), /exact owner/);
   assert.throws(() => requireAccessReview({ ...comment, issue_url: comment.issue_url + '0' }, sha, digest), /issue 10/);
   assert.throws(() => requireAccessReview({ ...comment, user: { id: 2 } }, sha, digest), /exact owner/);
+});
+
+test('rejects Pages Functions, provider control files and unexpected output members', () => {
+  const source = { 'bootstrap/public/index.html': 'digest', 'bootstrap/public/_headers': 'digest' };
+  const files = ['index.html', '_headers', 'app.mjs', 'qa-adapter.mjs'];
+  assert.doesNotThrow(() => requireStaticQAOutput(files, source));
+  for (const file of ['_worker.js', '_routes.json', 'functions/index.mjs', 'unexpected.mjs']) {
+    assert.throws(() => requireStaticQAOutput([...files, file], source), /static QA output/);
+  }
+  assert.throws(() => requireStaticQAOutput(
+    [...files, '_worker.js'], { ...source, 'bootstrap/public/_worker.js': 'digest' }
+  ), /static QA output/);
 });

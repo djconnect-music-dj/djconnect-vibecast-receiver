@@ -299,7 +299,7 @@ account-scoped Cloudflare Pages Edit permission. Never store the production
 token, DNS permissions or local Wrangler OAuth in this environment.
 
 The workflow re-verifies the artifact, confirms that the QA Worker is closed,
-and uploads only to a unique preview branch in the pinned Direct Upload
+and uploads only the committed static file inventory to a unique preview branch in the pinned Direct Upload
 project with an empty production slot. It checks Access before upload and
 again on the immutable URL and branch alias. The preview origin cannot run the
 receiver's rendezvous adapter, which is bound to the custom QA hostname.
@@ -319,13 +319,16 @@ VibeCast QA preview Access reviewed
 Source: <40-character main SHA>
 Artifact: sha256:<64-character digest>
 Scope: qa.vibecast.tv, vibecast-tv-bootstrap-qa.pages.dev, *.vibecast-tv-bootstrap-qa.pages.dev
-Stop: close QA Access and revoke sessions
+Stop: deny and verify exact preview hosts, then revoke QA sessions
 ```
 
 The owner attestation covers the policy, including the future immutable host
 that cannot be probed before creation. On a failed or ambiguous upload, inspect the exact run
-branch and SHA in Cloudflare and close access to the QA app, revoking its
-sessions if needed. Do not retry on the assumption that a failed command had
+branch and SHA in Cloudflare. Apply an explicit deny policy on the immutable
+preview and branch alias, check unauthenticated requests on the failing route
+and revoke QA sessions. Retain the Access application itself. If an exact
+policy cannot intercept the exposed route, keep the incident open and
+escalate to the owner for containment of the dedicated QA Pages project. Do not retry on the assumption that a failed command had
 no effect. There is no prior QA production deployment for rollback, and Pages
 can refuse deletion of a branch's latest preview. Custom-domain publication,
 Worker activation and the Apple, HA and Pi trial need separate qualification.
