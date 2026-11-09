@@ -9,7 +9,7 @@ import {verify} from './verify_bootstrap.mjs';
 import {waitReadback} from './wait_bootstrap.mjs';
 
 // Current independently qualified live baseline; never advance this pin automatically.
-export const baseline=Object.freeze({id:'ec8037e0-2c6f-4c8b-81d3-e658220c8ef4',sourceSHA:'d4bd0f91eab92eaf02d1f1a937fe8c1fa1fd8eb5',origin:'https://ec8037e0.vibecast-tv-bootstrap.pages.dev',manifestSHA256:'c2e9ea8ef8f4fdc5f64e48069bc2c91f36ed8f6548acc66faf766554c9456d33'});
+export const baseline=Object.freeze({id:'6b1e22d2-a5c4-4e7e-a4eb-429cec20c526',sourceSHA:'7f06c661c6daafe9fbf13c8e0891762fb54797fb',origin:'https://6b1e22d2.vibecast-tv-bootstrap.pages.dev',manifestSHA256:'f719854fee99c2ed90a82ddd5afa95fb34c35289927410561a9037c5944e7917'});
 const route=`/accounts/${target.account}/pages/projects/${target.project}`;
 const priorDirectory='artifacts/update-prior/bootstrap',receiptPath='update-receipt.json';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
