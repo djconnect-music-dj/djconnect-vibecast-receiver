@@ -7,8 +7,8 @@ export const qa=Object.freeze({product:'vibecast-tv-bootstrap-qa',browser:'https
 export const sourcePins=Object.freeze({
  'bootstrap/src/wire.mjs':'2b89c5a139c02a5267cf2f68cff9c14f1e656ccad6e5ea453449c5bc7d79ec33',
  'bootstrap/src/wire-schema.mjs':'01272335b2b4d5c3ee43b98fae4dfd147bbe971307a88a447580c5a73b5a7700',
- 'bootstrap/src/app.mjs':'72f2e16da90d4b4dd63bf14eddec971b2abf1861cba1ddda63a0a23d1f74a288',
- 'bootstrap/public/_headers':'081df3f86740c947fad701419df794cb215ac42ad5837955b81415babf943501'
+ 'bootstrap/src/app.mjs':'b2168f720364b669cb51d236fef448ced188be00b0e84adf8a55a207deb4b3c7',
+ 'bootstrap/public/_headers':'03dcc81641810e473b6e7dccda1011ff91a80a3be7b9155e6cf76bd7efb80930'
 });
 const hash=x=>createHash('sha256').update(x).digest('hex');
 export function replaceOnce(source,needle,replacement){if(source.split(needle).length!==2)throw Error('QA transform count drift');return source.replace(needle,replacement);}
@@ -16,10 +16,12 @@ export function transform(file,source){
  if(hash(source)!==sourcePins[file])throw Error('QA protected input drift: '+file);
  if(file==='bootstrap/src/wire.mjs')return replaceOnce(source,"ORIGIN='https://vibecast.tv', SERVICE='https://api.djconnect.dev'",`ORIGIN='${qa.browser}', SERVICE='${qa.service}'`);
  if(file==='bootstrap/src/wire-schema.mjs')return replaceOnce(source,'"const": "https://api.djconnect.dev"',`"const": "${qa.service}"`);
- if(file==='bootstrap/public/_headers')return replaceOnce(source,"connect-src 'none'",`connect-src ${qa.service}`);
- if(file==='bootstrap/src/app.mjs')return "import {createQAAdapter,QA_BROWSER} from '../qa/adapter.mjs';\n"+replaceOnce(source,
- 'const controller = new BootstrapController({ adapter: unavailableAdapter, render: state => {current=state;paint();}, navigate: url => location.replace(url) });',
- 'const factory=()=>createQAAdapter();\nconst controller = new BootstrapController({ adapter: factory(), adapterFactory: factory, render: state => {current=state;paint();}, navigate: url => {if(location.origin===QA_BROWSER)location.replace(url);} });');
+ if(file==='bootstrap/public/_headers')return replaceOnce(source,"connect-src https://api.djconnect.dev",`connect-src ${qa.service}`);
+ if(file==='bootstrap/src/app.mjs'){
+  const entry=replaceOnce(source,"import { createRendezvousAdapter } from './rendezvous.mjs';","import {createQAAdapter,QA_BROWSER} from '../qa/adapter.mjs';");
+  return replaceOnce(replaceOnce(entry,"const productionOrigin = 'https://vibecast.tv';","const productionOrigin = QA_BROWSER;"),
+   'createRendezvousAdapter() : unavailableAdapter','createQAAdapter() : unavailableAdapter');
+ }
  throw Error('Unknown QA transform');
 }
 export async function buildQA(expectedSourceSHA){
