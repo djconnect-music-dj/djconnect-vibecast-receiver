@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';import {createServer} from 'node:http';import {readFile,writeFile,mkdir} from 'node:fs/promises';import {createHash} from 'node:crypto';import {execFileSync} from 'node:child_process';import path from 'node:path';import {fileURLToPath,pathToFileURL} from 'node:url';import {chromium,webkit} from 'playwright';import jsQR from 'jsqr';
 import {build} from '../../scripts/build_bootstrap.mjs';import {verify} from '../../scripts/verify_bootstrap.mjs';
 import {verifyAPISource,fixedTransportSource} from './source-guard.mjs';
+import {browserLaunchOptions} from '../browser-options.mjs';
 let phase='source_guard';
 async function main(){
 const root=process.cwd(),out=path.resolve('dist/qa-http-ui'),report=path.resolve('artifacts/http-ui'),hash=b=>createHash('sha256').update(b).digest('hex');
@@ -16,7 +17,7 @@ const server=createServer(async(req,res)=>{try{assert.equal(req.method,'GET');co
 res.writeHead(200,{'Content-Type':types[path.extname(name)]??'text/plain','Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff','Content-Security-Policy':`default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src ${new URL(api.base).origin}; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'`});res.end(bytes);}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;
 try{phase='api_start';api=await startRootIntegrationRuntime(origin);fixedTransportSource('https://api.djconnect.dev/v1/rendezvous/',api.base);
-for(const [engine,type] of Object.entries({chromium,webkit})){phase=engine+'_launch';const browser=await type.launch();try{const page=await browser.newPage({viewport:{width:390,height:844}});page.on('pageerror',()=>errors.push(engine));const before=(await api.observations()).length;phase=engine+'_page';await page.goto(origin);
+for(const [engine,type] of Object.entries({chromium,webkit})){phase=engine+'_launch';const browser=await type.launch(browserLaunchOptions(engine));try{const page=await browser.newPage({viewport:{width:390,height:844}});page.on('pageerror',()=>errors.push(engine));const before=(await api.observations()).length;phase=engine+'_page';await page.goto(origin,{timeout:30000});
 phase=engine+'_adapter';await page.evaluate(async(base)=>{if(!isSecureContext||!crypto.subtle)throw Error('secure_context_required');const [{createRendezvousAdapter},{BootstrapController},{renderState}]=await Promise.all([import('/rendezvous.mjs'),import('/lifecycle.mjs'),import('/view.mjs')]);
 const transport=(url,options)=>{const prefix='https://api.djconnect.dev/v1/rendezvous/';if(typeof url!=='string'||!url.startsWith(prefix))throw Error('fixed_qa_transport_only');const route=url.slice(prefix.length);if(!['create','poll','cancel','consume'].includes(route))throw Error('closed_route');return fetch(base+route,options);};
 const adapter=createRendezvousAdapter({fetch:transport});window.qa={adapter,states:[],navigations:0};const controller=new BootstrapController({adapter,render:s=>{window.qa.states.push(s.state);renderState(document,'nl',s);},navigate:()=>{window.qa.navigations++;}});window.qa.controller=controller;window.qa.work=controller.start(true);},api.base);

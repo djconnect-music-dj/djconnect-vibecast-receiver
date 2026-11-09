@@ -1,9 +1,10 @@
 import {fileURLToPath} from 'node:url';
 import {readFile,readdir,lstat} from 'node:fs/promises';import {createHash} from 'node:crypto';import path from 'node:path';
+import { CONTRACT } from '../bootstrap/src/rendezvous.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 export async function verify(directory,sourceSHA) {
  const manifest=JSON.parse(await readFile(path.join(directory,'build-manifest.json'),'utf8'));
- if(!/^[a-f0-9]{40}$/.test(sourceSHA)||manifest.sourceSHA!==sourceSHA||manifest.product!=='vibecast-tv-bootstrap'||manifest.schema!==1||manifest.rendezvous!=='unavailable')throw Error('Artifact identity mismatch');
+ if(!/^[a-f0-9]{40}$/.test(sourceSHA)||manifest.sourceSHA!==sourceSHA||manifest.product!=='vibecast-tv-bootstrap'||manifest.schema!==1||!['unavailable', CONTRACT].includes(manifest.rendezvous))throw Error('Artifact identity mismatch');
  const expected=[...Object.keys(manifest.files),'build-manifest.json','SHA256SUMS'].sort();
  if(JSON.stringify((await readdir(directory)).sort())!==JSON.stringify(expected))throw Error('Unexpected or missing artifact files');
  const actual={};

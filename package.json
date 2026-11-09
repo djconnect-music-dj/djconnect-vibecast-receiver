@@ -9,20 +9,20 @@
     "build:bootstrap": "node scripts/build_bootstrap.mjs",
     "test:bootstrap": "node --test tests/bootstrap/*.test.mjs",
     "test:browser": "playwright test",
-    "check:bootstrap": "npm run test:bootstrap && npm run build:bootstrap && npm run test:browser",
+    "check:bootstrap": "npm run test:bootstrap && npm run build:bootstrap && npm run build:bootstrap:qa && npm run test:browser",
     "test:http-ui": "node qualification/http-ui/run.mjs",
     "build:bootstrap:qa": "node scripts/build_bootstrap_qa.mjs",
     "verify:bootstrap:qa": "node scripts/verify_bootstrap_qa.mjs"
   },
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "1.64.1",
+    "@playwright/test": "1.65.0",
     "esbuild": "0.28.2",
     "jsqr": "1.4.0",
-    "wrangler": "4.156.0"
+    "wrangler": "4.158.0"
   },
   "dependencies": {
-    "jose": "6.2.12",
+    "jose": "6.2.15",
     "qrcode-generator": "2.0.4"
   }
 }

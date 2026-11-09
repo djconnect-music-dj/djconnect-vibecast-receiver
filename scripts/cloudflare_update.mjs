@@ -2,13 +2,14 @@ import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {api,guardSource} from './promotion_guard.mjs';
 import {target} from './cloudflare_readiness.mjs';
 import {verify} from './verify_bootstrap.mjs';
 import {waitReadback} from './wait_bootstrap.mjs';
 
 // Current independently qualified live baseline; never advance this pin automatically.
-export const baseline=Object.freeze({id:'220f0e59-6bc7-4088-9928-a72a742968c5',sourceSHA:'f5c72a5d913b870209ca33ccb45254012da9de9c',origin:'https://220f0e59.vibecast-tv-bootstrap.pages.dev',manifestSHA256:'875bf51f82d6e6a66d1f401148c6eefd9caa16b591f43650b51673d2beb3d600'});
+export const baseline=Object.freeze({id:'8f5d0fb4-8178-4bd7-a15f-6584daa21cc5',sourceSHA:'57938b72cdfdf7dc269d6dc9f838c79afef12953',origin:'https://8f5d0fb4.vibecast-tv-bootstrap.pages.dev',manifestSHA256:'a5965b1a3945990eb24b46a95fa8a17ba8057ea43c5f42bf919e9cf9245fbe1b'});
 const route=`/accounts/${target.account}/pages/projects/${target.project}`;
 const priorDirectory='artifacts/update-prior/bootstrap',receiptPath='update-receipt.json';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -35,7 +36,8 @@ export function immutableFromLog(log) {
 export async function downloadPrior({fetcher=fetch,directory=priorDirectory}={}) {
  async function bytes(file) {
   // Pages consumes _headers and canonicalizes index.html; neither is a raw file route.
-  if(file==='_headers')return readFile('dist/bootstrap/_headers');
+  if(file==='_headers')return execFileSync('gh',['api','-H','Accept: application/vnd.github.raw+json',
+   'repos/pcvantol/djconnect-vibecast-receiver/contents/bootstrap/public/_headers?ref='+baseline.sourceSHA]);
   const route=file==='index.html'?'/':file==='404.html'?'/__vibecast_missing__':'/'+file;
   const response=await fetcher(baseline.origin+route,{redirect:'error',signal:AbortSignal.timeout(20000)});
   if(response.status!==(file==='404.html'?404:200))throw Error('Prior artifact unavailable');
@@ -81,8 +83,11 @@ async function main(action) {
   if(domain.name!==target.domain||domain.status!=='active')throw Error('Active fixed domain required');
   const manifest=await downloadPrior();
   await waitReadback(manifest,baseline.origin);await waitReadback(manifest,'https://vibecast.tv');
-  // Retain the already-qualified privacy policy, rather than trusting a weaker prior one.
-  if(! (await readFile(priorDirectory+'/_headers')).equals(await readFile('dist/bootstrap/_headers')))throw Error('Header policy changed');
+  // Permit only the reviewed addition of the fixed production API to connect-src.
+  const priorHeaders=await readFile(priorDirectory+'/_headers','utf8');
+  const candidateHeaders=await readFile('dist/bootstrap/_headers','utf8');
+  const allowedHeaders=priorHeaders.replace("connect-src 'none';",'connect-src https://api.djconnect.dev;');
+  if(candidateHeaders!==allowedHeaders)throw Error('Unexpected header policy change');
   const current=deployment(project(await call(route)),baseline);
   if(current.id!==prior.id)throw Error('Production changed during preflight');
   await save({schema:1,sourceSHA,runID,account:target.account,project:target.project,prior,stage:'prepared',production:null});return;

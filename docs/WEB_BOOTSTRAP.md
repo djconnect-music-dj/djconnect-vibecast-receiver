@@ -25,13 +25,15 @@ The existing Cast1.1 import, vendor, source locks, origin and AppID are unchange
 Core owns all shared renderer source. No session UI, Worker, D1, backend, analytics,
 third-party font/script, storage or HA/owner credentials are implemented here.
 
-The production adapter has no contract and makes no request. The public frontend
-shows a clear localized unavailable state, no QR. This is real fail-closed UI,
-not a complete rendezvous/onboarding implementation. Successful destination
-receipt would only lead to HA; HA's six-digit session admission stays separate.
+On `https://vibecast.tv`, the browser uses the existing
+`djc-rendezvous/1-implementation.1` adapter against `https://api.djconnect.dev`.
+The content security policy permits connections to that API origin. The
+browser shows the localized unavailable state when the service rejects the
+request, including while production returns 503. A verified destination leads
+to Home Assistant, which still controls six-digit session admission.
 
 `BootstrapController` is an **internal semantic consumer seam, not a proposed
-wire protocol**. A future separately reviewed, statically imported adapter must
+wire protocol**. The statically imported adapter must
 supply create/wait/cancel-by-AbortSignal, challenge validation, destination
 verification and exact origin/path/query admission. `contract` is its exact
 qualified identity; challenge deadline and boolean QR matrix are internal view
@@ -74,17 +76,31 @@ headers over loopback HTTP (not a production HTTPS or physical-TV receipt).
 npm ci --ignore-scripts
 npm test
 npm run build:bootstrap
+npm run build:bootstrap:qa
 npx playwright install chromium webkit
 npm run test:browser
 node scripts/verify_bootstrap.mjs dist/bootstrap "$(git rev-parse HEAD)"
+npm run verify:bootstrap:qa -- dist/bootstrap-qa "$(git rev-parse HEAD)"
 ```
 
-Node24 is the CI runtime. Exact dev dependencies/lock: Playwright1.64.1,
-Wrangler4.151.0; runtime has no npm dependency. Build has no timestamps or machine
-paths. Manifest pins sourceSHA, designPin, unavailable-service disposition and
+The primary CI job uses Node 24; the separate HTTP/UI qualification job uses
+Node 26. `package-lock.json` pins Playwright 1.65.0, Wrangler 4.158.0 and the
+browser adapter's bundled jose 6.2.15. There is no runtime npm install on Pages.
+The wire parser and schema are compiled into the adapter rather than published
+as duplicate standalone modules. Build has no timestamps or machine paths.
+Manifest pins sourceSHA, designPin, rendezvous contract identity and
 all static file hashes; SHA256SUMS also binds the manifest. The hash file does
 not hash itself. Tests compare two builds, deny Cast output, tampering, extra
 members and wrong source, and restore exact bytes as local rollback proof.
+
+Run QA qualification from a clean checkout of the exact commit. The QA manifest
+binds source and installed module bytes, and the production verifier rejects
+the QA artifact. Both builds and the fixture browsers are local evidence;
+neither grants QA admission or device acceptance. On macOS the suite uses the
+full bundled Chromium and WebKit's Option+Tab button traversal. It still checks
+that the next control receives focus and that Enter activates it. Browsers
+without a working 2D canvas show the unsupported state before creating a
+challenge, and reduced effects still take precedence during frame sampling.
 
 Existing required `test` and `validate-projection` job names remain. PR/main CI
 runs Cast plus bootstrap security/state/localization/build regressions, real

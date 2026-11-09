@@ -1,14 +1,20 @@
 import {test,expect} from '@playwright/test';
-for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:1920,height:1080},{width:390,height:844}])test(`${locale} ${viewport.width}: real production unavailable UI, focus, no QR or external data`,async({page})=>{
+import {readFile} from 'node:fs/promises';
+import {extname} from 'node:path';
+for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:1920,height:1080},{width:390,height:844}])test(`${locale} ${viewport.width}: production build outside its canonical origin, focus, no QR or external data`,async({page,browserName})=>{
  await page.setViewportSize(viewport);const external=[];page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:4186'))external.push(r.url());});
  await page.goto('/?url=https://evil.example/');await page.locator('#language').selectOption(locale);
  await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  await expect(page.locator('#qr-panel')).toBeHidden();await expect(page.locator('#state-title')).not.toHaveText('');
  await page.locator('#effects').click();await expect(page.locator('html')).toHaveAttribute('data-effects','solid');
- await expect(page.locator('#effects')).toHaveAttribute('aria-pressed','true');await page.keyboard.press('Tab');await expect(page.locator('#retry')).toBeFocused();await page.keyboard.press('Enter');await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
+ await expect(page.locator('#effects')).toHaveAttribute('aria-pressed','true');
+ // macOS WebKit does not focus a button on click or include it in plain Tab traversal.
+ await page.locator('#effects').focus();
+ await page.keyboard.press(process.platform==='darwin' && browserName==='webkit' ? 'Alt+Tab' : 'Tab');
+ await expect(page.locator('#retry')).toBeFocused();await page.keyboard.press('Enter');await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);expect(external).toEqual([]);expect(page.url()).toBe('http://127.0.0.1:4186/');
 });
-test('security headers and reduced effects',async({page})=>{await page.emulateMedia({reducedMotion:'reduce',contrast:'more'});const r=await page.goto('/');expect(r.headers()['referrer-policy']).toBe('no-referrer');expect(r.headers()['content-security-policy']).toContain("connect-src 'none'");await expect(page.locator('html')).toHaveAttribute('data-effects','solid');expect(await page.locator('#status').getAttribute('role')).toBe('status');});
+test('security headers and reduced effects',async({page})=>{await page.emulateMedia({reducedMotion:'reduce',contrast:'more'});const r=await page.goto('/');expect(r.headers()['referrer-policy']).toBe('no-referrer');expect(r.headers()['content-security-policy']).toContain('connect-src https://api.djconnect.dev;');await expect(page.locator('html')).toHaveAttribute('data-effects','solid');expect(await page.locator('#status').getAttribute('role')).toBe('status');});
 test('test-only adapter exercises actual browser lifecycle through pending/confirm/expiry',async({page})=>{await page.goto('/');const result=await page.evaluate(async()=>{const {BootstrapController}=await import('/lifecycle.mjs');const states=[];let resolveWait;const adapter={contract:'TEST_ONLY',create:async()=>({expiresAt:Date.now()+100,matrix:Array.from({length:21},()=>Array(21).fill(false))}),validateChallenge:()=>true,allowsDestination:()=>true,verifyDestination:async()=> 'https://ha.example/display',wait:({onConfirming})=>{onConfirming();return new Promise(r=>resolveWait=r);}};let navigations=0;const c=new BootstrapController({adapter,render:s=>states.push(s.state),navigate:()=>navigations++});const work=c.start();await new Promise(r=>setTimeout(r,180));resolveWait({});await work;return{states,navigations};});expect(result.states).toEqual(['creating','waiting','confirming','expired']);expect(result.navigations).toBe(0);});
 test('every genuine UI state is localized and withdraws old QR pixels',async({page})=>{
  await page.goto('/');
@@ -28,4 +34,34 @@ for(const state of ['waiting','confirming'])for(const size of [21,177])test(`QR 
   await expect(page.locator('#expiry')).toHaveText(deadline);
  }
  await page.evaluate(()=>window.testOnlyQRStop());
+});
+
+test('canonical production app uses the fixed API and hides QR when service is closed', async ({page}) => {
+ const origin = 'https://vibecast.tv';
+ const endpoint = 'https://api.djconnect.dev/v1/rendezvous/create';
+ const types = {'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.png':'image/png'};
+ const headers = Object.fromEntries((await readFile('dist/bootstrap/_headers','utf8')).split('\n')
+  .filter(line => line.includes(':')).map(line => {
+   const colon = line.indexOf(':');
+   return [line.slice(0,colon).trim(),line.slice(colon+1).trim()];
+  }));
+ const calls = [];
+ await page.route('**/*', async route => {
+  const request = route.request(), url = new URL(request.url());
+  if (url.href === endpoint) {
+   const cors = {'access-control-allow-origin':origin,'access-control-allow-methods':'POST, OPTIONS','access-control-allow-headers':'content-type'};
+   if (request.method() === 'OPTIONS') return route.fulfill({status:204,headers:cors});
+   calls.push(request.method());
+   return route.fulfill({status:503,headers:cors,json:{v:'djc-rendezvous/1',error:'service_unavailable'}});
+  }
+  if (url.origin !== origin) return route.abort();
+  const name = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
+  if (!/^[a-zA-Z0-9._-]+$/.test(name)) return route.abort();
+  return route.fulfill({status:200,headers:{...headers,'content-type':types[extname(name)] ?? 'text/plain'},body:await readFile('dist/bootstrap/'+name)});
+ });
+ await page.goto(origin);
+ await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
+ await expect(page.locator('#qr-panel')).toBeHidden();
+ expect(calls).toEqual(['POST']);
+ expect(page.url()).toBe(origin+'/');
 });

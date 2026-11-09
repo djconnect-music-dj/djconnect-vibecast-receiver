@@ -9,10 +9,9 @@ export function renderState(document, language, current) {
  byId('state-title').textContent = copy[current.state][0]; byId('state-description').textContent = copy[current.state][1];
  byId('retry').hidden = current.retryAllowed===false || !['unavailable','expired','recovering','unknown','unsafe'].includes(current.state);
  const visible = ['waiting','confirming'].includes(current.state) && !!current.challenge;
- byId('qr-panel').hidden = !visible;
- const canvas = byId('qr'), ctx = canvas.getContext('2d');
- ctx.clearRect(0,0,canvas.width,canvas.height);
- if (visible) {
+ const canvas = byId('qr'), ctx = visible ? canvas.getContext?.('2d') : null;
+ byId('qr-panel').hidden = !ctx;
+ if (ctx) {
   const matrix = current.challenge.matrix;
   const available = Math.max(185, Math.min(320, byId('qr-panel').clientWidth - 32 || 280));
   const scale = Math.max(1,Math.floor(available/(matrix.length+8)));
