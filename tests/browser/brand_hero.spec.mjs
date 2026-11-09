@@ -15,6 +15,15 @@ test('VibeCast hero and canonical brand marks decode without implying a connecti
  expect(images.heroHidden).toBe('true');
  const response=await page.request.get('/brand-mark-32.png');
  expect(response.headers()['content-type']).toBe('image/png');
+ const touchIcon = page.locator('link[rel="apple-touch-icon"]');
+ await expect(touchIcon).toHaveAttribute('sizes', '180x180');
+ const touchIconSize = await touchIcon.evaluate(async node => {
+  const image = new Image();
+  image.src = node.href;
+  await image.decode();
+  return [image.naturalWidth, image.naturalHeight];
+ });
+ expect(touchIconSize).toEqual([180, 180]);
 });
 
 test('the waiting row animates the vector avatar and trailing dots on iPhone widths', async ({page}) => {
