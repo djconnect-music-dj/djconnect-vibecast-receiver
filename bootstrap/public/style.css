@@ -173,17 +173,18 @@ h2 {
 }
 #qr-panel {
   align-self: center;
-  width: min(100%, 22rem);
+  /* Preserve room for the quiet zone and a whole number of pixels per module. */
+  width: min(100%, calc(clamp(185px, 28vh, 244px) + 2rem + 2px));
   background: #15152edb;
   border: 1px solid var(--edge);
   color: #f7f8ff;
   text-align: center;
   border-radius: 1rem;
   padding: 1rem;
-  margin: 0 0 1rem;
+  margin: 0 0 .5rem;
 }
 canvas { display: block; height: auto; margin: auto; image-rendering: pixelated; }
-#expiry { margin: .7rem 0 0; }
+#expiry { margin: .35rem 0 0; }
 
 .screen-status {
   grid-column: 1 / -1;
@@ -286,6 +287,38 @@ html[data-effects=glass] :is(.vibecast-hero, .panel) {
   .brand-mark { width: 26px; height: 26px; flex-basis: 26px; }
   main { width: 88%; }
   .bottom-bar { column-gap: .5rem; }
+}
+
+main:has(#qr-panel:not([hidden])) {
+  margin-top: clamp(.6rem, 2vh, 1.5rem);
+  row-gap: clamp(.5rem, 1.7vh, 1.5rem);
+}
+main:has(#qr-panel:not([hidden])) :is(.vibecast-hero, .panel) {
+  padding-block: clamp(.75rem, 2.2vh, 1.7rem);
+}
+main:has(#qr-panel:not([hidden])) .hero-symbol {
+  margin-bottom: clamp(.5rem, 1.7vh, 1.35rem);
+}
+main:has(#qr-panel:not([hidden])) #hero-tagline { margin-top: .65rem; }
+main:has(#qr-panel:not([hidden])) .eyebrow { margin-bottom: .4rem; }
+main:has(#qr-panel:not([hidden])) #state-description { margin: .45rem 0 .6rem; }
+main:has(#qr-panel:not([hidden])) .privacy { padding-top: .45rem; }
+main:has(#qr-panel:not([hidden])) .screen-status { margin: 0 0 .5rem; }
+main:has(#qr-panel:not([hidden])) .waiting-avatar { width: clamp(3rem, 7vh, 5.25rem); }
+@media (max-height: 760px) and (min-width: 901px) and (orientation: landscape) {
+  html:has(#qr-panel:not([hidden])) #screen-time { font-size: clamp(2.5rem, 8vh, 4rem); }
+  main:has(#qr-panel:not([hidden])) .screen-status { font-size: clamp(1.2rem, 3.3vh, 1.8rem); }
+}
+@media (max-width: 600px) {
+  main:has(#qr-panel:not([hidden])) { margin-top: .65rem; row-gap: .6rem; }
+  main:has(#qr-panel:not([hidden])) :is(.vibecast-hero, .panel) { padding-block: .7rem; }
+  main:has(#qr-panel:not([hidden])) .hero-symbol { width: 48px; height: 40px; }
+  main:has(#qr-panel:not([hidden])) .vibecast-hero { --hero-title-size: clamp(2.35rem, 9vw, 3rem); }
+  main:has(#qr-panel:not([hidden])) .waiting-avatar { width: 2.75rem; }
+  #qr-panel {
+    width: min(100%, calc(clamp(185px, 23vh, 220px) + 2rem + 2px));
+    padding-block: .6rem;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
