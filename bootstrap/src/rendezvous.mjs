@@ -44,7 +44,8 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
   schema(route+'_response',data);if(route!=='cancel')need(data.expires_at===c.expires);return data;
  }
  async function pause(c,ms){live(c);need(Number.isFinite(ms)&&ms>=0);if(!ms)return;const remaining=Math.min(c.expires-now(),c.monoExpires-mono());let timer,stop;const deadline=mono()+Math.min(ms,remaining);try{await new Promise((resolve,reject)=>{stop=()=>reject(new Stopped());waiters.add(stop);const wake=()=>{try{const remaining=deadline-mono();if(remaining>0)timer=schedule(wake,remaining);else resolve();}catch(e){reject(e);}};timer=schedule(wake,Math.min(ms,remaining));});}finally{cancel(timer);waiters.delete(stop);}live(c);}
- function matrix(payload){const qr=qrcode(0,'M');qr.addData(payload,'Byte');qr.make();const n=qr.getModuleCount();return Array.from({length:n},(_,y)=>Array.from({length:n},(_,x)=>qr.isDark(y,x)));}
+ // Version 14 leaves the center clear of alignment patterns for the logo.
+ function matrix(payload){const qr=qrcode(14,'M');qr.addData(payload,'Byte');qr.make();const n=qr.getModuleCount();return Array.from({length:n},(_,y)=>Array.from({length:n},(_,x)=>qr.isDark(y,x)));}
  function challengeFor(c, hideQR=false){
   const challenge=Object.freeze({expiresAt:c.expires,monotonicDeadline:c.monoExpires,matrix:matrix(c.payload),hideQR});
   sessions.set(challenge,c);
