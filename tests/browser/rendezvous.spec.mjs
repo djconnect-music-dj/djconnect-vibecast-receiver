@@ -7,7 +7,7 @@ import jsQR from 'jsqr';
 const WIRE='djc-rendezvous/1',SERVICE='https://api.djconnect.dev',ORIGIN='https://vibecast.tv';
 const text=new TextEncoder();
 function scan(matrix){const scale=4,n=(matrix.length+8)*scale,rgba=new Uint8ClampedArray(n*n*4).fill(255);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.floor(y/scale)-4,c=Math.floor(x/scale)-4;if(matrix[r]?.[c]){const i=(y*n+x)*4;rgba[i]=rgba[i+1]=rgba[i+2]=0;}}return jsQR(rgba,n,n)?.data;}
-async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=false,denyAfter=Infinity,consumeBackoff=false,consumeAfterCommit503=false,actualApp=false,reconcileAsReady=false}={}){
+async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=false,denyAfter=Infinity,consumeBackoff=false,consumeAfterCommit503=false,actualApp=false,reconcileAsReady=false,controlledClock=false}={}){
  const calls=[],keys=[];let current,state='pending',envelope,createCount=0;
  let ready=!actualApp,refusePoll=false;
  const browserOrigin=actualApp?ORIGIN:'http://127.0.0.1:4186';
@@ -26,7 +26,8 @@ async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=f
   const respond=(value,status=200)=>route.fulfill({status,headers:{'content-type':'application/json','access-control-allow-origin':browserOrigin},body:JSON.stringify(value)});
   if(name==='create'){
    state='pending';createCount++;keys.push(body.browser_public_key);if(createCount<=lostCreate)return route.abort('failed');if(deny||createCount>denyAfter)return respond({v:WIRE,error:deny===429?'rate_limited':'service_unavailable'},deny||503);
-   const created=Date.now(),thumb=await calculateJwkThumbprint(body.browser_public_key);current={type:'djc-rendezvous-qr',v:WIRE,service_origin:SERVICE,transaction_id:crypto.randomUUID(),generation:body.generation,expires_at:created+120000,browser_key_thumbprint:thumb,qr_capability:Buffer.alloc(32,9).toString('base64url')};
+   const created=controlledClock?await page.evaluate(()=>Date.now()):Date.now();
+   const thumb=await calculateJwkThumbprint(body.browser_public_key);current={type:'djc-rendezvous-qr',v:WIRE,service_origin:SERVICE,transaction_id:crypto.randomUUID(),generation:body.generation,expires_at:created+120000,browser_key_thumbprint:thumb,qr_capability:Buffer.alloc(32,9).toString('base64url')};
    await page.evaluate(value=>{window.fixtureExpected=value;},current);
    const plain={v:WIRE,transaction_id:current.transaction_id,generation:current.generation,browser_key_thumbprint:thumb,expires_at:current.expires_at,bootstrap_origin:ORIGIN,display_entry_url:'https://ha.example.org/djconnect/vibecast/display',issuer_epoch:Buffer.alloc(32,7).toString('base64url')};
    envelope=await new CompactEncrypt(text.encode(JSON.stringify(plain))).setProtectedHeader({alg:'RSA-OAEP-256',enc:'A256GCM',typ:'djc-rendezvous-destination+jwe',kid:thumb}).encrypt(await importJWK(body.browser_public_key,'RSA-OAEP-256'));
@@ -156,7 +157,7 @@ test('actual app reload retains the durable consume fence after a 503',async({pa
  expect(f.calls.filter(x=>x.name==='create')).toHaveLength(1);
 });
 
-test('actual app reload cannot use or replace an invitation after its original expiry',async({page})=>{
+test('actual app reload cannot replace an invitation on a wall clock jump alone',async({page})=>{
  const f=await fixture(page,{actualApp:true});
  await expect(page.locator('#qr-panel')).toBeVisible();
  const calls=f.calls.length;
@@ -165,6 +166,54 @@ test('actual app reload cannot use or replace an invitation after its original e
  await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  await expect(page.locator('#qr-panel')).toBeHidden();
  expect(f.calls).toHaveLength(calls);
+});
+
+test('actual app reload starts a fresh invitation after both deadlines of a settled QR',async({page})=>{
+ const f=await fixture(page,{actualApp:true,controlledClock:true});
+ await expect(page.locator('#qr-panel')).toBeVisible();
+ const original=f.qr;
+ await page.addInitScript(offset=>{
+  const wall=Date.now.bind(Date),monotonic=performance.now.bind(performance);
+  Date.now=()=>wall()+offset;
+  Object.defineProperty(performance,'now',{value:()=>monotonic()+offset});
+ },121000);
+ await page.reload();
+ await expect(page.locator('#qr-panel')).toBeVisible();
+ expect(f.calls.map(call=>call.name)).toEqual(['create','create']);
+ expect(f.qr.transaction_id).not.toBe(original.transaction_id);
+ expect(f.keys[1]).not.toEqual(f.keys[0]);
+});
+
+test('actual app reload can replace a settled QR after background expiry cleanup',async({page})=>{
+ await page.addInitScript(()=>{
+  const schedule=window.setTimeout.bind(window);
+  window.setTimeout=(callback,delay,...args)=>{
+   if(delay>100000) window.fixtureExpiryCleanup=callback;
+   return schedule(callback,delay,...args);
+  };
+ });
+ const f=await fixture(page,{actualApp:true,controlledClock:true});
+ await expect(page.locator('#qr-panel')).toBeVisible();
+ await page.evaluate(()=>{
+  Object.defineProperty(document,'visibilityState',{value:'hidden'});
+  document.dispatchEvent(new Event('visibilitychange'));
+ });
+ await expect(page.locator('#qr-panel')).toBeHidden();
+ await page.evaluate(()=>{
+  const wall=Date.now.bind(Date),monotonic=performance.now.bind(performance);
+  Date.now=()=>wall()+121000;
+  Object.defineProperty(performance,'now',{value:()=>monotonic()+121000});
+  window.fixtureExpiryCleanup();
+ });
+ await expect.poll(()=>page.evaluate(()=>Boolean(JSON.parse(sessionStorage.getItem('vibecast-qr-resume-v1'))?.restart))).toBe(true);
+ await page.addInitScript(()=>{
+  const wall=Date.now.bind(Date),monotonic=performance.now.bind(performance);
+  Date.now=()=>wall()+121000;
+  Object.defineProperty(performance,'now',{value:()=>monotonic()+121000});
+ });
+ await page.reload();
+ await expect(page.locator('#qr-panel')).toBeVisible();
+ expect(f.calls.map(call=>call.name)).toEqual(['create','create']);
 });
 
 test('actual app reload respects transient poll refusal before restoring the QR',async({page})=>{

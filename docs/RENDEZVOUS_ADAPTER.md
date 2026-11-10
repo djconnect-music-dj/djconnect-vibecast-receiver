@@ -66,7 +66,11 @@ the record. The marker in the browsing context name is an opaque binding.
 Reject unrelated navigation, another tab, missing browser support, invalid
 records and unverified deadlines. Treat expired records as unusable even if
 the browser has not deleted them yet. Do not mint a new invitation on an
-ambiguous reload. Confirm the saved invitation with an authenticated poll
+ambiguous reload. After both original deadlines pass, an explicit reload can
+start fresh if the same-tab journal shows no pending poll or consume. Expiry
+cleanup can retain only the two deadlines as a one-use restart marker, without
+retaining the old invitation or its encryption key. Confirm a saved, still
+live invitation with an authenticated poll
 before displaying it. A ready invitation may continue directly to consume.
 
 Commit an unsettled-consume marker before starting the consume request.
