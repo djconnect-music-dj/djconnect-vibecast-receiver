@@ -7,7 +7,7 @@ import jsQR from 'jsqr';
 const WIRE='djc-rendezvous/1',SERVICE='https://api.djconnect.dev',ORIGIN='https://vibecast.tv';
 const text=new TextEncoder();
 function scan(matrix){const scale=4,n=(matrix.length+8)*scale,rgba=new Uint8ClampedArray(n*n*4).fill(255);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.floor(y/scale)-4,c=Math.floor(x/scale)-4;if(matrix[r]?.[c]){const i=(y*n+x)*4;rgba[i]=rgba[i+1]=rgba[i+2]=0;}}return jsQR(rgba,n,n)?.data;}
-async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=false,denyAfter=Infinity,consumeBackoff=false}={}){
+async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=false,denyAfter=Infinity,consumeBackoff=false,consumeAfterCommit503=false}={}){
  const calls=[],keys=[];let current,state='pending',envelope,createCount=0;
  const html=(await readFile('bootstrap/public/index.html','utf8')).replace('<script type="module" src="/app.mjs"></script>','');
  await page.route('**/adapter-fixture',route=>route.fulfill({status:200,contentType:'text/html',body:html}));
@@ -24,7 +24,7 @@ async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=f
    return respond({v:WIRE,transaction_id:current.transaction_id,generation:current.generation,created_at:created,expires_at:current.expires_at,browser_key_thumbprint:thumb,qr_payload:current},201);
   }
   if(name==='poll'){if(consumeBackoff&&state==='consumed')return respond({v:WIRE,error:'service_unavailable',retry_after_ms:120000},503);if(longBackoff)return respond({v:WIRE,state:'pending',expires_at:current.expires_at,retry_after_ms:120000});if(state==='pending')state='ready';return respond({v:WIRE,state,expires_at:current.expires_at,retry_after_ms:2000});}
-  if(name==='consume'){state='consumed';if(loseConsume)return route.abort('failed');return respond({v:WIRE,state,destination_envelope:envelope,expires_at:current.expires_at});}
+  if(name==='consume'){state='consumed';if(consumeAfterCommit503)return respond({v:WIRE,error:'service_unavailable',retry_after_ms:2000},503);if(loseConsume)return route.abort('failed');return respond({v:WIRE,state,destination_envelope:envelope,expires_at:current.expires_at});}
   throw Error('unexpected test route');
  });
  await page.goto('/adapter-fixture');
@@ -101,8 +101,8 @@ test('foreground QR rotates at its original expiry with a new key and no button 
  expect(creates()).toBe(3);
 });
 
-test('an unresolved consume at the original deadline cannot rotate',async({page})=>{
- const f=await fixture(page,{loseConsume:true,consumeBackoff:true});
+for(const failure of ['transport loss','503 after commit'])test(`consume with ${failure} cannot replay or rotate at the original deadline`,async({page})=>{
+ const f=await fixture(page,{loseConsume:failure==='transport loss',consumeAfterCommit503:failure==='503 after commit',consumeBackoff:true});
  await run(page,{accelerate:true,holdLong:true,autoRotate:true});
  await expect.poll(()=>page.evaluate(()=>typeof window.fixtureLongWake)).toBe('function');
  await page.evaluate(()=>window.fixtureLongWake());

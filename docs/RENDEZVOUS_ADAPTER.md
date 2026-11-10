@@ -31,8 +31,10 @@ invalid201 never replaces. Acceptance/exposure is sticky before render callbacks
 Polls respect >=2s, original120s expiry and60attempt limit; 429/503 hints remain
 bounded within the original deadline. Each request is separately aborted on local
 timeout before the next request. An uncertain consume is reconciled through poll,
-never retried; an explicit canonical quota/service refusal may retry after backoff
-and authenticated ready. Server one-time consume is not redefined by a client.
+never retried. A consume 503 is also uncertain, since the service may return it
+after committing consume. An explicit quota refusal or not-ready result may
+retry after the applicable delay and authenticated ready. Server one-time
+consume is not redefined by a client.
 The original implementation used an explicit restart. The no-button receiver
 candidate instead rotates an exposed invitation in a foreground page at its
 original known deadline. Each rotation uses a fresh adapter, transaction and key.

@@ -96,7 +96,10 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
     c.consumeStarted=true;rotationBlocked=true;let result;try{result=await response('consume',c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}
     if(result.error){
      if(['not_ready','rate_limited','service_unavailable','attestation_unavailable'].includes(result.error)){
-      c.consumeStarted=false;rotationBlocked=false;
+      // A 503 can arrive after the server committed consume. Only poll can reconcile it.
+      if(result.error==='not_ready'||result.error==='rate_limited'){
+       c.consumeStarted=false;rotationBlocked=false;
+      }
       if(result.error!=='not_ready')delay=Math.max(2000,result.retry);
       continue;
      }
