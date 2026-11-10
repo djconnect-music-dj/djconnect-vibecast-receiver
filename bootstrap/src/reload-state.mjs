@@ -4,6 +4,13 @@ const storageKey = 'vibecast-qr-resume-v1';
 const namePrefix = 'vibecast-qr:';
 const token = () => btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
 
+async function importEncryption(value) {
+  if (typeof value !== 'string') throw Error('reload encryption key missing');
+  const raw = Uint8Array.from(atob(value), c=>c.charCodeAt(0));
+  if (raw.length !== 32) throw Error('reload encryption key missing');
+  return crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt','decrypt']);
+}
+
 function requestResult(request) {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
@@ -31,6 +38,17 @@ function write(database, apply) {
     transaction.onabort = () => reject(transaction.error);
     apply(transaction.objectStore('invitations'));
   });
+}
+
+function rotationDeadline(invitation) {
+  if (invitation.pollPending !== false || invitation.consumeStarted !== false ||
+      !Number.isSafeInteger(invitation.expires) || !Number.isFinite(invitation.deadline)) return null;
+  return {expires: invitation.expires, deadline: invitation.deadline};
+}
+
+function reachedDeadline(value) {
+  return Number.isSafeInteger(value?.expires) && Number.isFinite(value?.deadline) &&
+    value.expires <= Date.now() && value.deadline <= performance.timeOrigin + performance.now();
 }
 
 export function createReloadState() {
@@ -70,7 +88,7 @@ export function createReloadState() {
     return {tab,marker,additionalData,database};
   }
 
-  async function clear(expected) {
+  async function clear(expected, restart = null) {
     if (!initialization) return;
     const {tab,marker,database} = await initialization;
     await write(database, store => {
@@ -79,9 +97,14 @@ export function createReloadState() {
       generation++;
       encryption = null;
       delete marker.encryption;
+      delete marker.restart;
       sessionStorage.setItem(storageKey, JSON.stringify(marker));
       store.delete(tab);
     });
+    if (restart && expected + 1 === generation) {
+      marker.restart = restart;
+      sessionStorage.setItem(storageKey, JSON.stringify(marker));
+    }
   }
 
   function scheduleCleanup(invitation, expected) {
@@ -89,7 +112,7 @@ export function createReloadState() {
       if (expected !== generation) return;
       const remaining = Math.min(invitation.expires-Date.now(),invitation.deadline-performance.timeOrigin-performance.now());
       if (remaining > 0) cleanup = setTimeout(expire,remaining);
-      else void clear(expected).catch(()=>{});
+      else void clear(expected, rotationDeadline(invitation)).catch(()=>{});
     };
     clearTimeout(cleanup);
     expire();
@@ -99,17 +122,18 @@ export function createReloadState() {
     async open(signal) {
       initialization ??= initialize(signal);
       const {tab,marker,additionalData,database} = await initialization;
-      const read = first && kind === 'reload';
+      let read = first && kind === 'reload';
       first = false;
       const expected = ++generation;
       clearTimeout(cleanup);
-      if (!read) {
+      const startFresh = async () => {
+        delete marker.restart;
         marker.encryption = token();
         sessionStorage.setItem(storageKey, JSON.stringify(marker));
-      }
-      const raw = Uint8Array.from(atob(marker.encryption), c=>c.charCodeAt(0));
-      if (raw.length !== 32) throw Error('reload encryption key missing');
-      encryption = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt','decrypt']);
+        return importEncryption(marker.encryption);
+      };
+      if (read && !marker.encryption && reachedDeadline(marker.restart)) read = false;
+      encryption = await (read ? importEncryption(marker.encryption) : startFresh());
       await write(database, store => {
         if (!read) store.delete(tab);
         const request = store.index('expiry').openKeyCursor(IDBKeyRange.upperBound(Date.now()));
@@ -128,7 +152,12 @@ export function createReloadState() {
       if (invitation.expires !== stored.expiry) throw Error('reload expiry mismatch');
       const remaining = Math.min(invitation.expires-Date.now(),invitation.deadline-performance.timeOrigin-performance.now());
       if (remaining <= 0) {
+        const restart = rotationDeadline(invitation);
         await clear(expected);
+        if (reachedDeadline(restart)) {
+          encryption = await startFresh();
+          return null;
+        }
         throw Error('reload invitation expired');
       }
       scheduleCleanup(invitation,expected);
