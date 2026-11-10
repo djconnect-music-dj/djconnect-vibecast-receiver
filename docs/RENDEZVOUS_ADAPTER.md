@@ -31,13 +31,59 @@ invalid201 never replaces. Acceptance/exposure is sticky before render callbacks
 Polls respect >=2s, original120s expiry and60attempt limit; 429/503 hints remain
 bounded within the original deadline. Each request is separately aborted on local
 timeout before the next request. An uncertain consume is reconciled through poll,
-never retried; an explicit canonical quota/service refusal may retry after backoff
-and authenticated ready. Server one-time consume is not redefined by a client.
-Authenticated consumed/cancelled or original knownexpiry permits ONLY an explicit
-user-requested new adapter via a statically supplied host factory. Unknown create/
-consume/cancel and renderer/context loss do not reset allowance. When no safe
-restart exists the retry control is hidden; no false cancel/expired/connected claim.
-Visibility/pagehide/BFCache retires; online/restoration never creates authority.
+never retried. A consume 503 is also uncertain, since the service may return it
+after committing consume. An explicit quota refusal or not-ready result may
+retry after the applicable delay and authenticated ready. Server one-time
+consume is not redefined by a client.
+The original implementation used an explicit restart. The no-button receiver
+candidate instead rotates an exposed invitation in a foreground page at its
+original known deadline. Each rotation uses a fresh adapter, transaction and key.
+Authenticated consumed/cancelled and an in-flight or uncertain consume do not
+allow rotation. A server expiry received early clears the QR immediately and
+keeps the original local deadline. Unknown create/cancel and renderer/context
+loss do not reset allowance. Visibility/pagehide/BFCache retires the interaction.
+Online/restoration never creates authority. This changes post-QR browser policy,
+which requires API/Core review before live promotion. Wire and expiry are unchanged.
+
+## Same-tab reload candidate
+
+Resume the same transaction, generation, QR payload and browser key after an
+ordinary reload of the same navigation entry. Keep both the server's original
+expiry and the original monotonic deadline. A reload sends no create request
+for that invitation and does not extend either deadline.
+
+The proposed storage exception is limited to one exposed invitation for its
+original lifetime. Keep only an opaque record locator and an encryption key in
+the page session. Store the nonextractable RSA `CryptoKey` as a browser-managed
+object and encrypt the QR payload and claim in the origin database. Bind the
+record to the exact origin, navigation-entry identity, transaction and expiry.
+Never write account credentials, a Home Assistant URL or a destination
+envelope to storage. Commit the record before making its QR resumable. The
+browser may retain deleted bytes, so cleanup does not claim secure erasure.
+
+Require a matching entry, a tab marker and exclusive ownership before using
+the record. The marker in the browsing context name is an opaque binding.
+Reject unrelated navigation, another tab, missing browser support, invalid
+records and unverified deadlines. Treat expired records as unusable even if
+the browser has not deleted them yet. Do not mint a new invitation on an
+ambiguous reload. Confirm the saved invitation with an authenticated poll
+before displaying it. A ready invitation may continue directly to consume.
+
+Commit an unsettled-consume marker before starting the consume request.
+A reload can reconcile that request through poll but cannot send it again.
+Remove or invalidate the record on terminal status or verified handoff.
+Restore the remaining poll budget and any active backoff; neither resets on
+reload. If a poll outcome was not yet saved when the document closed, reload
+fails closed rather than risk skipping the service's backoff. A read, write
+or lock failure cannot restore pairing authority. Expired records are deleted
+while the page is active or on a later visit; a closed browser cannot run cleanup.
+
+Isolated Chromium tab duplication copied the page session and navigation entry
+but did not copy the browsing context name. Chromium and WebKit both retained
+the name and original nonextractable key across ordinary reloads. These probes
+do not qualify native Safari tab duplication, OS suspension or live pairing.
+The storage exception and browser behavior remain subject to exact review
+before protected publication.
 
 ## Evidence and remaining limits
 

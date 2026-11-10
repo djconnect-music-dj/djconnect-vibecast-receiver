@@ -59,12 +59,12 @@ test('strict UTF8/duplicate decoded names/trailing/oversize JSON and canonical b
 test('all pinned Core raw-route negatives before URL normalization',async()=>{const x=JSON.parse(await readFile('docs/contracts/rendezvous-implementation-1/route-cases.json'));for(const c of x.cases){let allowed;try{allowed=displayURL(c.entry_url).startsWith(c.selected_origin+'/');}catch{allowed=false;}assert.equal(allowed,c.allowed,c.id);}});
 test('actual adapter and controller compose without cloning private challenge identity',async()=>{
  const {BootstrapController}=await import('../../bootstrap/src/lifecycle.mjs');for(const lostCreate of [0,1]){const s=service({lostCreate}),a=adapter(s),states=[],urls=[];
- const c=new BootstrapController({adapter:a,render:x=>states.push(x.state),navigate:x=>urls.push(x)});await c.start();assert.deepEqual(states,['creating','waiting','received','redirecting']);assert.deepEqual(urls,['https://ha.example.org/djconnect/vibecast/display']);assert.equal(s.creates.length,lostCreate+1);await c.reconnect();await c.start();assert.equal(s.creates.length,lostCreate+1);}
+ const c=new BootstrapController({adapter:a,render:x=>states.push(x.state),navigate:x=>urls.push(x)});await c.start();assert.deepEqual(states,['creating','waiting','confirming','received','redirecting']);assert.deepEqual(urls,['https://ha.example.org/djconnect/vibecast/display']);assert.equal(s.creates.length,lostCreate+1);await c.reconnect();await c.start();assert.equal(s.creates.length,lostCreate+1);}
 });
-test('explicit consume quota/service refusal preserves transaction and retries only after pollready/backoff',async()=>{for(const code of [429,503]){const s=service({consumeRefusal:code}),a=adapter(s),c=await a.create();a.expose(c);const e=await a.wait({challenge:c});assert.equal(await a.verifyDestination(e,{challenge:c}),'https://ha.example.org/djconnect/vibecast/display');assert.equal(s.calls.filter(x=>x.route==='consume').length,2);assert.equal(s.consumed,1);assert.equal(s.creates.length,1);}});
+test('explicit consume quota refusal preserves transaction and retries only after pollready/backoff',async()=>{const s=service({consumeRefusal:429}),a=adapter(s),c=await a.create();a.expose(c);const e=await a.wait({challenge:c});assert.equal(await a.verifyDestination(e,{challenge:c}),'https://ha.example.org/djconnect/vibecast/display');assert.equal(s.calls.filter(x=>x.route==='consume').length,2);assert.equal(s.consumed,1);assert.equal(s.creates.length,1);});
 test('fresh explicit controller interaction only after authenticated terminal state',async()=>{
  const {BootstrapController}=await import('../../bootstrap/src/lifecycle.mjs');for(const unknown of [true,false]){
- const s=service(unknown?{lostCreate:2}:{consumeLoss:true});let instances=0;const factory=()=>{instances++;return adapter(s);},states=[];const c=new BootstrapController({adapter:factory(),adapterFactory:factory,render:x=>states.push(x),navigate:()=>assert.fail()});await c.start();assert.equal(states.at(-1).retryAllowed,!unknown);const count=s.creates.length;await c.start();assert.equal(s.creates.length,count);await c.start(true,{explicit:true});assert.equal(instances,unknown?1:2);assert.equal(s.creates.length,unknown?2:2);
+ const s=service(unknown?{lostCreate:2}:{consumeLoss:true});let instances=0;const factory=()=>{instances++;return adapter(s);},states=[];const c=new BootstrapController({adapter:factory(),adapterFactory:factory,render:x=>states.push(x),navigate:()=>assert.fail()});await c.start();assert.equal(c.adapter.canRestart(),!unknown);const count=s.creates.length;await c.start();assert.equal(s.creates.length,count);await c.start(true,{explicit:true});assert.equal(instances,unknown?1:2);assert.equal(s.creates.length,unknown?2:2);
  }
 });
 test('timed-out poll is aborted before another client request; late result is fenced',async()=>{
@@ -96,5 +96,31 @@ test('compact JOSE duplicate/extra headers, noncanonical segments and authentica
 test('201 body transport failure permits one replacement; complete malformed201 does not',async()=>{for(const incomplete of [true,false]){const s=service();let first=true;const transport=async(...args)=>{const res=await s.transport(...args);if(first&&args[0].endsWith('/create')){first=false;return new Response(incomplete?new ReadableStream({start(c){c.error(Error('synthetic body loss'));}}):'{"v":', {status:201,headers:{'content-type':'application/json'}});}return res;};const a=adapter(s,{fetch:transport});if(incomplete){const c=await a.create();assert.equal(s.creates.length,2);a.stop();}else{await assert.rejects(a.create());assert.equal(s.creates.length,1);}}});
 test('long server backoff does not claim early expiry and wakes explicit retry at original expiry',async(t)=>{
  const {BootstrapController}=await import('../../bootstrap/src/lifecycle.mjs');const s=service();let clock=0,wakeLong,longDelay;const a=createRendezvousAdapter({visible:()=>true,monotonic:()=>clock,fetch:async(url,opts)=>url.endsWith('/poll')?payload({v:WIRE,state:'pending',expires_at:s.qr.expires_at,retry_after_ms:120000}):s.transport(url,opts),schedule:(fn,ms)=>{if(ms>100000){longDelay=ms;wakeLong=()=>{clock+=ms;fn();};return -1;}return setTimeout(()=>{if(ms===2000)clock+=ms;fn();},ms===2000?1:ms);},cancel:id=>{if(id!==-1)clearTimeout(id);}});
- const states=[],c=new BootstrapController({adapter:a,adapterFactory:()=>assert.fail('no automatic replacement'),render:x=>states.push(x),navigate:()=>assert.fail()});t.after(()=>c.stop());const work=c.start();while(!wakeLong)await new Promise(r=>setTimeout(r,2));assert.equal(states.at(-1).state,'waiting');assert.equal(a.canRestart(),false);assert.ok(longDelay<120000&&longDelay>100000,JSON.stringify({longDelay,clock}));wakeLong();await work;assert.equal(states.at(-1).state,'expired');assert.equal(states.at(-1).retryAllowed,true);assert.equal(s.creates.length,1);
+ const states=[],c=new BootstrapController({adapter:a,adapterFactory:()=>assert.fail('no automatic replacement'),monotonic:()=>clock,render:x=>states.push(x),navigate:()=>assert.fail()});t.after(()=>c.stop());const work=c.start();while(!wakeLong)await new Promise(r=>setTimeout(r,2));assert.equal(states.at(-1).state,'waiting');assert.equal(a.canRestart(),false);assert.ok(longDelay<120000&&longDelay>100000,JSON.stringify({longDelay,clock}));wakeLong();await work;assert.equal(states.at(-1).state,'expired');assert.equal(a.canRestart(),true);assert.equal(s.creates.length,1);
+});
+
+test('slow durable poll fence and immediate network loss keep two seconds between sends',async()=>{
+ const serviceFixture=service(),pollStarts=[];
+ let clock=0,slowSave=true;
+ const a=adapter(serviceFixture,{
+  monotonic:()=>clock,
+  schedule:(fn,ms)=>ms<=2000?setTimeout(()=>{clock+=ms;fn();},1):setTimeout(fn,ms),
+  reloadState:{
+   open:async()=>null,clear:async()=>{},
+   save:async record=>{if(record.pollPending&&slowSave){slowSave=false;clock+=2500;}}
+  },
+  fetch:async (url,options)=>{
+   if(url.endsWith('/poll')){
+    pollStarts.push(clock);
+    if(pollStarts.length===1)throw Error('synthetic network failure');
+   }
+   return serviceFixture.transport(url,options);
+  }
+ });
+ const challenge=await a.create();
+ await a.expose(challenge);
+ await a.wait({challenge});
+ assert.equal(pollStarts.length,2);
+ assert.ok(pollStarts[1]-pollStarts[0]>=2000);
+ a.stop();
 });

@@ -7,7 +7,7 @@ export const qa=Object.freeze({product:'vibecast-tv-bootstrap-qa',browser:'https
 export const sourcePins=Object.freeze({
  'bootstrap/src/wire.mjs':'2b89c5a139c02a5267cf2f68cff9c14f1e656ccad6e5ea453449c5bc7d79ec33',
  'bootstrap/src/wire-schema.mjs':'01272335b2b4d5c3ee43b98fae4dfd147bbe971307a88a447580c5a73b5a7700',
- 'bootstrap/src/app.mjs':'83e8d15d780ec0bd17c83a40eda476c5b00cad696502a63090168751f9dfdd5d',
+ 'bootstrap/src/app.mjs':'30f973baaa993d15e73eb9ba78d2b97d06d132e43011e9a6c3633d5a68b5e838',
  'bootstrap/public/_headers':'03dcc81641810e473b6e7dccda1011ff91a80a3be7b9155e6cf76bd7efb80930'
 });
 const hash=x=>createHash('sha256').update(x).digest('hex');
@@ -20,7 +20,7 @@ export function transform(file,source){
  if(file==='bootstrap/src/app.mjs'){
   const entry=replaceOnce(source,"import { createRendezvousAdapter } from './rendezvous.mjs';","import {createQAAdapter,QA_BROWSER} from '../qa/adapter.mjs';");
   return replaceOnce(replaceOnce(entry,"const productionOrigin = 'https://vibecast.tv';","const productionOrigin = QA_BROWSER;"),
-   'createRendezvousAdapter() : unavailableAdapter','createQAAdapter() : unavailableAdapter');
+   'createRendezvousAdapter({reloadState}) : unavailableAdapter','createQAAdapter({reloadState}) : unavailableAdapter');
  }
  throw Error('Unknown QA transform');
 }

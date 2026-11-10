@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {BootstrapController,validMatrix} from '../../bootstrap/src/lifecycle.mjs';
+import {BootstrapController,unavailableAdapter,validMatrix} from '../../bootstrap/src/lifecycle.mjs';
 import {chooseEffects,createEffectsUpdater} from '../../bootstrap/src/effects.mjs';
 import {locales,selectLocale} from '../../bootstrap/src/locales.mjs';
 import {build} from '../../scripts/build_bootstrap.mjs';
@@ -39,7 +39,7 @@ test('a failed frame sample leaves solid mode and can retry on a later preferenc
 test('all states and controls exist in five complete languages',()=>{assert.equal(selectLocale('NL-nl'),'nl');assert.equal(selectLocale('zh'),'en');assert.equal(Object.keys(locales).length,5);for(const copy of Object.values(locales)){assert.deepEqual(Object.keys(copy),Object.keys(locales.en));for(const value of Object.values(copy))assert.ok(typeof value==='string'?value.length:value.length===2&&value.every(Boolean));}});
 test('build is byte-reproducible, omits redundant wire modules and rejects Cast output/invalid source',async()=>{const sha='1'.repeat(40);await build('dist/check-a',sha);await build('dist/check-b',sha);const names=await readdir('dist/check-a');for(const name of names)assert.deepEqual(await readFile('dist/check-a/'+name),await readFile('dist/check-b/'+name));assert.ok(names.includes('rendezvous.mjs'));assert.ok(!names.includes('wire.mjs')&&!names.includes('wire-schema.mjs'));await assert.rejects(build('wwwroot',sha));await assert.rejects(build('dist/check-c','main'));const manifest=JSON.parse(await readFile('dist/check-a/build-manifest.json'));assert.equal(manifest.rendezvous,'djc-rendezvous/1-implementation.1');assert.equal(manifest.sourceSHA,sha);});
 test('wall-clock rollback cannot extend the original monotonic challenge deadline',async()=>{let wall=1000,mono=0,deadline;const states=[];const wait=pending();const c=new BootstrapController({adapter:{contract:'TEST_ONLY',create:async()=>({expiresAt:2000,matrix:matrix()}),validateChallenge:()=>true,wait:()=>wait.promise,verifyDestination:async()=> 'https://ha.example/display',allowsDestination:()=>true},render:s=>states.push(s.state),navigate:()=>assert.fail(),now:()=>wall,monotonic:()=>mono,schedule:fn=>{deadline=fn;return 1;},cancel:()=>{}});const p=c.start();await tick();wall=0;mono=1001;deadline();assert.equal(states.at(-1),'expired');wait.resolve({});await p;});
-test('public artifact contains no fixtures, credentials, storage or executable injection',async()=>{await build('dist/privacy-test','a'.repeat(40));for(const name of await readdir('dist/privacy-test')){const source=await readFile('dist/privacy-test/'+name,'utf8');assert.doesNotMatch(source,/TEST_ONLY|testBinding|ha\.example|oauth_token|CLOUDFLARE_API_TOKEN|localStorage|sessionStorage|eval\(/,name);}const headers=await readFile('dist/privacy-test/_headers','utf8');assert.match(headers,/connect-src https:\/\/api\.djconnect\.dev;/);});
+test('public artifact keeps tab storage confined to the reload journal',async()=>{await build('dist/privacy-test','a'.repeat(40));for(const name of await readdir('dist/privacy-test')){const source=await readFile('dist/privacy-test/'+name,'utf8');assert.doesNotMatch(source,/TEST_ONLY|testBinding|ha\.example|oauth_token|CLOUDFLARE_API_TOKEN|localStorage|eval\(/,name);if(name!=='reload-state.mjs')assert.doesNotMatch(source,/sessionStorage|indexedDB/,name);}const headers=await readFile('dist/privacy-test/_headers','utf8');assert.match(headers,/connect-src https:\/\/api\.djconnect\.dev;/);});
 test('expiry reached during deadline arming cannot be overwritten by waiting at start or reconnect',async()=>{
  for(const reconnect of [false,true]) {
   let clock=1000,reads=0,race=false;const states=[],channel=pending();
@@ -48,4 +48,29 @@ test('expiry reached during deadline arming cannot be overwritten by waiting at 
   else {race=true;await c.start();}
   assert.equal(c.state,'expired');assert.equal(c.challenge,null);assert.equal(states.at(-1),'expired');
  }
+});
+
+test('early server expiry hides the QR and preserves the original rotation deadline', async () => {
+ let now = 0, deadline, replacements = 0;
+ const states = [];
+ const adapter = {
+  bounded: true, contract: 'TEST_ONLY',
+  create: async () => ({expiresAt: 120000, monotonicDeadline: 120000, matrix: matrix()}),
+  validateChallenge: () => true, verifyDestination: () => assert.fail(), allowsDestination: () => false,
+  wait: async () => { now = 119900; throw Object.assign(Error('expired'), {state: 'expired'}); },
+  canRestart: () => now === 120000, canRotate: () => now === 120000
+ };
+ const c = new BootstrapController({adapter, autoRotate: true,
+  adapterFactory: () => { replacements++; return unavailableAdapter; },
+  now: () => now, monotonic: () => now,
+  schedule: (callback, delay) => { deadline = {callback, delay}; return 1; }, cancel: () => {},
+  render: ({state}) => states.push(state), navigate: () => assert.fail()
+ });
+ await c.start();
+ assert.deepEqual(states, ['creating', 'waiting', 'expired']);
+ assert.equal(deadline.delay, 100);
+ assert.equal(replacements, 0);
+ now = 120000;
+ deadline.callback();
+ assert.equal(replacements, 1);
 });
