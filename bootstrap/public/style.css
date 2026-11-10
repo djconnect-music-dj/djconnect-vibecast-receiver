@@ -1,8 +1,8 @@
 :root {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #f7f8ff;
-  /* Safari extends the solid canvas color behind its system bars. */
-  background-color: #191b3a;
+  --canvas: #191b3a;
+  background-color: var(--canvas);
   color-scheme: dark;
   font-synthesis: none;
   --muted: #c6cce4;
@@ -19,10 +19,21 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background-image:
+  --screen-gradient:
     radial-gradient(ellipse at 13% 50%, #174b9473, transparent 59%),
     radial-gradient(ellipse at 94% 3%, #4c1c795c, transparent 62%),
     linear-gradient(135deg, #10253e, #151a42 55%, #1b153b);
+  background-image: var(--screen-gradient);
+}
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  body {
+    /* Match Safari's solid canvas tint at the top and bottom of the page. */
+    background-image:
+      linear-gradient(to bottom, var(--canvas) 1rem, transparent 8rem,
+        transparent calc(100% - 8rem), var(--canvas) calc(100% - 1rem)),
+      var(--screen-gradient);
+  }
 }
 
 a { color: inherit; text-decoration: none; }
