@@ -56,7 +56,7 @@ export class BootstrapController {
   expire() {
     // Only a displayed invitation reaching its original deadline grants rotation.
     // The bounded adapter still checks restart authority and foreground before I/O.
-    if (this.autoRotate && this.state !== 'creating' && this.adapter.bounded && this.adapterFactory && this.adapter.canRestart?.()) {
+    if (this.autoRotate && this.adapterFactory && this.adapter.canRotate?.()) {
       void this.start(true, { explicit: true });
     } else {
       this.fail('expired');
@@ -82,7 +82,20 @@ export class BootstrapController {
       this.cancel(this.timer); this.abort?.abort();
       this.challenge = null; this.generation++;
       this.show('redirecting'); this.navigate(url.href);
-    } catch (error) { if (this.current(generation)) { if (this.adapter.bounded) this.fail(['expired','unsafe'].includes(error.state)?error.state:'unavailable'); else this.show('recovering', { challenge }); } }
+    } catch (error) {
+      if (generation !== this.generation) return;
+      if (this.adapter.bounded) {
+        if (error.state === 'expired' && this.autoRotate && this.challenge) {
+          // Hide the QR now, but never renew before the original local deadline.
+          this.show('expired');
+          this.armDeadline(generation);
+        } else {
+          this.fail(['expired','unsafe'].includes(error.state) ? error.state : 'unavailable');
+        }
+      } else if (this.current(generation)) {
+        this.show('recovering', { challenge });
+      }
+    }
   }
   current(generation) {
     if (generation !== this.generation || this.consumed || !this.challenge) return false;

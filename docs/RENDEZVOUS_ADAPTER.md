@@ -33,11 +33,15 @@ bounded within the original deadline. Each request is separately aborted on loca
 timeout before the next request. An uncertain consume is reconciled through poll,
 never retried; an explicit canonical quota/service refusal may retry after backoff
 and authenticated ready. Server one-time consume is not redefined by a client.
-Authenticated consumed/cancelled or original knownexpiry permits ONLY an explicit
-user-requested new adapter via a statically supplied host factory. Unknown create/
-consume/cancel and renderer/context loss do not reset allowance. When no safe
-restart exists the retry control is hidden; no false cancel/expired/connected claim.
-Visibility/pagehide/BFCache retires; online/restoration never creates authority.
+The original implementation used an explicit restart. The no-button receiver
+candidate instead rotates an exposed invitation in a foreground page at its
+original known deadline. Each rotation uses a fresh adapter, transaction and key.
+Authenticated consumed/cancelled and an in-flight or uncertain consume do not
+allow rotation. A server expiry received early clears the QR immediately and
+keeps the original local deadline. Unknown create/cancel and renderer/context
+loss do not reset allowance. Visibility/pagehide/BFCache retires the interaction.
+Online/restoration never creates authority. This changes post-QR browser policy,
+which requires API/Core review before live promotion. Wire and expiry are unchanged.
 
 ## Evidence and remaining limits
 

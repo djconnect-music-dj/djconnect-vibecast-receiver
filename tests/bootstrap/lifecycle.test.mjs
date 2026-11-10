@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {BootstrapController,validMatrix} from '../../bootstrap/src/lifecycle.mjs';
+import {BootstrapController,unavailableAdapter,validMatrix} from '../../bootstrap/src/lifecycle.mjs';
 import {chooseEffects,createEffectsUpdater} from '../../bootstrap/src/effects.mjs';
 import {locales,selectLocale} from '../../bootstrap/src/locales.mjs';
 import {build} from '../../scripts/build_bootstrap.mjs';
@@ -48,4 +48,29 @@ test('expiry reached during deadline arming cannot be overwritten by waiting at 
   else {race=true;await c.start();}
   assert.equal(c.state,'expired');assert.equal(c.challenge,null);assert.equal(states.at(-1),'expired');
  }
+});
+
+test('early server expiry hides the QR and preserves the original rotation deadline', async () => {
+ let now = 0, deadline, replacements = 0;
+ const states = [];
+ const adapter = {
+  bounded: true, contract: 'TEST_ONLY',
+  create: async () => ({expiresAt: 120000, monotonicDeadline: 120000, matrix: matrix()}),
+  validateChallenge: () => true, verifyDestination: () => assert.fail(), allowsDestination: () => false,
+  wait: async () => { now = 119900; throw Object.assign(Error('expired'), {state: 'expired'}); },
+  canRestart: () => now === 120000, canRotate: () => now === 120000
+ };
+ const c = new BootstrapController({adapter, autoRotate: true,
+  adapterFactory: () => { replacements++; return unavailableAdapter; },
+  now: () => now, monotonic: () => now,
+  schedule: (callback, delay) => { deadline = {callback, delay}; return 1; }, cancel: () => {},
+  render: ({state}) => states.push(state), navigate: () => assert.fail()
+ });
+ await c.start();
+ assert.deepEqual(states, ['creating', 'waiting', 'expired']);
+ assert.equal(deadline.delay, 100);
+ assert.equal(replacements, 0);
+ now = 120000;
+ deadline.callback();
+ assert.equal(replacements, 1);
 });

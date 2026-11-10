@@ -12,6 +12,7 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
  now=Date.now,monotonic=()=>performance.now(),visible=()=>globalThis.document?.visibilityState==='visible',
  schedule=(fn,ms)=>setTimeout(fn,ms),cancel=id=>clearTimeout(id)}={}){
  let used=false,retired=false,exposed=false,epoch=0,active=null,context=null,lastTime=-Infinity,restartAllowed=false,knownExpiry=null;
+ let rotationBlocked=false;
  const mono=()=>{const v=monotonic();if(!Number.isFinite(v)||v<0||v<lastTime){dispose();throw new Terminal();}lastTime=v;return v;};
  const sessions=new WeakMap(),waiters=new Set();
  function dispose(){retired=true;epoch++;active?.abort();active=null;for(const stop of waiters)stop();waiters.clear();if(context){context.key=null;context.claim=null;context=null;}}
@@ -92,10 +93,17 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
     if(status.state==='cancelled'||status.state==='consumed'){restartAllowed=true;throw new Terminal();}
     if(status.state!=='ready'){delay=Math.max(2000,status.retry_after_ms);continue;}
     if(c.consumeStarted)continue; // A lost consume is reconciled by poll only.
-    c.consumeStarted=true;let result;try{result=await response('consume',c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}
-    if(result.error){if(result.error==='not_ready'){c.consumeStarted=false;continue;}if(['rate_limited','service_unavailable','attestation_unavailable'].includes(result.error)){c.consumeStarted=false;delay=Math.max(2000,result.retry);continue;}throw new Terminal(result.error==='expired'?'expired':'unavailable');}
+    c.consumeStarted=true;rotationBlocked=true;let result;try{result=await response('consume',c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}
+    if(result.error){
+     if(['not_ready','rate_limited','service_unavailable','attestation_unavailable'].includes(result.error)){
+      c.consumeStarted=false;rotationBlocked=false;
+      if(result.error!=='not_ready')delay=Math.max(2000,result.retry);
+      continue;
+     }
+     throw new Terminal(result.error==='expired'?'expired':'unavailable');
+    }
     live(c);restartAllowed=true;return result.destination_envelope;
-   }throw new Terminal('expired');}catch(e){dispose();throw e instanceof Terminal?e:new Terminal();}
+   }throw new Terminal('expired');}catch(e){if(e.state!=='expired')rotationBlocked=true;dispose();throw e instanceof Terminal?e:new Terminal();}
   },
   async verifyDestination(envelope,{challenge}){
    const c=sessions.get(challenge);live(c);try{
@@ -111,6 +119,10 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
   allowsDestination(url){try{return displayURL(url.href)===url.href;}catch{return false;}},
   async cancel(challenge){const c=sessions.get(challenge);try{const result=await response('cancel',c);need(!result.error&&result.state==='cancelled');restartAllowed=true;return true;}finally{dispose();}},
   canRestart(){if(restartAllowed)return true;if(!knownExpiry)return false;try{return knownExpiry.wall<=now()||knownExpiry.mono<=mono();}catch{return false;}},
+  canRotate(){
+   if(!exposed||rotationBlocked||!knownExpiry||!visible())return false;
+   try{return knownExpiry.wall<=now()||knownExpiry.mono<=mono();}catch{return false;}
+  },
   stop:dispose
  };
  return Object.freeze(adapter);
