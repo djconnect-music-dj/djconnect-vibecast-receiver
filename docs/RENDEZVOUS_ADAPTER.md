@@ -67,7 +67,7 @@ Reject unrelated navigation, another tab, missing browser support, invalid
 records and unverified deadlines. Treat expired records as unusable even if
 the browser has not deleted them yet. Do not mint a new invitation on an
 ambiguous reload. After both original deadlines pass, an explicit reload can
-start fresh if the same-tab journal shows no pending poll or consume. Expiry
+start fresh if the same-tab journal shows no pending or uncertain consume. Expiry
 cleanup can retain only the two deadlines as a one-use restart marker, without
 retaining the old invitation or its encryption key. Confirm a saved, still
 live invitation with an authenticated poll
@@ -77,8 +77,11 @@ Commit an unsettled-consume marker before starting the consume request.
 A reload can reconcile that request through poll but cannot send it again.
 Remove or invalidate the record on terminal status or verified handoff.
 Restore the remaining poll budget and any active backoff; neither resets on
-reload. If a poll outcome was not yet saved when the document closed, reload
-fails closed rather than risk skipping the service's backoff. A read, write
+reload. If a poll outcome was not yet saved when the document closed and
+consume has not started, retire the old invitation, keep its original
+deadlines, and wait for both to pass. The browser sends no poll or create
+while waiting, even across repeated reloads. An uncertain consume stays
+blocked. A read, write
 or lock failure cannot restore pairing authority. Expired records are deleted
 while the page is active or on a later visit; a closed browser cannot run cleanup.
 

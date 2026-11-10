@@ -9,7 +9,7 @@ const text=new TextEncoder();
 function scan(matrix){const scale=4,n=(matrix.length+8)*scale,rgba=new Uint8ClampedArray(n*n*4).fill(255);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.floor(y/scale)-4,c=Math.floor(x/scale)-4;if(matrix[r]?.[c]){const i=(y*n+x)*4;rgba[i]=rgba[i+1]=rgba[i+2]=0;}}return jsQR(rgba,n,n)?.data;}
 async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=false,denyAfter=Infinity,consumeBackoff=false,consumeAfterCommit503=false,actualApp=false,reconcileAsReady=false,controlledClock=false}={}){
  const calls=[],keys=[];let current,state='pending',envelope,createCount=0;
- let ready=!actualApp,refusePoll=false;
+ let ready=!actualApp,refusePoll=false,heldPoll;
  const browserOrigin=actualApp?ORIGIN:'http://127.0.0.1:4186';
  if(actualApp)await page.route(ORIGIN+'/**',async route=>{
   const path=new URL(route.request().url()).pathname;
@@ -24,6 +24,11 @@ async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=f
   const req=route.request(),name=req.url().split('/').at(-1);if(req.method()==='OPTIONS')return route.fulfill({status:204,headers:{'access-control-allow-origin':browserOrigin,'access-control-allow-methods':'POST','access-control-allow-headers':'content-type'}});
   const body=req.postDataJSON();calls.push({name,body});
   const respond=(value,status=200)=>route.fulfill({status,headers:{'content-type':'application/json','access-control-allow-origin':browserOrigin},body:JSON.stringify(value)});
+  if(name==='poll'&&heldPoll){
+   const held=heldPoll;heldPoll=null;
+   await held;
+   return route.abort().catch(()=>{});
+  }
   if(name==='create'){
    state='pending';createCount++;keys.push(body.browser_public_key);if(createCount<=lostCreate)return route.abort('failed');if(deny||createCount>denyAfter)return respond({v:WIRE,error:deny===429?'rate_limited':'service_unavailable'},deny||503);
    const created=controlledClock?await page.evaluate(()=>Date.now()):Date.now();
@@ -39,7 +44,8 @@ async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=f
  });
  await page.goto(actualApp?ORIGIN:'/adapter-fixture');
  await page.evaluate(()=>{window.fixtureStates=[];window.fixtureUrls=[];window.fixtureDiagnostics={decrypt:[],verify:[],visibility:[]};});
- return {calls,keys,get qr(){return current;},ready:()=>{ready=true;},refuseNextPoll:()=>{refusePoll=true;}};
+ return {calls,keys,get qr(){return current;},ready:()=>{ready=true;},refuseNextPoll:()=>{refusePoll=true;},
+  holdNextPoll(){let release;heldPoll=new Promise(resolve=>{release=resolve;});return release;}};
 }
 async function run(page,{language='nl',accelerate=false,holdLong=false,diagnostic=false,autoRotate=false}={}){
  await page.evaluate(async({language,accelerate,holdLong,diagnostic,autoRotate})=>{
@@ -228,4 +234,70 @@ test('actual app reload respects transient poll refusal before restoring the QR'
  await expect(panel).toBeVisible();
  expect(await page.locator('#expiry').textContent()).toBe(deadline);
  expect(f.calls.filter(x=>x.name==='create')).toHaveLength(1);
+});
+
+test('five same-tab reloads recover after an interrupted poll without resetting its deadline',async({page})=>{
+ await page.addInitScript(()=>{
+  const wall=Date.now.bind(Date),monotonic=performance.now.bind(performance);
+  window.fixtureWallOffset=0;
+  window.fixtureMonotonicOffset=0;
+  Date.now=()=>wall()+window.fixtureWallOffset;
+  Object.defineProperty(performance,'now',{value:()=>monotonic()+window.fixtureMonotonicOffset});
+  const schedule=window.setTimeout.bind(window);
+  window.setTimeout=(callback,delay,...args)=>{
+   if(delay>30000) window.fixtureWaitWake=callback;
+   return schedule(callback,delay,...args);
+  };
+ });
+ const f=await fixture(page,{actualApp:true,controlledClock:true});
+ const panel=page.locator('#qr-panel');
+ await expect(panel).toBeVisible();
+ const original=f.qr;
+ const release=f.holdNextPoll();
+ try{
+  await expect.poll(()=>f.calls.map(call=>call.name)).toEqual(['create','poll']);
+  for(let reload=0;reload<5;reload++){
+   await page.reload();
+   await expect.poll(()=>page.evaluate(()=>JSON.parse(sessionStorage.getItem('vibecast-qr-resume-v1'))?.restart?.expires)).toBe(original.expires_at);
+   await expect(page.locator('html')).toHaveAttribute('data-state','creating');
+   await expect(panel).toBeHidden();
+   expect(f.calls.map(call=>call.name)).toEqual(['create','poll']);
+  }
+ }finally{release();}
+ await expect.poll(()=>page.evaluate(()=>typeof window.fixtureWaitWake)).toBe('function');
+ await page.evaluate(()=>{
+  window.fixtureMonotonicOffset=121000;
+  window.fixturePreviousWake=window.fixtureWaitWake;
+  window.fixtureWaitWake();
+ });
+ await expect.poll(()=>page.evaluate(()=>window.fixtureWaitWake!==window.fixturePreviousWake)).toBe(true);
+ expect(f.calls.map(call=>call.name)).toEqual(['create','poll']);
+ await expect(panel).toBeHidden();
+ await page.evaluate(()=>{
+  window.fixtureWallOffset=121000;
+  window.fixtureWaitWake();
+ });
+ await expect(panel).toBeVisible();
+ expect(f.calls.map(call=>call.name)).toEqual(['create','poll','create']);
+ expect(f.qr.transaction_id).not.toBe(original.transaction_id);
+});
+
+test('an interrupted poll after uncertain consume never authorizes a new invitation',async({page})=>{
+ const f=await fixture(page,{actualApp:true,consumeAfterCommit503:true,reconcileAsReady:true,controlledClock:true});
+ await expect(page.locator('#qr-panel')).toBeVisible();
+ f.ready();
+ await expect.poll(()=>f.calls.filter(call=>call.name==='consume').length).toBe(1);
+ const calls=f.calls.length;
+ const release=f.holdNextPoll();
+ try{
+  await expect.poll(()=>f.calls.length).toBeGreaterThan(calls);
+  await page.addInitScript(()=>{
+   const wall=Date.now.bind(Date),monotonic=performance.now.bind(performance);
+   Date.now=()=>wall()+121000;
+   Object.defineProperty(performance,'now',{value:()=>monotonic()+121000});
+  });
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
+  expect(f.calls.filter(call=>call.name==='create'||call.name==='consume').map(call=>call.name)).toEqual(['create','consume']);
+ }finally{release();}
 });
