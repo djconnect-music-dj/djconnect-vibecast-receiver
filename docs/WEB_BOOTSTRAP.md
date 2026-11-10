@@ -51,6 +51,11 @@ origin/path/query validation. Unsolicited query/hash inputs are discarded, never
 used for redirection. Verification/network exceptions give recovery without
 acceptance; unknown versions fail closed. No credentials enter logs/history/storage.
 
+In a foreground page, an exposed invitation reaching its original deadline
+is cleared and the browser requests a new invitation. A denied replacement
+shows the unavailable state. Page reload discards the in-memory pairing
+context, so the previous invitation cannot be resumed.
+
 ## Visual and accessibility implementation
 
 One responsive composition covers landscape TV/desktop and portrait/mobile.

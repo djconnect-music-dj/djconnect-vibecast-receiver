@@ -58,7 +58,7 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
    need(q.transaction_id===data.transaction_id&&q.generation===generation&&q.expires_at===data.expires_at&&q.browser_key_thumbprint===thumb&&q.service_origin===SERVICE);
    const payload=JSON.stringify(q);need(encoder.encode(payload).length<=1024);guard(ticket,deadline);
    const c={ticket,transaction:data.transaction_id,generation,thumb,key:keypair.privateKey,claim,expires:data.expires_at,monoExpires:mono()+data.expires_at-wall,polls:0,consumeStarted:false};
-   context=c;knownExpiry={wall:c.expires,mono:c.monoExpires};const challenge=Object.freeze({expiresAt:c.expires,matrix:matrix(payload)});sessions.set(challenge,c);return challenge;
+   context=c;knownExpiry={wall:c.expires,mono:c.monoExpires};const challenge=Object.freeze({expiresAt:c.expires,monotonicDeadline:c.monoExpires,matrix:matrix(payload)});sessions.set(challenge,c);return challenge;
   })();
   try{return await bound(work,Math.max(0,deadline-mono()),ticket);}catch(e){if(statusKnown)throw new Terminal();if(e instanceof TransportFailure&&ticket===epoch&&!retired)throw e;throw new Terminal();}
  }

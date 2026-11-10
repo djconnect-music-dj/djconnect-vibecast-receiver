@@ -28,7 +28,7 @@ observeQRLayout(document, () => { if (['waiting','confirming'].includes(current.
 const productionOrigin = 'https://vibecast.tv';
 const factory = () => location.origin === productionOrigin ? createRendezvousAdapter() : unavailableAdapter;
 const controller = new BootstrapController({
- adapter: factory(), adapterFactory: factory, render: state => {current=state;paint();},
+ adapter: factory(), adapterFactory: factory, autoRotate: true, render: state => {current=state;paint();},
  navigate: url => { if (location.origin === productionOrigin) location.replace(url); },
 });
 function supported() {
@@ -43,7 +43,6 @@ const effects = createEffectsUpdater({
  apply: mode => { document.documentElement.dataset.effects = mode; },
 });
 byId('language').addEventListener('change',event => {language=selectLocale(event.target.value);paint();updateClock();});
-byId('retry').addEventListener('click',() => {void (current.state==='recovering' ? controller.reconnect() : controller.start(supported(),{explicit:true}));});
 for(const preference of [motion,contrast,transparency]) preference.addEventListener?.('change',effects);
 bindPageLifecycle(controller);
 updateClock();

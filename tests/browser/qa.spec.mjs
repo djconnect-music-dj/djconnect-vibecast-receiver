@@ -31,7 +31,7 @@ test('QA rejects production QR and never exposes it',async({page})=>{
 test('QA without a 2D canvas stays unsupported and never starts a transaction',async({page})=>{
  await page.addInitScript(()=>{HTMLCanvasElement.prototype.getContext=()=>null;});
  const f=await fixture(page);await expect(page.locator('html')).toHaveAttribute('data-state','unsupported');
- await expect(page.locator('#qr-panel')).toBeHidden();await expect(page.locator('#retry')).toBeHidden();
+ await expect(page.locator('#qr-panel')).toBeHidden();await expect(page.locator('#retry')).toHaveCount(0);
  expect(f.s.calls).toEqual([]);expect(f.unexpected).toEqual([]);expect(f.navigations).toEqual([]);expect(f.errors).toEqual([]);
 });
 test('QA rejects authenticated production bootstrap origin without navigation',async({page})=>{

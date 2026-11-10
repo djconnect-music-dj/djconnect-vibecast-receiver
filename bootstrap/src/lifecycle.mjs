@@ -3,13 +3,13 @@
 // challenges and destinations. Production currently imports unavailableAdapter.
 export const unavailableAdapter = Object.freeze({ contract: null });
 export class BootstrapController {
-  constructor({ adapter = unavailableAdapter, adapterFactory = null, render, navigate, now = Date.now,
+  constructor({ adapter = unavailableAdapter, adapterFactory = null, autoRotate = false, render, navigate, now = Date.now,
     monotonic = () => performance.now(), schedule = (fn, delay) => setTimeout(fn, delay), cancel = id => clearTimeout(id) }) {
-    Object.assign(this, { adapter, adapterFactory, render, navigate, now, monotonic, schedule, cancel });
+    Object.assign(this, { adapter, adapterFactory, autoRotate, render, navigate, now, monotonic, schedule, cancel });
     this.started = false; this.generation = 0; this.timer = null; this.abort = null; this.challenge = null;
     this.monotonicDeadline = 0; this.consumed = false; this.state = 'initializing';
   }
-  show(state, details = {}) { this.state = state; this.render({ state, ...details, ...(this.adapter.bounded ? {retryAllowed:!!this.adapterFactory&&this.adapter.canRestart?.()===true} : {}) }); }
+  show(state, details = {}) { this.state = state; this.render({ state, ...details }); }
   invalidate() {
     if (this.adapter.bounded && this.started) this.adapter.stop?.();
     this.generation++; this.abort?.abort(); this.abort = null;
@@ -34,7 +34,7 @@ export class BootstrapController {
       if (!this.adapter.validateChallenge(challenge) || !Number.isFinite(challenge?.expiresAt) || challenge.expiresAt <= this.now() || !validMatrix(challenge.matrix)) return this.fail('unknown');
       // Preserve the original deadline: reconnect never creates or renews it.
       this.challenge = this.adapter.bounded ? challenge : Object.freeze({ ...challenge, expiresAt: challenge.expiresAt });
-      this.monotonicDeadline = this.monotonic() + challenge.expiresAt - this.now();
+      this.monotonicDeadline = challenge.monotonicDeadline ?? (this.monotonic() + challenge.expiresAt - this.now());
       if (!this.armDeadline(generation)) return;
       this.adapter.expose?.(this.challenge); // sticky before any renderer callback
       this.show('waiting', { challenge: this.challenge });
@@ -45,13 +45,22 @@ export class BootstrapController {
     if (generation !== this.generation || !this.challenge) return false;
     this.cancel(this.timer);
     const remaining = Math.min(this.challenge.expiresAt - this.now(), this.monotonicDeadline - this.monotonic());
-    if (remaining <= 0) { this.fail('expired'); return false; }
+    if (remaining <= 0) { this.expire(); return false; }
     this.timer = this.schedule(() => {
       if (generation !== this.generation) return;
       // Timers may fire early or be capped by the browser for large deadlines.
       this.armDeadline(generation);
     }, Math.min(remaining, 2147483647));
     return true;
+  }
+  expire() {
+    // Only a displayed invitation reaching its original deadline grants rotation.
+    // The bounded adapter still checks restart authority and foreground before I/O.
+    if (this.autoRotate && this.state !== 'creating' && this.adapter.bounded && this.adapterFactory && this.adapter.canRestart?.()) {
+      void this.start(true, { explicit: true });
+    } else {
+      this.fail('expired');
+    }
   }
   fail(state) { this.invalidate(); this.show(state); }
   async receive(generation) {
@@ -77,7 +86,7 @@ export class BootstrapController {
   }
   current(generation) {
     if (generation !== this.generation || this.consumed || !this.challenge) return false;
-    if (this.challenge.expiresAt <= this.now() || this.monotonicDeadline <= this.monotonic()) { this.fail('expired'); return false; }
+    if (this.challenge.expiresAt <= this.now() || this.monotonicDeadline <= this.monotonic()) { this.expire(); return false; }
     return true;
   }
   async reconnect() {

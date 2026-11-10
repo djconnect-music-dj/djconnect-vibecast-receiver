@@ -171,7 +171,6 @@ h2 {
   color: var(--muted);
   font-size: .8rem;
 }
-#retry { margin: 0 0 1rem; background: #d9e8ff; color: #142541; border-color: #d9e8ff; font-weight: 650; }
 #qr-panel {
   align-self: center;
   width: min(100%, 22rem);

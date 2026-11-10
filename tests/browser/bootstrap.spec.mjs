@@ -1,16 +1,15 @@
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {extname} from 'node:path';
-for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:1920,height:1080},{width:390,height:844}])test(`${locale} ${viewport.width}: production build outside its canonical origin, focus, no QR or external data`,async({page,browserName})=>{
+for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:1920,height:1080},{width:390,height:844}])test(`${locale} ${viewport.width}: production build outside its canonical origin, focus, no QR or external data`,async({page})=>{
  await page.setViewportSize(viewport);const external=[];page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:4186'))external.push(r.url());});
  await page.goto('/?url=https://evil.example/');await page.locator('#language').selectOption(locale);
  await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  await expect(page.locator('#qr-panel')).toBeHidden();await expect(page.locator('#state-title')).not.toHaveText('');
  await expect(page.locator('#effects')).toHaveCount(0);
- // macOS WebKit requires Option+Tab to include buttons in keyboard traversal.
  await page.locator('#language').focus();
- await page.keyboard.press(process.platform==='darwin' && browserName==='webkit' ? 'Alt+Tab' : 'Tab');
- await expect(page.locator('#retry')).toBeFocused();await page.keyboard.press('Enter');await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
+ await expect(page.locator('#language')).toBeFocused();
+ await expect(page.locator('#retry')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);expect(external).toEqual([]);expect(page.url()).toBe('http://127.0.0.1:4186/');
 });
 test('security headers and reduced effects',async({page})=>{await page.emulateMedia({reducedMotion:'reduce',contrast:'more'});const r=await page.goto('/');expect(r.headers()['referrer-policy']).toBe('no-referrer');expect(r.headers()['content-security-policy']).toContain('connect-src https://api.djconnect.dev;');await expect(page.locator('html')).toHaveAttribute('data-effects','solid');expect(await page.locator('#status').getAttribute('role')).toBe('status');});
