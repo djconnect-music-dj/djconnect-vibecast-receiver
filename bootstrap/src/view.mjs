@@ -8,8 +8,9 @@ export function renderState(document, language, current) {
  const pairing = ['creating','waiting','confirming','received','redirecting','recovering'].includes(current.state);
  byId('hero-tagline').textContent = copy.heroTagline;
  byId('screen-mode').textContent = pairing ? copy.pairing : copy.idle;
- byId('screen-status').textContent = pairing ? copy[current.state][0] : copy.idleDetail;
- byId('state-title').textContent = copy[current.state][0]; byId('state-description').textContent = copy[current.state][1];
+ byId('screen-status').textContent = current.state === 'waiting' ? copy.waitingStatus : pairing ? copy[current.state][0] : copy.idleDetail;
+ byId('state-title-text').textContent = copy[current.state][0]; byId('state-description').textContent = copy[current.state][1];
+ byId('qr-instruction-icon').hidden = current.state !== 'waiting';
  const visible = ['waiting','confirming'].includes(current.state) && !!current.challenge && !current.hideQR;
  const canvas = byId('qr'), ctx = visible ? canvas.getContext?.('2d') : null;
  byId('qr-panel').hidden = !ctx;
