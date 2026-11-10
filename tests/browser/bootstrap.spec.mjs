@@ -19,8 +19,14 @@ test('test-only adapter exercises actual browser lifecycle through pending/confi
 test('every genuine UI state is localized and withdraws old QR pixels',async({page})=>{
  await page.goto('/');
  const results=await page.evaluate(async()=>{const{renderState}=await import('/view.mjs');const states=['initializing','creating','waiting','confirming','received','redirecting','expired','recovering','unknown','unsafe','unsupported','unavailable'];const result=[];
- for(const language of ['en','nl','de','fr','es'])for(const state of states){renderState(document,language,{state,challenge:{expiresAt:Date.now()+1000,matrix:Array.from({length:21},()=>Array(21).fill(true))}});const c=document.getElementById('qr');result.push({state,visible:!document.getElementById('qr-panel').hidden,title:document.getElementById('state-title').textContent,pixels:c.width,quiet:state==='waiting'?Array.from(c.getContext('2d').getImageData(0,0,1,1).data):null});}return result;});
- for(const result of results){expect(result.title.length).toBeGreaterThan(5);expect(result.visible).toBe(['waiting','confirming'].includes(result.state));if(!result.visible)expect(result.pixels).toBe(0);if(result.quiet)expect(result.quiet).toEqual([255,255,255,255]);}
+ for(const language of ['en','nl','de','fr','es'])for(const state of states){renderState(document,language,{state,challenge:{expiresAt:Date.now()+1000,matrix:Array.from({length:21},()=>Array(21).fill(true))}});const c=document.getElementById('qr');result.push({language,state,visible:!document.getElementById('qr-panel').hidden,iconVisible:document.getElementById('qr-instruction-icon').getBoundingClientRect().width>0,title:document.getElementById('state-title-text').textContent,description:document.getElementById('state-description').textContent,pixels:c.width,quiet:state==='waiting'?Array.from(c.getContext('2d').getImageData(0,0,1,1).data):null});}return result;});
+ for(const result of results){
+  expect(result.iconVisible).toBe(result.state==='waiting');
+  if(result.language==='nl'&&result.state==='waiting'){
+   expect(result.title).toBe("Kies 'VibeCast sessie starten' in de app.");
+   expect(result.description).toBe('Scan TV-QR-code');
+  }
+  expect(result.title.length).toBeGreaterThan(5);expect(result.visible).toBe(['waiting','confirming'].includes(result.state));if(!result.visible)expect(result.pixels).toBe(0);if(result.quiet)expect(result.quiet).toEqual([255,255,255,255]);}
 });
 for(const state of ['waiting','confirming'])for(const size of [21,177])test(`QR ${state}/${size} stays sharp and within the viewport after orientation changes`,async({page})=>{
  await page.setViewportSize({width:1920,height:1080});await page.goto('/');

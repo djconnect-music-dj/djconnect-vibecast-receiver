@@ -94,7 +94,15 @@
 <p id="hero-tagline">Show your DJ session on this screen.</p>
 </div>
 </section>
-<section class="panel" aria-labelledby="state-title"><p id="state-label" class="eyebrow">CONNECT YOUR SCREEN</p><div id="status" role="status" aria-live="polite" aria-atomic="true"><h2 id="state-title">A secure browser is required</h2><p id="state-description">Use a current browser with JavaScript and a secure HTTPS connection.</p></div><div id="qr-panel" hidden><canvas id="qr" role="img"></canvas><p id="expiry"></p></div><p id="privacy" class="privacy">No account details or session content are stored here.</p></section>
+<section class="panel" aria-labelledby="state-title"><p id="state-label" class="eyebrow">CONNECT YOUR SCREEN</p>
+<div id="status" role="status" aria-live="polite" aria-atomic="true">
+ <h2 id="state-title"><svg id="qr-instruction-icon" viewBox="4 9 90 66" aria-hidden="true" focusable="false" hidden>
+  <use href="#receiver-symbol-strokes" stroke="currentColor"/>
+  <use href="#receiver-symbol-dot" fill="currentColor"/>
+ </svg><span id="state-title-text">A secure browser is required</span></h2>
+ <p id="state-description">Use a current browser with JavaScript and a secure HTTPS connection.</p>
+</div>
+<div id="qr-panel" hidden><canvas id="qr" role="img"></canvas><p id="expiry"></p></div><p id="privacy" class="privacy">No account details or session content are stored here.</p></section>
 <p class="screen-status" aria-hidden="true">
   <svg class="waiting-avatar" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
     <defs>
