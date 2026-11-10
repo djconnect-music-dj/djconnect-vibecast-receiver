@@ -1,6 +1,8 @@
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {extname} from 'node:path';
+import qrcode from 'qrcode-generator';
+import jsQR from 'jsqr';
 for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:1920,height:1080},{width:390,height:844}])test(`${locale} ${viewport.width}: production build outside its canonical origin, focus, no QR or external data`,async({page})=>{
  await page.setViewportSize(viewport);const external=[];page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:4186'))external.push(r.url());});
  await page.goto('/?url=https://evil.example/');await page.locator('#language').selectOption(locale);
@@ -32,6 +34,34 @@ for(const state of ['waiting','confirming'])for(const size of [21,177])test(`QR 
   await expect(page.locator('#expiry')).toHaveText(deadline);
  }
  await page.evaluate(()=>window.testOnlyQRStop());
+});
+
+test('pairing layout fits the screen with a decodable compact QR',async({page})=>{
+ const payload='VibeCast layout test only '.repeat(14);
+ const qr=qrcode(0,'M');
+ qr.addData(payload,'Byte');
+ qr.make();
+ const matrix=Array.from({length:qr.getModuleCount()},(_,y)=>
+  Array.from({length:qr.getModuleCount()},(_,x)=>qr.isDark(y,x)));
+ await page.goto('/');
+ for(const [width,height] of [[1800,943],[1280,720],[1024,600],[390,844]]){
+  await page.setViewportSize({width,height});
+  const result=await page.evaluate(async matrix=>{
+   const {renderState}=await import('/view.mjs');
+   renderState(document,'nl',{state:'waiting',challenge:{expiresAt:Date.now()+120000,matrix}});
+   const canvas=document.querySelector('#qr');
+   const {width,height}=canvas;
+   const pixels=canvas.getContext('2d').getImageData(0,0,width,height).data;
+   return {width,height,pixels:[...pixels],scrollHeight:document.documentElement.scrollHeight,
+    headerTop:document.querySelector('.screen-header').getBoundingClientRect().top,
+    footerBottom:document.querySelector('.bottom-bar').getBoundingClientRect().bottom};
+  },matrix);
+  expect(result.scrollHeight,`full pairing page at ${width}×${height}`).toBeLessThanOrEqual(height);
+  expect(result.headerTop).toBeGreaterThanOrEqual(0);
+  expect(result.footerBottom).toBeLessThanOrEqual(height);
+  expect(result.width).toBeLessThanOrEqual(244);
+  expect(jsQR(Uint8ClampedArray.from(result.pixels),result.width,result.height)?.data).toBe(payload);
+ }
 });
 
 test('canonical production app uses the fixed API and hides QR when service is closed', async ({page}) => {
