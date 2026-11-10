@@ -56,7 +56,7 @@ test('pairing layout fits the screen with a decodable compact QR',async({page})=
     headerTop:document.querySelector('.screen-header').getBoundingClientRect().top,
     footerBottom:document.querySelector('.bottom-bar').getBoundingClientRect().bottom};
   },matrix);
-  expect(result.scrollHeight).toBeLessThanOrEqual(height);
+  expect(result.scrollHeight,`full pairing page at ${width}×${height}`).toBeLessThanOrEqual(height);
   expect(result.headerTop).toBeGreaterThanOrEqual(0);
   expect(result.footerBottom).toBeLessThanOrEqual(height);
   expect(result.width).toBeLessThanOrEqual(244);

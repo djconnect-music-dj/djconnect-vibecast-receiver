@@ -309,6 +309,13 @@ main:has(#qr-panel:not([hidden])) .waiting-avatar { width: clamp(3rem, 7vh, 5.25
   html:has(#qr-panel:not([hidden])) #screen-time { font-size: clamp(2.5rem, 8vh, 4rem); }
   main:has(#qr-panel:not([hidden])) .screen-status { font-size: clamp(1.2rem, 3.3vh, 1.8rem); }
 }
+@media (max-height: 680px) and (min-width: 901px) and (orientation: landscape) {
+  html:has(#qr-panel:not([hidden])) .screen-header { padding-top: calc(.55rem + env(safe-area-inset-top, 0px)); }
+  main:has(#qr-panel:not([hidden])) { margin-top: .4rem; row-gap: .4rem; }
+  main:has(#qr-panel:not([hidden])) :is(.vibecast-hero, .panel) { padding-block: .6rem; }
+  main:has(#qr-panel:not([hidden])) .waiting-avatar { width: 2.5rem; }
+  #qr-panel { padding-block: .45rem; }
+}
 @media (max-width: 600px) {
   main:has(#qr-panel:not([hidden])) { margin-top: .65rem; row-gap: .6rem; }
   main:has(#qr-panel:not([hidden])) :is(.vibecast-hero, .panel) { padding-block: .7rem; }
