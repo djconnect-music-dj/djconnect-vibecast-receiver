@@ -10,7 +10,7 @@ export function renderState(document, language, current) {
  byId('screen-mode').textContent = pairing ? copy.pairing : copy.idle;
  byId('screen-status').textContent = pairing ? copy[current.state][0] : copy.idleDetail;
  byId('state-title').textContent = copy[current.state][0]; byId('state-description').textContent = copy[current.state][1];
- const visible = ['waiting','confirming'].includes(current.state) && !!current.challenge;
+ const visible = ['waiting','confirming'].includes(current.state) && !!current.challenge && !current.challenge.hideQR;
  const canvas = byId('qr'), ctx = visible ? canvas.getContext?.('2d') : null;
  byId('qr-panel').hidden = !ctx;
  if (ctx) {

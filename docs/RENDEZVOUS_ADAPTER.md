@@ -45,7 +45,7 @@ loss do not reset allowance. Visibility/pagehide/BFCache retires the interaction
 Online/restoration never creates authority. This changes post-QR browser policy,
 which requires API/Core review before live promotion. Wire and expiry are unchanged.
 
-## Same-tab reload proposal for API/Core review
+## Same-tab reload candidate
 
 Resume the same transaction, generation, QR payload and browser key after an
 ordinary reload of the same navigation entry. Keep both the server's original
@@ -61,7 +61,8 @@ Never write account credentials, a Home Assistant URL or a destination
 envelope to storage. Commit the record before making its QR resumable. The
 browser may retain deleted bytes, so cleanup does not claim secure erasure.
 
-Require a matching entry and exclusive ownership before using the record.
+Require a matching entry, a tab marker and exclusive ownership before using
+the record. The marker in the browsing context name is an opaque binding.
 Reject unrelated navigation, another tab, missing browser support, invalid
 records and unverified deadlines. Treat expired records as unusable even if
 the browser has not deleted them yet. Do not mint a new invitation on an
@@ -74,15 +75,12 @@ Remove or invalidate the record on terminal status or verified handoff.
 Restore the remaining poll budget and any active backoff; neither resets on
 reload. A read, write or lock failure cannot restore pairing authority.
 
-Isolated Chromium and WebKit probes showed that an ordinary reload retained
-the navigation-entry key and that the original nonextractable RSA key remained
-usable. In both probes a same-origin opener could copy the page-session marker,
-but the new tab had a different navigation-entry key. This does not qualify
-the browser's Duplicate Tab command, OS suspension, storage loss, deadline
-preservation or any live pairing. Qualification must cover those boundaries,
-two or more reloads near expiry, reload during consume, and production
-preflight closeout. This proposal is not a storage implementation or
-publication approval.
+Isolated Chromium tab duplication copied the page session and navigation entry
+but did not copy the browsing context name. Chromium and WebKit both retained
+the name and original nonextractable key across ordinary reloads. These probes
+do not qualify native Safari tab duplication, OS suspension or live pairing.
+The storage exception and browser behavior remain subject to exact review
+before protected publication.
 
 ## Evidence and remaining limits
 

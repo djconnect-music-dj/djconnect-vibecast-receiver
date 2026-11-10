@@ -7,14 +7,23 @@ import jsQR from 'jsqr';
 const WIRE='djc-rendezvous/1',SERVICE='https://api.djconnect.dev',ORIGIN='https://vibecast.tv';
 const text=new TextEncoder();
 function scan(matrix){const scale=4,n=(matrix.length+8)*scale,rgba=new Uint8ClampedArray(n*n*4).fill(255);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.floor(y/scale)-4,c=Math.floor(x/scale)-4;if(matrix[r]?.[c]){const i=(y*n+x)*4;rgba[i]=rgba[i+1]=rgba[i+2]=0;}}return jsQR(rgba,n,n)?.data;}
-async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=false,denyAfter=Infinity,consumeBackoff=false,consumeAfterCommit503=false}={}){
+async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=false,denyAfter=Infinity,consumeBackoff=false,consumeAfterCommit503=false,actualApp=false,reconcileAsReady=false}={}){
  const calls=[],keys=[];let current,state='pending',envelope,createCount=0;
+ let ready=!actualApp;
+ const browserOrigin=actualApp?ORIGIN:'http://127.0.0.1:4186';
+ if(actualApp)await page.route(ORIGIN+'/**',async route=>{
+  const path=new URL(route.request().url()).pathname;
+  const name=path==='/'?'index.html':path.slice(1);
+  if(!/^[a-zA-Z0-9._-]+$/.test(name))return route.abort();
+  const type=name.endsWith('.mjs')?'text/javascript':name.endsWith('.html')?'text/html':name.endsWith('.css')?'text/css':'image/png';
+  return route.fulfill({contentType:type,body:await readFile('dist/bootstrap/'+name)});
+ });
  const html=(await readFile('bootstrap/public/index.html','utf8')).replace('<script type="module" src="/app.mjs"></script>','');
  await page.route('**/adapter-fixture',route=>route.fulfill({status:200,contentType:'text/html',body:html}));
  await page.route(SERVICE+'/v1/rendezvous/**',async route=>{
-  const req=route.request(),name=req.url().split('/').at(-1);if(req.method()==='OPTIONS')return route.fulfill({status:204,headers:{'access-control-allow-origin':'http://127.0.0.1:4186','access-control-allow-methods':'POST','access-control-allow-headers':'content-type'}});
+  const req=route.request(),name=req.url().split('/').at(-1);if(req.method()==='OPTIONS')return route.fulfill({status:204,headers:{'access-control-allow-origin':browserOrigin,'access-control-allow-methods':'POST','access-control-allow-headers':'content-type'}});
   const body=req.postDataJSON();calls.push({name,body});
-  const respond=(value,status=200)=>route.fulfill({status,headers:{'content-type':'application/json','access-control-allow-origin':'http://127.0.0.1:4186'},body:JSON.stringify(value)});
+  const respond=(value,status=200)=>route.fulfill({status,headers:{'content-type':'application/json','access-control-allow-origin':browserOrigin},body:JSON.stringify(value)});
   if(name==='create'){
    state='pending';createCount++;keys.push(body.browser_public_key);if(createCount<=lostCreate)return route.abort('failed');if(deny||createCount>denyAfter)return respond({v:WIRE,error:deny===429?'rate_limited':'service_unavailable'},deny||503);
    const created=Date.now(),thumb=await calculateJwkThumbprint(body.browser_public_key);current={type:'djc-rendezvous-qr',v:WIRE,service_origin:SERVICE,transaction_id:crypto.randomUUID(),generation:body.generation,expires_at:created+120000,browser_key_thumbprint:thumb,qr_capability:Buffer.alloc(32,9).toString('base64url')};
@@ -23,13 +32,13 @@ async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=f
    envelope=await new CompactEncrypt(text.encode(JSON.stringify(plain))).setProtectedHeader({alg:'RSA-OAEP-256',enc:'A256GCM',typ:'djc-rendezvous-destination+jwe',kid:thumb}).encrypt(await importJWK(body.browser_public_key,'RSA-OAEP-256'));
    return respond({v:WIRE,transaction_id:current.transaction_id,generation:current.generation,created_at:created,expires_at:current.expires_at,browser_key_thumbprint:thumb,qr_payload:current},201);
   }
-  if(name==='poll'){if(consumeBackoff&&state==='consumed')return respond({v:WIRE,error:'service_unavailable',retry_after_ms:120000},503);if(longBackoff)return respond({v:WIRE,state:'pending',expires_at:current.expires_at,retry_after_ms:120000});if(state==='pending')state='ready';return respond({v:WIRE,state,expires_at:current.expires_at,retry_after_ms:2000});}
+  if(name==='poll'){if(reconcileAsReady&&state==='consumed')return respond({v:WIRE,state:'ready',expires_at:current.expires_at,retry_after_ms:2000});if(consumeBackoff&&state==='consumed')return respond({v:WIRE,error:'service_unavailable',retry_after_ms:120000},503);if(longBackoff)return respond({v:WIRE,state:'pending',expires_at:current.expires_at,retry_after_ms:120000});if(ready&&state==='pending')state='ready';return respond({v:WIRE,state,expires_at:current.expires_at,retry_after_ms:2000});}
   if(name==='consume'){state='consumed';if(consumeAfterCommit503)return respond({v:WIRE,error:'service_unavailable',retry_after_ms:2000},503);if(loseConsume)return route.abort('failed');return respond({v:WIRE,state,destination_envelope:envelope,expires_at:current.expires_at});}
   throw Error('unexpected test route');
  });
- await page.goto('/adapter-fixture');
+ await page.goto(actualApp?ORIGIN:'/adapter-fixture');
  await page.evaluate(()=>{window.fixtureStates=[];window.fixtureUrls=[];window.fixtureDiagnostics={decrypt:[],verify:[],visibility:[]};});
- return {calls,keys,get qr(){return current;}};
+ return {calls,keys,get qr(){return current;},ready:()=>{ready=true;}};
 }
 async function run(page,{language='nl',accelerate=false,holdLong=false,diagnostic=false,autoRotate=false}={}){
  await page.evaluate(async({language,accelerate,holdLong,diagnostic,autoRotate})=>{
@@ -110,4 +119,49 @@ for(const failure of ['transport loss','503 after commit'])test(`consume with ${
  await expect(page.locator('#qr-panel')).toBeHidden();
  expect(f.calls.filter(x=>x.name==='consume')).toHaveLength(1);
  expect(f.calls.filter(x=>x.name==='create')).toHaveLength(1);
+});
+
+test('actual app reload restores the same invitation and key without another create',async({page})=>{
+ const f=await fixture(page,{actualApp:true});
+ const panel=page.locator('#qr-panel');
+ const pixels=()=>page.locator('#qr').evaluate(canvas=>canvas.toDataURL());
+ await expect(panel).toBeVisible();
+ const original=await pixels();
+ const deadline=await page.locator('#expiry').textContent();
+ await page.reload();
+ await expect(panel).toBeVisible();
+ expect(await pixels()).toBe(original);
+ expect(await page.locator('#expiry').textContent()).toBe(deadline);
+ expect(f.calls.filter(x=>x.name==='create')).toHaveLength(1);
+ await page.route('https://ha.example.org/**',route=>route.fulfill({body:'Synthetic destination'}));
+ f.ready();
+ await expect(page).toHaveURL('https://ha.example.org/djconnect/vibecast/display');
+ expect(f.calls.filter(x=>x.name==='consume')).toHaveLength(1);
+});
+
+test('actual app reload retains the durable consume fence after a 503',async({page})=>{
+ const f=await fixture(page,{actualApp:true,consumeAfterCommit503:true,reconcileAsReady:true});
+ await expect(page.locator('#qr-panel')).toBeVisible();
+ f.ready();
+ const consumes=()=>f.calls.filter(x=>x.name==='consume').length;
+ await expect.poll(consumes).toBe(1);
+ await page.reload();
+ await expect(page.locator('html')).toHaveAttribute('data-state','confirming');
+ await expect(page.locator('#qr-panel')).toBeHidden();
+ const polls=()=>f.calls.filter(x=>x.name==='poll').length;
+ const afterReload=polls();
+ await expect.poll(polls).toBeGreaterThan(afterReload);
+ expect(consumes()).toBe(1);
+ expect(f.calls.filter(x=>x.name==='create')).toHaveLength(1);
+});
+
+test('actual app reload cannot use or replace an invitation after its original expiry',async({page})=>{
+ const f=await fixture(page,{actualApp:true});
+ await expect(page.locator('#qr-panel')).toBeVisible();
+ const calls=f.calls.length;
+ await page.addInitScript(expiry=>{Date.now=()=>expiry;},f.qr.expires_at+1);
+ await page.reload();
+ await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
+ await expect(page.locator('#qr-panel')).toBeHidden();
+ expect(f.calls).toHaveLength(calls);
 });

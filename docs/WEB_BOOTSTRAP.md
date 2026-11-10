@@ -23,7 +23,8 @@ missing source contracts are superseded only for this bounded implementation.
 `bootstrap/src` and `bootstrap/public` build to **dist/bootstrap**, never wwwroot.
 The existing Cast1.1 import, vendor, source locks, origin and AppID are unchanged.
 Core owns all shared renderer source. No session UI, Worker, D1, backend, analytics,
-third-party font/script, storage or HA/owner credentials are implemented here.
+third-party font/script or HA/owner credentials are implemented here. The
+tab-scoped QR reload candidate has a separate, bounded storage exception.
 
 On `https://vibecast.tv`, the browser uses the existing
 `djc-rendezvous/1-implementation.1` adapter against `https://api.djconnect.dev`.
@@ -49,12 +50,14 @@ bound also prevents wall-clock rollback extending it. Only a verified handoff
 may navigate using replace; HTTPS, no userinfo/fragment, exact adapter-owned
 origin/path/query validation. Unsolicited query/hash inputs are discarded, never
 used for redirection. Verification/network exceptions give recovery without
-acceptance; unknown versions fail closed. No credentials enter logs/history/storage.
+acceptance; unknown versions fail closed. No credentials enter logs or history.
 
 In a foreground page, an exposed invitation reaching its original deadline
 is cleared and the browser requests a new invitation. A denied replacement
-shows the unavailable state. Page reload discards the in-memory pairing
-context, so the previous invitation cannot be resumed.
+shows the unavailable state. The reload candidate resumes the same invitation
+only from its original tab, using the original deadline and a durable consume
+fence. See [the reload candidate](RENDEZVOUS_ADAPTER.md#same-tab-reload-candidate)
+for the storage scope and remaining qualification.
 
 ## Visual and accessibility implementation
 

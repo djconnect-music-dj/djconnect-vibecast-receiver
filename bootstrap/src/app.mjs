@@ -2,6 +2,7 @@ import {bindPageLifecycle} from './page-lifecycle.mjs';
 import {renderState, observeQRLayout} from './view.mjs';
 import { BootstrapController, unavailableAdapter } from './lifecycle.mjs';
 import { createRendezvousAdapter } from './rendezvous.mjs';
+import { createReloadState } from './reload-state.mjs';
 import { selectLocale } from './locales.mjs';
 import { createEffectsUpdater } from './effects.mjs';
 // Discard unsolicited URL input without interpreting it as a destination.
@@ -26,7 +27,8 @@ function updateClock() {
 
 observeQRLayout(document, () => { if (['waiting','confirming'].includes(current.state)) paint(); });
 const productionOrigin = 'https://vibecast.tv';
-const factory = () => location.origin === productionOrigin ? createRendezvousAdapter() : unavailableAdapter;
+const reloadState = location.origin === productionOrigin ? createReloadState() : null;
+const factory = () => location.origin === productionOrigin ? createRendezvousAdapter({reloadState}) : unavailableAdapter;
 const controller = new BootstrapController({
  adapter: factory(), adapterFactory: factory, autoRotate: true, render: state => {current=state;paint();},
  navigate: url => { if (location.origin === productionOrigin) location.replace(url); },

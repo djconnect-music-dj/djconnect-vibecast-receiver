@@ -36,8 +36,9 @@ export class BootstrapController {
       this.challenge = this.adapter.bounded ? challenge : Object.freeze({ ...challenge, expiresAt: challenge.expiresAt });
       this.monotonicDeadline = challenge.monotonicDeadline ?? (this.monotonic() + challenge.expiresAt - this.now());
       if (!this.armDeadline(generation)) return;
-      this.adapter.expose?.(this.challenge); // sticky before any renderer callback
-      this.show('waiting', { challenge: this.challenge });
+      await this.adapter.expose?.(this.challenge); // sticky before any renderer callback
+      if (!this.current(generation)) return;
+      this.show(this.challenge.hideQR ? 'confirming' : 'waiting', { challenge: this.challenge });
       await this.receive(generation);
     } catch (error) { if (generation === this.generation) { if (this.adapter.bounded) this.fail(['expired','unsafe'].includes(error.state)?error.state:'unavailable'); else this.show('recovering'); } }
   }

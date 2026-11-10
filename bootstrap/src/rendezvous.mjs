@@ -10,7 +10,7 @@ class Terminal extends Error {constructor(state='unavailable'){super('rendezvous
 // unavailableAdapter. This constructor is for reviewed static adoption/testing.
 export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto=globalThis.crypto,
  now=Date.now,monotonic=()=>performance.now(),visible=()=>globalThis.document?.visibilityState==='visible',
- schedule=(fn,ms)=>setTimeout(fn,ms),cancel=id=>clearTimeout(id)}={}){
+ schedule=(fn,ms)=>setTimeout(fn,ms),cancel=id=>clearTimeout(id),reloadState=null,timeOrigin=performance.timeOrigin}={}){
  let used=false,retired=false,exposed=false,epoch=0,active=null,context=null,lastTime=-Infinity,restartAllowed=false,knownExpiry=null;
  let rotationBlocked=false;
  const mono=()=>{const v=monotonic();if(!Number.isFinite(v)||v<0||v<lastTime){dispose();throw new Terminal();}lastTime=v;return v;};
@@ -41,8 +41,53 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
   }
   schema(route+'_response',data);if(route!=='cancel')need(data.expires_at===c.expires);return data;
  }
- async function pause(c,ms){live(c);need(Number.isFinite(ms)&&ms>=2000);const remaining=Math.min(c.expires-now(),c.monoExpires-mono());let timer,stop;const deadline=mono()+Math.min(ms,remaining);try{await new Promise((resolve,reject)=>{stop=()=>reject(new Stopped());waiters.add(stop);const wake=()=>{try{const remaining=deadline-mono();if(remaining>0)timer=schedule(wake,remaining);else resolve();}catch(e){reject(e);}};timer=schedule(wake,Math.min(ms,remaining));});}finally{cancel(timer);waiters.delete(stop);}live(c);}
+ async function pause(c,ms){live(c);need(Number.isFinite(ms)&&ms>=0);if(!ms)return;const remaining=Math.min(c.expires-now(),c.monoExpires-mono());let timer,stop;const deadline=mono()+Math.min(ms,remaining);try{await new Promise((resolve,reject)=>{stop=()=>reject(new Stopped());waiters.add(stop);const wake=()=>{try{const remaining=deadline-mono();if(remaining>0)timer=schedule(wake,remaining);else resolve();}catch(e){reject(e);}};timer=schedule(wake,Math.min(ms,remaining));});}finally{cancel(timer);waiters.delete(stop);}live(c);}
  function matrix(payload){const qr=qrcode(0,'M');qr.addData(payload,'Byte');qr.make();const n=qr.getModuleCount();return Array.from({length:n},(_,y)=>Array.from({length:n},(_,x)=>qr.isDark(y,x)));}
+ function challengeFor(c, hideQR=false){
+  const challenge=Object.freeze({expiresAt:c.expires,monotonicDeadline:c.monoExpires,matrix:matrix(c.payload),hideQR});
+  sessions.set(challenge,c);
+  return challenge;
+ }
+ async function save(c){
+  if(!reloadState)return;
+  const {key,claim,payload,expires,polls,consumeStarted,nextPoll,monoExpires}=c;
+  await reloadState.save({key,claim,payload,expires,polls,consumeStarted,nextPoll:timeOrigin+nextPoll,deadline:timeOrigin+monoExpires});
+  live(c);
+ }
+ async function poll(c){
+  await pause(c,reloadState?Math.max(0,c.nextPoll-mono()):c.delay??2000);
+  c.polls++;
+  c.delay=2000;
+  c.nextPoll=mono()+2000;
+  await save(c);
+  const status=await response('poll',c);
+  if(status.retry!==undefined || status.retry_after_ms!==undefined){
+   c.delay=Math.max(2000,status.retry??status.retry_after_ms);
+   c.nextPoll=mono()+c.delay;
+   await save(c);
+  }
+  return status;
+ }
+ async function restore(saved){
+  const q=schema('qr_payload',JSON.parse(saved.payload));
+  const {key,claim,polls,consumeStarted}=saved;
+  decode(claim,32);decode(q.browser_key_thumbprint,32);decode(q.qr_capability,32);
+  need(q.service_origin===SERVICE&&q.expires_at===saved.expires);
+  need(key?.type==='private'&&!key.extractable&&key.algorithm.name==='RSA-OAEP'&&key.algorithm.modulusLength===2048&&key.algorithm.hash.name==='SHA-256'&&key.usages.includes('decrypt'));
+  need(Number.isInteger(polls)&&polls>=0&&polls<=60&&typeof consumeStarted==='boolean');
+  const monoExpires=saved.deadline-timeOrigin,nextPoll=saved.nextPoll-timeOrigin;
+  need(Number.isFinite(nextPoll)&&Number.isFinite(monoExpires)&&monoExpires-mono()<=120000&&saved.expires-now()<=120000);
+  const c={ticket:++epoch,transaction:q.transaction_id,generation:q.generation,thumb:q.browser_key_thumbprint,
+   key,claim,expires:saved.expires,monoExpires,payload:saved.payload,polls,consumeStarted,nextPoll};
+  context=c;knownExpiry={wall:c.expires,mono:c.monoExpires};rotationBlocked=consumeStarted;
+  live(c);need(c.polls<60);
+  active=new AbortController();
+  const status=await poll(c);
+  if(status.state==='consumed'||status.state==='cancelled'||status.error==='expired')await reloadState.clear();
+  if(status.error||status.state==='consumed'||status.state==='cancelled')throw new Terminal(status.error==='expired'?'expired':'unavailable');
+  c.restoredStatus=status;
+  return challengeFor(c, consumeStarted||status.state==='ready');
+ }
  async function attempt(generation,prepared,start,ticket){
   const {keypair,claim,jwk,thumb,commitment}=prepared;
   const sent=mono(),deadline=Math.min(sent+10000,start+30000);let statusKnown=false;
@@ -58,8 +103,9 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
    const q=data.qr_payload;schema('qr_payload',q);decode(q.qr_capability,32);decode(q.browser_key_thumbprint,32);
    need(q.transaction_id===data.transaction_id&&q.generation===generation&&q.expires_at===data.expires_at&&q.browser_key_thumbprint===thumb&&q.service_origin===SERVICE);
    const payload=JSON.stringify(q);need(encoder.encode(payload).length<=1024);guard(ticket,deadline);
-   const c={ticket,transaction:data.transaction_id,generation,thumb,key:keypair.privateKey,claim,expires:data.expires_at,monoExpires:mono()+data.expires_at-wall,polls:0,consumeStarted:false};
-   context=c;knownExpiry={wall:c.expires,mono:c.monoExpires};const challenge=Object.freeze({expiresAt:c.expires,monotonicDeadline:c.monoExpires,matrix:matrix(payload)});sessions.set(challenge,c);return challenge;
+   const c={ticket,transaction:data.transaction_id,generation,thumb,key:keypair.privateKey,claim,expires:data.expires_at,
+    monoExpires:mono()+data.expires_at-wall,payload,polls:0,consumeStarted:false,nextPoll:mono()+2000};
+   context=c;knownExpiry={wall:c.expires,mono:c.monoExpires};return challengeFor(c);
   })();
   try{return await bound(work,Math.max(0,deadline-mono()),ticket);}catch(e){if(statusKnown)throw new Terminal();if(e instanceof TransportFailure&&ticket===epoch&&!retired)throw e;throw new Terminal();}
  }
@@ -67,7 +113,13 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
   async create({signal}={}){
    if(used||retired)throw new Terminal();used=true;const start=mono();need(Number.isFinite(start)&&start>=0);
    signal?.addEventListener('abort',dispose,{once:true});if(signal?.aborted){dispose();throw new Terminal();}
-   try{for(let n=0;n<2;n++){
+   try{
+    if(reloadState){
+     const saved=await reloadState.open(signal);
+     foreground();
+     if(saved)return await restore(saved);
+    }
+    for(let n=0;n<2;n++){
     foreground();const ticket=++epoch;active=new AbortController();const prepDeadline=Math.min(mono()+5000,start+30000);
     const prepared=await bound((async()=>{
      const keypair=await crypto.subtle.generateKey({name:'RSA-OAEP',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},false,['encrypt','decrypt']);guard(ticket,prepDeadline);need(keypair.privateKey.extractable===false);
@@ -84,23 +136,30 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
    }}catch(e){dispose();throw e instanceof Terminal?e:new Terminal();}
   },
   validateChallenge(challenge){try{const c=sessions.get(challenge);live(c);return true;}catch{return false;}},
-  expose(challenge){const c=sessions.get(challenge);live(c);exposed=true;},
+  expose(challenge){const c=sessions.get(challenge);live(c);exposed=true;return reloadState?save(c):undefined;},
   async wait({challenge}){
    const c=sessions.get(challenge);live(c);need(exposed);
-   let delay=2000;try{while(c.polls<60){
-    await pause(c,delay);delay=2000;c.polls++;let status;try{status=await response('poll',c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}
-    if(status.error){if(['rate_limited','service_unavailable','attestation_unavailable','not_ready'].includes(status.error)){delay=Math.max(2000,status.retry);continue;}throw new Terminal(status.error==='expired'?'expired':'unavailable');}
-    if(status.state==='cancelled'||status.state==='consumed'){restartAllowed=true;throw new Terminal();}
-    if(status.state!=='ready'){delay=Math.max(2000,status.retry_after_ms);continue;}
+   try{while(c.restoredStatus||c.polls<60){
+    let status=c.restoredStatus;c.restoredStatus=null;
+    if(!status){try{status=await poll(c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}}
+    if(status.error){if(['rate_limited','service_unavailable','attestation_unavailable','not_ready'].includes(status.error))continue;throw new Terminal(status.error==='expired'?'expired':'unavailable');}
+    if(status.state==='cancelled'||status.state==='consumed'){await reloadState?.clear();restartAllowed=true;throw new Terminal();}
+    if(status.state!=='ready')continue;
     if(c.consumeStarted)continue; // A lost consume is reconciled by poll only.
-    c.consumeStarted=true;rotationBlocked=true;let result;try{result=await response('consume',c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}
+    c.consumeStarted=true;rotationBlocked=true;
+    await save(c);
+    let result;try{result=await response('consume',c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}
     if(result.error){
      if(['not_ready','rate_limited','service_unavailable','attestation_unavailable'].includes(result.error)){
       // A 503 can arrive after the server committed consume. Only poll can reconcile it.
       if(result.error==='not_ready'||result.error==='rate_limited'){
        c.consumeStarted=false;rotationBlocked=false;
       }
-      if(result.error!=='not_ready')delay=Math.max(2000,result.retry);
+      if(result.error!=='not_ready'){
+       c.delay=Math.max(2000,result.retry);
+       c.nextPoll=mono()+c.delay;
+      }
+      await save(c);
       continue;
      }
      throw new Terminal(result.error==='expired'?'expired':'unavailable');
@@ -116,11 +175,11 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
     const {plaintext}=await compactDecrypt(envelope,c.key,{keyManagementAlgorithms:['RSA-OAEP-256'],contentEncryptionAlgorithms:['A256GCM']});live(c);
     const data=closed(strictJSON(plaintext,2048),['v','transaction_id','generation','browser_key_thumbprint','expires_at','bootstrap_origin','display_entry_url','issuer_epoch']);
     need(data.v===WIRE&&data.transaction_id===c.transaction&&data.generation===c.generation&&data.browser_key_thumbprint===c.thumb&&data.expires_at===c.expires&&data.bootstrap_origin===ORIGIN);decode(data.issuer_epoch,32);
-    const url=displayURL(data.display_entry_url);live(c);dispose();return url;
+    const url=displayURL(data.display_entry_url);live(c);await reloadState?.clear();live(c);dispose();return url;
    }catch{dispose();throw new Terminal('unsafe');}
   },
   allowsDestination(url){try{return displayURL(url.href)===url.href;}catch{return false;}},
-  async cancel(challenge){const c=sessions.get(challenge);try{const result=await response('cancel',c);need(!result.error&&result.state==='cancelled');restartAllowed=true;return true;}finally{dispose();}},
+  async cancel(challenge){const c=sessions.get(challenge);try{const result=await response('cancel',c);need(!result.error&&result.state==='cancelled');await reloadState?.clear();restartAllowed=true;return true;}finally{dispose();}},
   canRestart(){if(restartAllowed)return true;if(!knownExpiry)return false;try{return knownExpiry.wall<=now()||knownExpiry.mono<=mono();}catch{return false;}},
   canRotate(){
    if(!exposed||rotationBlocked||!knownExpiry||!visible())return false;
