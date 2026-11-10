@@ -128,6 +128,23 @@ for(const failure of ['transport loss','503 after commit'])test(`consume with ${
  expect(f.calls.filter(x=>x.name==='create')).toHaveLength(1);
 });
 
+for(const viewport of [{width:1280,height:720},{width:390,height:844}])test(`branded rendezvous QR decodes at ${viewport.width} pixels`,async({page})=>{
+ await page.setViewportSize(viewport);
+ const f=await fixture(page,{actualApp:true});
+ const canvas=page.locator('#qr');
+ await expect(canvas).toBeVisible();
+ const readPixels=()=>canvas.evaluate(element=>{
+  const {width,height}=element;
+  const ctx=element.getContext('2d');
+  const pixels=ctx.getImageData(0,0,width,height).data;
+  const center=ctx.getImageData(Math.floor(width/2),Math.floor(height/2),1,1).data;
+  return {width,height,pixels:[...pixels],branded:center[0]!==center[2]};
+ });
+ await expect.poll(async()=>(await readPixels()).branded).toBe(true);
+ const {width,height,pixels}=await readPixels();
+ expect(JSON.parse(jsQR(Uint8ClampedArray.from(pixels),width,height)?.data)).toEqual(f.qr);
+});
+
 test('actual app reload restores the same invitation and key without another create',async({page})=>{
  const f=await fixture(page,{actualApp:true});
  const panel=page.locator('#qr-panel');
