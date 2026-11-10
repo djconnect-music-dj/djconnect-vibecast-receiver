@@ -138,7 +138,7 @@ main {
   line-height: 1.06;
 }
 .vibecast-hero { --hero-title-size: clamp(3.4rem, 5vw, 4.8rem); }
-.hero-brand { font-size: calc(.72 * var(--hero-title-size)); }
+.hero-brand { font-size: calc(.72 * var(--hero-title-size)); letter-spacing: calc(-.055 * var(--hero-title-size)); }
 .vibecast-hero h1 { font-size: var(--hero-title-size); margin-top: .08em; }
 #hero-tagline { margin: clamp(.85rem, 1.3vw, 1.7rem) 0 0; font-size: 1.4rem; letter-spacing: -.035em; line-height: 1.1; }
 .hero-symbol-glow { display: none; }
