@@ -237,6 +237,18 @@ test('actual app reload respects transient poll refusal before restoring the QR'
 });
 
 test('five same-tab reloads recover after an interrupted poll without resetting its deadline',async({page})=>{
+ await page.addInitScript(()=>{
+  const wall=Date.now.bind(Date),monotonic=performance.now.bind(performance);
+  window.fixtureWallOffset=0;
+  window.fixtureMonotonicOffset=0;
+  Date.now=()=>wall()+window.fixtureWallOffset;
+  Object.defineProperty(performance,'now',{value:()=>monotonic()+window.fixtureMonotonicOffset});
+  const schedule=window.setTimeout.bind(window);
+  window.setTimeout=(callback,delay,...args)=>{
+   if(delay>30000) window.fixtureWaitWake=callback;
+   return schedule(callback,delay,...args);
+  };
+ });
  const f=await fixture(page,{actualApp:true,controlledClock:true});
  const panel=page.locator('#qr-panel');
  await expect(panel).toBeVisible();
@@ -244,7 +256,7 @@ test('five same-tab reloads recover after an interrupted poll without resetting 
  const release=f.holdNextPoll();
  try{
   await expect.poll(()=>f.calls.map(call=>call.name)).toEqual(['create','poll']);
-  for(let reload=0;reload<4;reload++){
+  for(let reload=0;reload<5;reload++){
    await page.reload();
    await expect.poll(()=>page.evaluate(()=>JSON.parse(sessionStorage.getItem('vibecast-qr-resume-v1'))?.restart?.expires)).toBe(original.expires_at);
    await expect(page.locator('html')).toHaveAttribute('data-state','creating');
@@ -252,12 +264,19 @@ test('five same-tab reloads recover after an interrupted poll without resetting 
    expect(f.calls.map(call=>call.name)).toEqual(['create','poll']);
   }
  }finally{release();}
- await page.addInitScript(()=>{
-  const wall=Date.now.bind(Date),monotonic=performance.now.bind(performance);
-  Date.now=()=>wall()+121000;
-  Object.defineProperty(performance,'now',{value:()=>monotonic()+121000});
+ await expect.poll(()=>page.evaluate(()=>typeof window.fixtureWaitWake)).toBe('function');
+ await page.evaluate(()=>{
+  window.fixtureMonotonicOffset=121000;
+  window.fixturePreviousWake=window.fixtureWaitWake;
+  window.fixtureWaitWake();
  });
- await page.reload();
+ await expect.poll(()=>page.evaluate(()=>window.fixtureWaitWake!==window.fixturePreviousWake)).toBe(true);
+ expect(f.calls.map(call=>call.name)).toEqual(['create','poll']);
+ await expect(panel).toBeHidden();
+ await page.evaluate(()=>{
+  window.fixtureWallOffset=121000;
+  window.fixtureWaitWake();
+ });
  await expect(panel).toBeVisible();
  expect(f.calls.map(call=>call.name)).toEqual(['create','poll','create']);
  expect(f.qr.transaction_id).not.toBe(original.transaction_id);

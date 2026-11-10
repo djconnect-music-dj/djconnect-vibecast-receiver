@@ -123,7 +123,7 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
  }
  const adapter={contract:CONTRACT,bounded:true,
   async create({signal}={}){
-   if(used||retired)throw new Terminal();used=true;const start=mono();need(Number.isFinite(start)&&start>=0);
+   if(used||retired)throw new Terminal();used=true;
    signal?.addEventListener('abort',dispose,{once:true});if(signal?.aborted){dispose();throw new Terminal();}
    try{
     if(reloadState){
@@ -131,6 +131,7 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
      foreground();
      if(saved)return await restore(saved);
     }
+    const start=mono();need(Number.isFinite(start)&&start>=0);
     for(let n=0;n<2;n++){
     foreground();const ticket=++epoch;active=new AbortController();const prepDeadline=Math.min(mono()+5000,start+30000);
     const prepared=await bound((async()=>{
