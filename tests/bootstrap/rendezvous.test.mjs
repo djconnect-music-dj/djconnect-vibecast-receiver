@@ -98,3 +98,29 @@ test('long server backoff does not claim early expiry and wakes explicit retry a
  const {BootstrapController}=await import('../../bootstrap/src/lifecycle.mjs');const s=service();let clock=0,wakeLong,longDelay;const a=createRendezvousAdapter({visible:()=>true,monotonic:()=>clock,fetch:async(url,opts)=>url.endsWith('/poll')?payload({v:WIRE,state:'pending',expires_at:s.qr.expires_at,retry_after_ms:120000}):s.transport(url,opts),schedule:(fn,ms)=>{if(ms>100000){longDelay=ms;wakeLong=()=>{clock+=ms;fn();};return -1;}return setTimeout(()=>{if(ms===2000)clock+=ms;fn();},ms===2000?1:ms);},cancel:id=>{if(id!==-1)clearTimeout(id);}});
  const states=[],c=new BootstrapController({adapter:a,adapterFactory:()=>assert.fail('no automatic replacement'),monotonic:()=>clock,render:x=>states.push(x),navigate:()=>assert.fail()});t.after(()=>c.stop());const work=c.start();while(!wakeLong)await new Promise(r=>setTimeout(r,2));assert.equal(states.at(-1).state,'waiting');assert.equal(a.canRestart(),false);assert.ok(longDelay<120000&&longDelay>100000,JSON.stringify({longDelay,clock}));wakeLong();await work;assert.equal(states.at(-1).state,'expired');assert.equal(a.canRestart(),true);assert.equal(s.creates.length,1);
 });
+
+test('slow durable poll fence and immediate network loss keep two seconds between sends',async()=>{
+ const serviceFixture=service(),pollStarts=[];
+ let clock=0,slowSave=true;
+ const a=adapter(serviceFixture,{
+  monotonic:()=>clock,
+  schedule:(fn,ms)=>ms<=2000?setTimeout(()=>{clock+=ms;fn();},1):setTimeout(fn,ms),
+  reloadState:{
+   open:async()=>null,clear:async()=>{},
+   save:async record=>{if(record.pollPending&&slowSave){slowSave=false;clock+=2500;}}
+  },
+  fetch:async (url,options)=>{
+   if(url.endsWith('/poll')){
+    pollStarts.push(clock);
+    if(pollStarts.length===1)throw Error('synthetic network failure');
+   }
+   return serviceFixture.transport(url,options);
+  }
+ });
+ const challenge=await a.create();
+ await a.expose(challenge);
+ await a.wait({challenge});
+ assert.equal(pollStarts.length,2);
+ assert.ok(pollStarts[1]-pollStarts[0]>=2000);
+ a.stop();
+});

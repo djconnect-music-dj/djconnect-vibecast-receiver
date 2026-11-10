@@ -63,6 +63,7 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
   c.nextPoll=mono()+2000;
   c.pollPending=true;
   await save(c);
+  c.nextPoll=mono()+2000;
   const status=await response('poll',c);
   if(pollClosed(status)){
    rotationBlocked=true;
