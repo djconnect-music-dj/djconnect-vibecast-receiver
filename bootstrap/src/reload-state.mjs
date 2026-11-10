@@ -41,9 +41,30 @@ function write(database, apply) {
 }
 
 function rotationDeadline(invitation) {
-  if (invitation.pollPending !== false || invitation.consumeStarted !== false ||
+  if (typeof invitation.pollPending !== 'boolean' || invitation.consumeStarted !== false ||
       !Number.isSafeInteger(invitation.expires) || !Number.isFinite(invitation.deadline)) return null;
   return {expires: invitation.expires, deadline: invitation.deadline};
+}
+
+async function waitForDeadline(value, signal) {
+  if (!Number.isSafeInteger(value?.expires) || !Number.isFinite(value?.deadline)) throw Error('reload deadline rejected');
+  while (!reachedDeadline(value)) {
+    if (signal.aborted) throw Error('reload interrupted');
+    const remaining = Math.max(value.expires - Date.now(), value.deadline - performance.timeOrigin - performance.now());
+    if (!Number.isFinite(remaining) || remaining > 120000) throw Error('reload deadline rejected');
+    await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        signal.removeEventListener('abort', abort);
+        resolve();
+      }, remaining);
+      function abort() {
+        clearTimeout(timer);
+        reject(Error('reload interrupted'));
+      }
+      signal.addEventListener('abort', abort, {once:true});
+    });
+  }
+  if (signal.aborted) throw Error('reload interrupted');
 }
 
 function reachedDeadline(value) {
@@ -96,15 +117,14 @@ export function createReloadState() {
       clearTimeout(cleanup);
       generation++;
       encryption = null;
+      // Replace the key and marker together. If a reload interrupts deletion,
+      // the next document still must delete the sealed record before creating.
       delete marker.encryption;
-      delete marker.restart;
+      if (restart) marker.restart = restart;
+      else delete marker.restart;
       sessionStorage.setItem(storageKey, JSON.stringify(marker));
       store.delete(tab);
     });
-    if (restart && expected + 1 === generation) {
-      marker.restart = restart;
-      sessionStorage.setItem(storageKey, JSON.stringify(marker));
-    }
   }
 
   function scheduleCleanup(invitation, expected) {
@@ -132,7 +152,10 @@ export function createReloadState() {
         sessionStorage.setItem(storageKey, JSON.stringify(marker));
         return importEncryption(marker.encryption);
       };
-      if (read && !marker.encryption && reachedDeadline(marker.restart)) read = false;
+      if (read && !marker.encryption && marker.restart) {
+        await waitForDeadline(marker.restart, signal);
+        read = false;
+      }
       encryption = await (read ? importEncryption(marker.encryption) : startFresh());
       await write(database, store => {
         if (!read) store.delete(tab);
@@ -150,6 +173,16 @@ export function createReloadState() {
       const plaintext = await crypto.subtle.decrypt({name:'AES-GCM',iv:stored.iv,additionalData}, encryption, stored.sealed);
       const invitation = JSON.parse(new TextDecoder().decode(plaintext));
       if (invitation.expires !== stored.expiry) throw Error('reload expiry mismatch');
+      if (invitation.pollPending === true) {
+        const restart = rotationDeadline(invitation);
+        if (!restart) throw Error('unresolved consume or invalid invitation');
+        // The missing poll response may have carried a backoff. Retire this
+        // invitation without another poll and wait out both original deadlines.
+        await clear(expected, restart);
+        await waitForDeadline(restart, signal);
+        encryption = await startFresh();
+        return null;
+      }
       const remaining = Math.min(invitation.expires-Date.now(),invitation.deadline-performance.timeOrigin-performance.now());
       if (remaining <= 0) {
         const restart = rotationDeadline(invitation);
