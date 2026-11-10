@@ -38,7 +38,7 @@ export class BootstrapController {
       if (!this.armDeadline(generation)) return;
       await this.adapter.expose?.(this.challenge); // sticky before any renderer callback
       if (!this.current(generation)) return;
-      this.show(this.challenge.hideQR ? 'confirming' : 'waiting', { challenge: this.challenge });
+      this.show(this.challenge.hideQR ? 'confirming' : 'waiting', { challenge: this.challenge, hideQR:this.challenge.hideQR });
       await this.receive(generation);
     } catch (error) { if (generation === this.generation) { if (this.adapter.bounded) this.fail(['expired','unsafe'].includes(error.state)?error.state:'unavailable'); else this.show('recovering'); } }
   }
@@ -69,7 +69,8 @@ export class BootstrapController {
     const challenge = this.challenge;
     try {
       const envelope = await this.adapter.wait({ challenge, signal: this.abort.signal,
-        onConfirming: () => { if (this.current(generation)) this.show('confirming', { challenge }); } });
+        onConfirming: (hideQR = false) => { if (this.current(generation)) this.show('confirming', { challenge, hideQR }); },
+        onWaiting: () => { if (this.current(generation)) this.show('waiting', { challenge }); } });
       if (!this.current(generation)) return;
       this.show('received');
       const destination = await this.adapter.verifyDestination(envelope, { challenge, signal: this.abort.signal });

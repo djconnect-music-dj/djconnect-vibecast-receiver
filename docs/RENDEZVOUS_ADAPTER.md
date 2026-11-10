@@ -73,7 +73,10 @@ Commit an unsettled-consume marker before starting the consume request.
 A reload can reconcile that request through poll but cannot send it again.
 Remove or invalidate the record on terminal status or verified handoff.
 Restore the remaining poll budget and any active backoff; neither resets on
-reload. A read, write or lock failure cannot restore pairing authority.
+reload. If a poll outcome was not yet saved when the document closed, reload
+fails closed rather than risk skipping the service's backoff. A read, write
+or lock failure cannot restore pairing authority. Expired records are deleted
+while the page is active or on a later visit; a closed browser cannot run cleanup.
 
 Isolated Chromium tab duplication copied the page session and navigation entry
 but did not copy the browsing context name. Chromium and WebKit both retained

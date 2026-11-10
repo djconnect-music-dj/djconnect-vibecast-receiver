@@ -6,6 +6,8 @@ const encoder=new TextEncoder();
 class TransportFailure extends Error {}
 class Stopped extends Error {}
 class Terminal extends Error {constructor(state='unavailable'){super('rendezvous_stopped');this.state=state;}}
+const pollRetryable = status => ['rate_limited','service_unavailable','attestation_unavailable','not_ready'].includes(status.error);
+const pollClosed = status => status.state==='cancelled'||status.state==='consumed'||(status.error&&status.error!=='expired'&&!pollRetryable(status));
 // No public config/window/URL activation hook. app.mjs continues to import only
 // unavailableAdapter. This constructor is for reviewed static adoption/testing.
 export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto=globalThis.crypto,
@@ -50,8 +52,8 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
  }
  async function save(c){
   if(!reloadState)return;
-  const {key,claim,payload,expires,polls,consumeStarted,nextPoll,monoExpires}=c;
-  await reloadState.save({key,claim,payload,expires,polls,consumeStarted,nextPoll:timeOrigin+nextPoll,deadline:timeOrigin+monoExpires});
+  const {key,claim,payload,expires,polls,consumeStarted,pollPending=false,nextPoll,monoExpires}=c;
+  await reloadState.save({key,claim,payload,expires,polls,consumeStarted,pollPending,nextPoll:timeOrigin+nextPoll,deadline:timeOrigin+monoExpires});
   live(c);
  }
  async function poll(c){
@@ -59,13 +61,19 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
   c.polls++;
   c.delay=2000;
   c.nextPoll=mono()+2000;
+  c.pollPending=true;
   await save(c);
   const status=await response('poll',c);
+  if(pollClosed(status)){
+   rotationBlocked=true;
+   return status;
+  }
+  c.pollPending=false;
   if(status.retry!==undefined || status.retry_after_ms!==undefined){
    c.delay=Math.max(2000,status.retry??status.retry_after_ms);
    c.nextPoll=mono()+c.delay;
-   await save(c);
   }
+  await save(c);
   return status;
  }
  async function restore(saved){
@@ -74,7 +82,7 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
   decode(claim,32);decode(q.browser_key_thumbprint,32);decode(q.qr_capability,32);
   need(q.service_origin===SERVICE&&q.expires_at===saved.expires);
   need(key?.type==='private'&&!key.extractable&&key.algorithm.name==='RSA-OAEP'&&key.algorithm.modulusLength===2048&&key.algorithm.hash.name==='SHA-256'&&key.usages.includes('decrypt'));
-  need(Number.isInteger(polls)&&polls>=0&&polls<=60&&typeof consumeStarted==='boolean');
+  need(Number.isInteger(polls)&&polls>=0&&polls<=60&&typeof consumeStarted==='boolean'&&saved.pollPending===false);
   const monoExpires=saved.deadline-timeOrigin,nextPoll=saved.nextPoll-timeOrigin;
   need(Number.isFinite(nextPoll)&&Number.isFinite(monoExpires)&&monoExpires-mono()<=120000&&saved.expires-now()<=120000);
   const c={ticket:++epoch,transaction:q.transaction_id,generation:q.generation,thumb:q.browser_key_thumbprint,
@@ -83,10 +91,13 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
   live(c);need(c.polls<60);
   active=new AbortController();
   const status=await poll(c);
-  if(status.state==='consumed'||status.state==='cancelled'||status.error==='expired')await reloadState.clear();
-  if(status.error||status.state==='consumed'||status.state==='cancelled')throw new Terminal(status.error==='expired'?'expired':'unavailable');
+  if(pollClosed(status)||status.error==='expired'){
+   await reloadState.clear();
+   throw new Terminal(status.error==='expired'?'expired':'unavailable');
+  }
   c.restoredStatus=status;
-  return challengeFor(c, consumeStarted||status.state==='ready');
+  c.reconciling=!!status.error;
+  return challengeFor(c, consumeStarted||status.state==='ready'||c.reconciling);
  }
  async function attempt(generation,prepared,start,ticket){
   const {keypair,claim,jwk,thumb,commitment}=prepared;
@@ -133,20 +144,27 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
      epoch++;active.abort();active=null;
      if(!(e instanceof TransportFailure)||n===1||retired||!visible()||mono()<start||mono()>=start+30000)throw new Terminal();
     }
-   }}catch(e){dispose();throw e instanceof Terminal?e:new Terminal();}
+   }}catch(e){
+    if(e.state!=='expired'&&!retired)await reloadState?.clear().catch(()=>{});
+    dispose();throw e instanceof Terminal?e:new Terminal();
+   }
   },
   validateChallenge(challenge){try{const c=sessions.get(challenge);live(c);return true;}catch{return false;}},
   expose(challenge){const c=sessions.get(challenge);live(c);exposed=true;return reloadState?save(c):undefined;},
-  async wait({challenge}){
+  async wait({challenge,onConfirming,onWaiting}){
    const c=sessions.get(challenge);live(c);need(exposed);
    try{while(c.restoredStatus||c.polls<60){
     let status=c.restoredStatus;c.restoredStatus=null;
     if(!status){try{status=await poll(c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}}
-    if(status.error){if(['rate_limited','service_unavailable','attestation_unavailable','not_ready'].includes(status.error))continue;throw new Terminal(status.error==='expired'?'expired':'unavailable');}
-    if(status.state==='cancelled'||status.state==='consumed'){await reloadState?.clear();restartAllowed=true;throw new Terminal();}
-    if(status.state!=='ready')continue;
+    if(status.error){if(pollRetryable(status))continue;throw new Terminal(status.error==='expired'?'expired':'unavailable');}
+    if(status.state==='cancelled'||status.state==='consumed'){restartAllowed=true;throw new Terminal();}
+    if(status.state!=='ready'){
+     if(c.reconciling&&!c.consumeStarted){c.reconciling=false;onWaiting?.();}
+     continue;
+    }
     if(c.consumeStarted)continue; // A lost consume is reconciled by poll only.
     c.consumeStarted=true;rotationBlocked=true;
+    onConfirming?.(true);
     await save(c);
     let result;try{result=await response('consume',c);}catch(e){if(e instanceof TransportFailure)continue;throw e;}
     if(result.error){
@@ -165,7 +183,13 @@ export function createRendezvousAdapter({fetch:transport=globalThis.fetch,crypto
      throw new Terminal(result.error==='expired'?'expired':'unavailable');
     }
     live(c);restartAllowed=true;return result.destination_envelope;
-   }throw new Terminal('expired');}catch(e){if(e.state!=='expired')rotationBlocked=true;dispose();throw e instanceof Terminal?e:new Terminal();}
+   }throw new Terminal('expired');}catch(e){
+    if(e.state!=='expired'){
+     rotationBlocked=true;
+     if(!retired)await reloadState?.clear().catch(()=>{});
+    }
+    dispose();throw e instanceof Terminal?e:new Terminal();
+   }
   },
   async verifyDestination(envelope,{challenge}){
    const c=sessions.get(challenge);live(c);try{

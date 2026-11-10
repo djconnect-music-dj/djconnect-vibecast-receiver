@@ -9,7 +9,7 @@ const text=new TextEncoder();
 function scan(matrix){const scale=4,n=(matrix.length+8)*scale,rgba=new Uint8ClampedArray(n*n*4).fill(255);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.floor(y/scale)-4,c=Math.floor(x/scale)-4;if(matrix[r]?.[c]){const i=(y*n+x)*4;rgba[i]=rgba[i+1]=rgba[i+2]=0;}}return jsQR(rgba,n,n)?.data;}
 async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=false,denyAfter=Infinity,consumeBackoff=false,consumeAfterCommit503=false,actualApp=false,reconcileAsReady=false}={}){
  const calls=[],keys=[];let current,state='pending',envelope,createCount=0;
- let ready=!actualApp;
+ let ready=!actualApp,refusePoll=false;
  const browserOrigin=actualApp?ORIGIN:'http://127.0.0.1:4186';
  if(actualApp)await page.route(ORIGIN+'/**',async route=>{
   const path=new URL(route.request().url()).pathname;
@@ -32,13 +32,13 @@ async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=f
    envelope=await new CompactEncrypt(text.encode(JSON.stringify(plain))).setProtectedHeader({alg:'RSA-OAEP-256',enc:'A256GCM',typ:'djc-rendezvous-destination+jwe',kid:thumb}).encrypt(await importJWK(body.browser_public_key,'RSA-OAEP-256'));
    return respond({v:WIRE,transaction_id:current.transaction_id,generation:current.generation,created_at:created,expires_at:current.expires_at,browser_key_thumbprint:thumb,qr_payload:current},201);
   }
-  if(name==='poll'){if(reconcileAsReady&&state==='consumed')return respond({v:WIRE,state:'ready',expires_at:current.expires_at,retry_after_ms:2000});if(consumeBackoff&&state==='consumed')return respond({v:WIRE,error:'service_unavailable',retry_after_ms:120000},503);if(longBackoff)return respond({v:WIRE,state:'pending',expires_at:current.expires_at,retry_after_ms:120000});if(ready&&state==='pending')state='ready';return respond({v:WIRE,state,expires_at:current.expires_at,retry_after_ms:2000});}
+  if(name==='poll'){if(refusePoll){refusePoll=false;return respond({v:WIRE,error:'service_unavailable',retry_after_ms:2000},503);}if(reconcileAsReady&&state==='consumed')return respond({v:WIRE,state:'ready',expires_at:current.expires_at,retry_after_ms:2000});if(consumeBackoff&&state==='consumed')return respond({v:WIRE,error:'service_unavailable',retry_after_ms:120000},503);if(longBackoff)return respond({v:WIRE,state:'pending',expires_at:current.expires_at,retry_after_ms:120000});if(ready&&state==='pending')state='ready';return respond({v:WIRE,state,expires_at:current.expires_at,retry_after_ms:2000});}
   if(name==='consume'){state='consumed';if(consumeAfterCommit503)return respond({v:WIRE,error:'service_unavailable',retry_after_ms:2000},503);if(loseConsume)return route.abort('failed');return respond({v:WIRE,state,destination_envelope:envelope,expires_at:current.expires_at});}
   throw Error('unexpected test route');
  });
  await page.goto(actualApp?ORIGIN:'/adapter-fixture');
  await page.evaluate(()=>{window.fixtureStates=[];window.fixtureUrls=[];window.fixtureDiagnostics={decrypt:[],verify:[],visibility:[]};});
- return {calls,keys,get qr(){return current;},ready:()=>{ready=true;}};
+ return {calls,keys,get qr(){return current;},ready:()=>{ready=true;},refuseNextPoll:()=>{refusePoll=true;}};
 }
 async function run(page,{language='nl',accelerate=false,holdLong=false,diagnostic=false,autoRotate=false}={}){
  await page.evaluate(async({language,accelerate,holdLong,diagnostic,autoRotate})=>{
@@ -145,6 +145,7 @@ test('actual app reload retains the durable consume fence after a 503',async({pa
  f.ready();
  const consumes=()=>f.calls.filter(x=>x.name==='consume').length;
  await expect.poll(consumes).toBe(1);
+ await expect(page.locator('#qr-panel')).toBeHidden();
  await page.reload();
  await expect(page.locator('html')).toHaveAttribute('data-state','confirming');
  await expect(page.locator('#qr-panel')).toBeHidden();
@@ -164,4 +165,18 @@ test('actual app reload cannot use or replace an invitation after its original e
  await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  await expect(page.locator('#qr-panel')).toBeHidden();
  expect(f.calls).toHaveLength(calls);
+});
+
+test('actual app reload respects transient poll refusal before restoring the QR',async({page})=>{
+ const f=await fixture(page,{actualApp:true});
+ const panel=page.locator('#qr-panel');
+ await expect(panel).toBeVisible();
+ const deadline=await page.locator('#expiry').textContent();
+ f.refuseNextPoll();
+ await page.reload();
+ await expect(page.locator('html')).toHaveAttribute('data-state','confirming');
+ await expect(panel).toBeHidden();
+ await expect(panel).toBeVisible();
+ expect(await page.locator('#expiry').textContent()).toBe(deadline);
+ expect(f.calls.filter(x=>x.name==='create')).toHaveLength(1);
 });

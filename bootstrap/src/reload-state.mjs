@@ -22,6 +22,10 @@ async function openJournal() {
 
 function write(database, apply) {
   const transaction = database.transaction('invitations', 'readwrite', {durability:'strict'});
+  if (transaction.durability !== 'strict') {
+    transaction.abort();
+    throw Error('reload durable storage unavailable');
+  }
   return new Promise((resolve, reject) => {
     transaction.oncomplete = resolve;
     transaction.onabort = () => reject(transaction.error);
