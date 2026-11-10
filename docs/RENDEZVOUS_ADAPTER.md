@@ -43,6 +43,45 @@ loss do not reset allowance. Visibility/pagehide/BFCache retires the interaction
 Online/restoration never creates authority. This changes post-QR browser policy,
 which requires API/Core review before live promotion. Wire and expiry are unchanged.
 
+## Same-tab reload proposal for API/Core review
+
+Resume the same transaction, generation, QR payload and browser key after an
+ordinary reload of the same navigation entry. Keep both the server's original
+expiry and the original monotonic deadline. A reload sends no create request
+for that invitation and does not extend either deadline.
+
+The proposed storage exception is limited to one exposed invitation for its
+original lifetime. Keep only an opaque record locator and an encryption key in
+the page session. Store the nonextractable RSA `CryptoKey` as a browser-managed
+object and encrypt the QR payload and claim in the origin database. Bind the
+record to the exact origin, navigation-entry identity, transaction and expiry.
+Never write account credentials, a Home Assistant URL or a destination
+envelope to storage. Commit the record before making its QR resumable. The
+browser may retain deleted bytes, so cleanup does not claim secure erasure.
+
+Require a matching entry and exclusive ownership before using the record.
+Reject unrelated navigation, another tab, missing browser support, invalid
+records and unverified deadlines. Treat expired records as unusable even if
+the browser has not deleted them yet. Do not mint a new invitation on an
+ambiguous reload. Confirm the saved invitation with an authenticated poll
+before displaying it. A ready invitation may continue directly to consume.
+
+Commit an unsettled-consume marker before starting the consume request.
+A reload can reconcile that request through poll but cannot send it again.
+Remove or invalidate the record on terminal status or verified handoff.
+Restore the remaining poll budget and any active backoff; neither resets on
+reload. A read, write or lock failure cannot restore pairing authority.
+
+Isolated Chromium and WebKit probes showed that an ordinary reload retained
+the navigation-entry key and that the original nonextractable RSA key remained
+usable. In both probes a same-origin opener could copy the page-session marker,
+but the new tab had a different navigation-entry key. This does not qualify
+the browser's Duplicate Tab command, OS suspension, storage loss, deadline
+preservation or any live pairing. Qualification must cover those boundaries,
+two or more reloads near expiry, reload during consume, and production
+preflight closeout. This proposal is not a storage implementation or
+publication approval.
+
 ## Evidence and remaining limits
 
 New Node tests exercise actual WebCrypto/JWE and independent jsQR1.4.0 decode,
