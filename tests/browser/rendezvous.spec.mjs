@@ -15,7 +15,7 @@ async function fixture(page,{lostCreate=0,deny=0,loseConsume=false,longBackoff=f
   const path=new URL(route.request().url()).pathname;
   const name=path==='/'?'index.html':path.slice(1);
   if(!/^[a-zA-Z0-9._-]+$/.test(name))return route.abort();
-  const type=name.endsWith('.mjs')?'text/javascript':name.endsWith('.html')?'text/html':name.endsWith('.css')?'text/css':'image/png';
+  const type=name.endsWith('.mjs')?'text/javascript':name.endsWith('.html')?'text/html':name.endsWith('.css')?'text/css':name.endsWith('.svg')?'image/svg+xml':'image/png';
   return route.fulfill({contentType:type,body:await readFile('dist/bootstrap/'+name)});
  });
  const html=(await readFile('bootstrap/public/index.html','utf8')).replace('<script type="module" src="/app.mjs"></script>','');
@@ -137,10 +137,20 @@ for(const viewport of [{width:1280,height:720},{width:390,height:844}])test(`bra
   const {width,height}=element;
   const ctx=element.getContext('2d');
   const pixels=ctx.getImageData(0,0,width,height).data;
-  const center=ctx.getImageData(Math.floor(width/2),Math.floor(height/2),1,1).data;
-  return {width,height,pixels:[...pixels],branded:center[0]!==center[2]};
+  let left=width, right=-1;
+  for(let i=0;i<pixels.length;i+=4){
+   if(pixels[i+2]>pixels[i] && pixels[i]>pixels[i+1]){
+    const x=(i/4)%width;
+    left=Math.min(left,x);
+    right=Math.max(right,x);
+   }
+  }
+  return {width,height,pixels:[...pixels],logoWidth:right-left+1};
  });
- await expect.poll(async()=>(await readPixels()).branded).toBe(true);
+ await expect.poll(async()=>{
+  const {width,logoWidth}=await readPixels();
+  return logoWidth/(width/81);
+ }).toBeGreaterThanOrEqual(17);
  const {width,height,pixels}=await readPixels();
  expect(JSON.parse(jsQR(Uint8ClampedArray.from(pixels),width,height)?.data)).toEqual(f.qr);
 });

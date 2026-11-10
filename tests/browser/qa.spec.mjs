@@ -6,7 +6,7 @@ const QA='https://qa.vibecast.tv',SERVICE='https://api-vibecast-qa.djconnect.dev
 async function fixture(page,{origin=QA,...options}={}){
  const s=syntheticQAService(options),unexpected=[],navigations=[];
  const policy=Object.fromEntries((await readFile('dist/bootstrap-qa/_headers','utf8')).split('\n').slice(1).filter(x=>x.includes(':')).map(x=>{const i=x.indexOf(':');return[x.slice(0,i).trim(),x.slice(i+1).trim()];}));
- const types={'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.png':'image/png','.json':'application/json'};
+ const types={'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'};
  await page.route('**/*',async route=>{
   const r=route.request(),u=new URL(r.url());
   if(u.origin===SERVICE){

@@ -1,5 +1,5 @@
 // Local-only static qualification server; no production API or fallback pairing.
 import http from 'node:http';import {readFile} from 'node:fs/promises';import path from 'node:path';
-const types={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png'};
+const types={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.svg':'image/svg+xml'};
 const headers=Object.fromEntries((await readFile('dist/bootstrap/_headers','utf8')).split('\n').slice(1).filter(line=>line.includes(':')).map(line=>{const i=line.indexOf(':');return[line.slice(0,i).trim(),line.slice(i+1).trim()];}));
 http.createServer(async(req,res)=>{const pathname=new URL(req.url,'http://localhost').pathname;const name=pathname==='/'?'index.html':pathname.slice(1);try{if(!/^[a-zA-Z0-9._-]+$/.test(name))throw Error();const body=await readFile(path.join('dist/bootstrap',name));res.writeHead(200,{...headers,'Content-Type':types[path.extname(name)]||'text/plain'});res.end(body);}catch{res.writeHead(404,headers);res.end('Not found');}}).listen(4186,'127.0.0.1');
