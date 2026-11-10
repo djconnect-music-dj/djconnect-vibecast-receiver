@@ -35,7 +35,7 @@ export async function readback(manifestPath, originString, fetcher = fetch) {
  }
  for (const [file, digest] of Object.entries(manifest.files)) {
   if (file === '_headers' || file === '404.html') continue;
-  const type = file.endsWith('.png') ? 'image/png' : file.endsWith('.mjs') ? 'javascript' : file.endsWith('.css') ? 'text/css' : file.endsWith('.html') ? 'text/html' : 'application/json';
+  const type = file.endsWith('.png') ? 'image/png' : file.endsWith('.svg') ? 'image/svg+xml' : file.endsWith('.mjs') ? 'javascript' : file.endsWith('.css') ? 'text/css' : file.endsWith('.html') ? 'text/html' : 'application/json';
   await check(file === 'index.html' ? '/' : '/' + file, digest, type);
  }
  await check('/build-manifest.json', hash(manifestBytes), 'application/json');

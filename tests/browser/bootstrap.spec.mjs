@@ -73,7 +73,7 @@ test('pairing layout fits the screen with a decodable compact QR',async({page})=
 test('canonical production app uses the fixed API and hides QR when service is closed', async ({page}) => {
  const origin = 'https://vibecast.tv';
  const endpoint = 'https://api.djconnect.dev/v1/rendezvous/create';
- const types = {'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.png':'image/png'};
+ const types = {'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml'};
  const headers = Object.fromEntries((await readFile('dist/bootstrap/_headers','utf8')).split('\n')
   .filter(line => line.includes(':')).map(line => {
    const colon = line.indexOf(':');

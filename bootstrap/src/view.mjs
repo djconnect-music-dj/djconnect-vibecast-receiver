@@ -22,13 +22,15 @@ export function renderState(document, language, current) {
   ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#000';
   matrix.forEach((row,y) => row.forEach((on,x) => {if(on) ctx.fillRect((x+4)*scale,(y+4)*scale,scale,scale);}));
   const brand = byId('qr-brand');
-  // The 73-module rendezvous QR has no function patterns in its central 11×11
-  // modules. Leave other QR versions intact, since their alignment grids differ.
+  // A circular badge fits between version 14's four nearby alignment marks.
   if (matrix.length === 73 && brand.complete && brand.naturalWidth > 0) {
-   const badgeModules = 11, inset = 4, badge = (inset + (matrix.length - badgeModules) / 2) * scale;
+   const center = canvas.width / 2;
+   const logoSize = 18 * scale;
+   ctx.beginPath();
+   ctx.arc(center, center, 10 * scale, 0, 2 * Math.PI);
    ctx.fillStyle = '#fff';
-   ctx.fillRect(badge, badge, badgeModules * scale, badgeModules * scale);
-   ctx.drawImage(brand, badge + scale, badge + scale, (badgeModules - 2) * scale, (badgeModules - 2) * scale);
+   ctx.fill();
+   ctx.drawImage(brand, center - logoSize / 2, center - logoSize / 2, logoSize, logoSize);
   }
   canvas.setAttribute('aria-label',copy.qr);
   byId('expiry').textContent = copy.expiry+' '+new Date(current.challenge.expiresAt).toLocaleTimeString(language);
