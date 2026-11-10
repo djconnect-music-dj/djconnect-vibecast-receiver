@@ -1,10 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 2 36 36" color="#843df5">
-  <g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 2 36 36">
+  <defs>
+    <linearGradient id="qr-brand-gradient" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="38" y2="38">
+      <stop stop-color="#3285ff"/>
+      <stop offset=".5" stop-color="#843df5"/>
+      <stop offset="1" stop-color="#cb27f5"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#qr-brand-gradient)" stroke-width="2.25" stroke-linecap="round">
     <path d="M4 20a16 16 0 0 1 32 0"/>
     <circle cx="20" cy="23" r="12.5"/>
     <path d="M13.5 22v2m3.25-4.5v7m3.25-9.5v12m3.25-9.5v7m3.25-4.5v2"/>
   </g>
-  <g fill="currentColor">
+  <g fill="url(#qr-brand-gradient)">
     <rect x="2" y="18" width="4.5" height="12" rx="2.25"/>
     <rect x="33.5" y="18" width="4.5" height="12" rx="2.25"/>
   </g>
