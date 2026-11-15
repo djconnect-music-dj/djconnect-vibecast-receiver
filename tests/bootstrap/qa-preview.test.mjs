@@ -59,7 +59,7 @@ test('preview branch alias is checked independently of the immutable preview URL
 test('requires an owner-confirmed Access review for the exact SHA and digest in issue 10', () => {
   const digest = `sha256:${'a'.repeat(64)}`;
   const comment = {
-    issue_url: 'https://api.github.com/repos/pcvantol/djconnect-vibecast-receiver/issues/10',
+    issue_url: 'https://api.github.com/repos/djconnect-music-dj/djconnect-vibecast-receiver/issues/10',
     user: { id: 19624891 },
     body: [
       'VibeCast QA preview Access reviewed', `Source: ${sha}`, `Artifact: ${digest}`,
@@ -67,12 +67,12 @@ test('requires an owner-confirmed Access review for the exact SHA and digest in 
       'Stop: deny and verify exact preview hosts, then revoke QA sessions',
     ].join('\n'),
   };
-  const repository = 'pcvantol/djconnect-vibecast-receiver';
-  const transferred = 'djconnect-music-dj/djconnect-vibecast-receiver';
-  const transferredComment = { ...comment, issue_url: `https://api.github.com/repos/${transferred}/issues/10` };
+  const repository = 'djconnect-music-dj/djconnect-vibecast-receiver';
+  const legacyRepository = 'pcvantol/djconnect-vibecast-receiver';
+  const legacyComment = { ...comment, issue_url: `https://api.github.com/repos/${legacyRepository}/issues/10` };
   assert.doesNotThrow(() => requireAccessReview(comment, sha, digest, repository));
-  assert.doesNotThrow(() => requireAccessReview(transferredComment, sha, digest, transferred));
-  assert.throws(() => requireAccessReview(comment, sha, digest, transferred), /issue 10/);
+  assert.doesNotThrow(() => requireAccessReview(legacyComment, sha, digest, legacyRepository));
+  assert.throws(() => requireAccessReview(legacyComment, sha, digest, repository), /issue 10/);
   assert.throws(() => requireAccessReview(comment, 'e'.repeat(40), digest, repository), /exact owner/);
   assert.throws(() => requireAccessReview({ ...comment, issue_url: comment.issue_url + '0' }, sha, digest, repository), /issue 10/);
   assert.throws(() => requireAccessReview({ ...comment, user: { id: 2 } }, sha, digest, repository), /exact owner/);
