@@ -56,7 +56,7 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          repository: pcvantol/djconnect-api
+          repository: djconnect-music-dj/djconnect-api
           ref: 379d70b558508f747d578d7b7d90a665bad7ffc8
           path: .qa/api
           persist-credentials: false
