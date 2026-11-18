@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "account": "efe77cadf8317a53832fca0848e3ae51",
+  "project": {
+    "id": "a815fc66-5fc2-49d3-812f-28b7401b6643",
+    "name": "vibecast-tv-bootstrap",
+    "production_branch": "main",
+    "source": null,
+    "subdomain": "vibecast-tv-bootstrap.pages.dev",
+    "domains": [
+      "vibecast-tv-bootstrap.pages.dev"
+    ]
+  },
+  "zone": "14310b82eeb03876e6c551632a046e87",
+  "domain": "vibecast.tv",
+  "records": [],
+  "read_access": "PASS",
+  "write_access": "NOT_TESTED",
+  "publication": "NOT_RUN",
+  "sourceSHA": "d0107eacb02b33f170dd24c7a13b740808102058"
+}

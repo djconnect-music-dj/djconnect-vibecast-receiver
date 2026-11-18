@@ -1,0 +1,248 @@
+{
+  "schema": 1,
+  "sourceSHA": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+  "runID": "39330314966",
+  "account": "efe77cadf8317a53832fca0848e3ae51",
+  "project": "vibecast-tv-bootstrap",
+  "prior": {
+    "id": "17bf0173-c70e-431c-884f-a9b8b04f2bca",
+    "origin": "https://17bf0173.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "0097f8d2e7f541401b7b5a6c533dc8074836ec56",
+    "environment": "production"
+  },
+  "stage": "qualified",
+  "production": {
+    "id": "220f0e59-6bc7-4088-9928-a72a742968c5",
+    "origin": "https://220f0e59.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+    "environment": "production"
+  },
+  "preview": {
+    "id": "b5e07226-10dc-45e2-93bc-87f47212afcd",
+    "origin": "https://b5e07226.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+    "environment": "preview"
+  },
+  "immutable": {
+    "origin": "https://220f0e59.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+    "outcome": "PASS",
+    "attempt": 1
+  },
+  "root": {
+    "origin": "https://vibecast.tv",
+    "sourceSHA": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+    "outcome": "PASS",
+    "attempt": 1
+  },
+  "scope": "Brand V2 bootstrap/header/footer/favicon, Apple-inspired VibeCast hero and GitHub README; excludes shared Cast renderer and social setting",
+  "sourcePR": 34,
+  "reviewedSHA": "6bc0b2bbf44fce98f42326027d4122b193b64bc1",
+  "reviewedTree": "970588deae8c2eee1781b879649c88cf0aad5595",
+  "prCI": 39329793582,
+  "mainCI": 39330058586,
+  "projectionCI": 39330058635,
+  "manifestSHA256": "875bf51f82d6e6a66d1f401148c6eefd9caa16b591f43650b51673d2beb3d600",
+  "archiveDigest": "a08736d7c7540c2e2dacc37000b878265cd12166b2b6372a1e135a79b1963d27",
+  "producer": {
+    "sourceSHA": "7e14e5970b3f68d33d243ae6bab2b281fad59bb2",
+    "finalizationSHA": "baac22d771bf3141404001517f62a5e34f8c8644",
+    "manifestSHA256": "73cc408e10d88aa1fb8a1be2783b9c577aec398ce3dcd54c2f997ad1425984d2",
+    "ingestion": "protected GitHub source blobs; selected exact hashes verified",
+    "reportedZIPDownload": "NOT_AVAILABLE_404_NOT_CLAIMED",
+    "qualification": "ASSET_SOURCE_ONLY"
+  },
+  "appleHeroReference": "aefbf5fe85cff222331aeb64e90c607e4f07d6c1/Sources/DJConnectUI/DJConnectRootView.swift",
+  "independentReadback": [
+    {
+      "origin": "https://vibecast.tv",
+      "sourceSHA": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+      "outcome": "PASS"
+    },
+    {
+      "origin": "https://220f0e59.vibecast-tv-bootstrap.pages.dev",
+      "sourceSHA": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+      "outcome": "PASS"
+    }
+  ],
+  "localTests": {
+    "node": 96,
+    "python": 10,
+    "browser": 84,
+    "visualCases": 8
+  },
+  "liveBrowser": {
+    "cases": 4,
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "widths": [
+      390,
+      1920
+    ],
+    "result": "PASS",
+    "scope": "actual HTTPS UI; no mocks; not physical TV or OS browser chrome"
+  },
+  "githubREADME": {
+    "ref": "main",
+    "cases": 8,
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "widths": [
+      390,
+      1100
+    ],
+    "result": "PASS",
+    "scope": "actual public GitHub rendered README; no social setting mutation",
+    "receipt": "artifacts/github-brand-main-visible/receipt.json",
+    "positiveRenderedSizeRequired": true,
+    "renderedSizes": {
+      "390": {
+        "width": 324,
+        "height": 84
+      },
+      "1100": {
+        "width": 512,
+        "height": 128
+      }
+    },
+    "verifiedCases": [
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "metrics": {
+          "src": "https://github.com/pcvantol/djconnect-vibecast-receiver/raw/main/docs/brand-v2/wordmark-compact-light.png",
+          "naturalWidth": 1728,
+          "naturalHeight": 448,
+          "width": 324,
+          "height": 84,
+          "complete": true
+        }
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 1100,
+        "metrics": {
+          "src": "https://github.com/pcvantol/djconnect-vibecast-receiver/raw/main/docs/brand-v2/wordmark-primary-light.png",
+          "naturalWidth": 2048,
+          "naturalHeight": 512,
+          "width": 512,
+          "height": 128,
+          "complete": true
+        }
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "metrics": {
+          "src": "https://github.com/pcvantol/djconnect-vibecast-receiver/raw/main/docs/brand-v2/wordmark-compact-dark.png",
+          "naturalWidth": 1728,
+          "naturalHeight": 448,
+          "width": 324,
+          "height": 84,
+          "complete": true
+        }
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 1100,
+        "metrics": {
+          "src": "https://github.com/pcvantol/djconnect-vibecast-receiver/raw/main/docs/brand-v2/wordmark-primary-dark.png",
+          "naturalWidth": 2048,
+          "naturalHeight": 512,
+          "width": 512,
+          "height": 128,
+          "complete": true
+        }
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "metrics": {
+          "src": "https://github.com/pcvantol/djconnect-vibecast-receiver/raw/main/docs/brand-v2/wordmark-compact-light.png",
+          "naturalWidth": 1728,
+          "naturalHeight": 448,
+          "width": 324,
+          "height": 84,
+          "complete": true
+        }
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 1100,
+        "metrics": {
+          "src": "https://github.com/pcvantol/djconnect-vibecast-receiver/raw/main/docs/brand-v2/wordmark-primary-light.png",
+          "naturalWidth": 2048,
+          "naturalHeight": 512,
+          "width": 512,
+          "height": 128,
+          "complete": true
+        }
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "metrics": {
+          "src": "https://github.com/pcvantol/djconnect-vibecast-receiver/raw/main/docs/brand-v2/wordmark-compact-dark.png",
+          "naturalWidth": 1728,
+          "naturalHeight": 448,
+          "width": 324,
+          "height": 84,
+          "complete": true
+        }
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 1100,
+        "metrics": {
+          "src": "https://github.com/pcvantol/djconnect-vibecast-receiver/raw/main/docs/brand-v2/wordmark-primary-dark.png",
+          "naturalWidth": 2048,
+          "naturalHeight": 512,
+          "width": 512,
+          "height": 128,
+          "complete": true
+        }
+      }
+    ],
+    "initialEvidenceCorrection": {
+      "candidate": "071e8ca50fd5a617980048ae9d9084273ebe96d9",
+      "reviews": "TWO_NO_GO_P2",
+      "retainedReceipt": "artifacts/github-brand-main/receipt.json",
+      "finding": "WebKit/light/390 decoded with correct source and natural dimensions but measured rendered width/height zero; original receipt does not prove all eight visible sizes",
+      "resolution": "Fresh actual GitHub MAIN run waits for visible image and layout, then requires positive rendered width/height, correct currentSrc, natural dimensions and aspect ratio; all eight pass. No product-source change."
+    }
+  },
+  "rollback": {
+    "actual": "NOT_REQUIRED_NOT_RUN",
+    "modeledOwnershipRecoveryTests": 8,
+    "prior": "17bf0173-c70e-431c-884f-a9b8b04f2bca",
+    "unknownCrashOrForeignProduction": "MANUAL_RECONCILIATION"
+  },
+  "acceptance": {
+    "SOURCE": "PROTECTED_DELIVERED_BOOTSTRAP_README_ONLY",
+    "CI": "PASS",
+    "PAGES": "PASS",
+    "DOMAIN_TLS": "PASS_EXISTING_BINDING",
+    "RENDEZVOUS": "SOURCE_ONLY_NOT_LIVE_QUALIFIED",
+    "APPLE_HA_E2E": "OPEN",
+    "PHYSICAL_TV": "NOT_RUN",
+    "SHARED_CAST_BRAND": "WAITING_FOR_FULL_PINNED_PRODUCER_BUILD",
+    "GITHUB_SOCIAL": "WAITING_FOR_CANONICAL_EXPORT"
+  },
+  "timer": "OFF"
+}

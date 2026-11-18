@@ -1,0 +1,881 @@
+{
+  "build_version": "1.1.0",
+  "cast_sha256": "cdd24ff51d0719d07d0929d7ab6c988df1b77e10b753f06028ad13b3caad9a14",
+  "evidence": "LOCAL_BROWSER_MODELED_CAF_AND_HA_ONLY",
+  "hardware": false,
+  "real_caf": false,
+  "real_ha": false,
+  "results": [
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1080,
+      "lang": "en",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "en",
+        "moment": "A shared musical moment.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1920
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1920,
+      "lang": "en",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "en",
+        "moment": "A shared musical moment.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1200
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1080,
+      "lang": "nl",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "nl",
+        "moment": "Een gedeeld muzikaal moment.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1920
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1920,
+      "lang": "nl",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "nl",
+        "moment": "Een gedeeld muzikaal moment.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1200
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1080,
+      "lang": "de",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "de",
+        "moment": "Ein gemeinsamer musikalischer Moment.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1920
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1920,
+      "lang": "de",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "de",
+        "moment": "Ein gemeinsamer musikalischer Moment.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1200
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1080,
+      "lang": "fr",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "fr",
+        "moment": "Un moment musical partag\u00e9.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1920
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1920,
+      "lang": "fr",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "fr",
+        "moment": "Un moment musical partag\u00e9.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1200
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1080,
+      "lang": "es",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "es",
+        "moment": "Un momento musical compartido.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1920
+    },
+    {
+      "cleared": true,
+      "correlated": true,
+      "errors": [],
+      "height": 1920,
+      "lang": "es",
+      "pass": true,
+      "shown": {
+        "firstSource": true,
+        "lang": "es",
+        "moment": "Un momento musical compartido.",
+        "overflow": false,
+        "secondSource": true,
+        "sessionControl": false,
+        "title": "Browser qualification fixture"
+      },
+      "statuses": [
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 1,
+            "session_id": "test-session",
+            "state": "receiver_ready",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 2,
+            "session_id": "test-session",
+            "state": "connecting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "sequence": 3,
+            "session_id": "test-session",
+            "state": "snapshot_accepted",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "presentation": "moment",
+            "sequence": 4,
+            "session_id": "test-session",
+            "state": "presenting",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        },
+        {
+          "data": {
+            "handoff_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "vibecast_status",
+            "lease_ms": 15000,
+            "reason": "host_stop",
+            "sequence": 5,
+            "session_id": "test-session",
+            "state": "stopped",
+            "version": 1
+          },
+          "id": "synthetic-sender",
+          "ns": "urn:x-cast:com.djconnect.vibecast.v1"
+        }
+      ],
+      "width": 1200
+    }
+  ],
+  "supplying_revision": "d7396554cb6179c7cdce67c473bd9b069c4c9a92"
+}

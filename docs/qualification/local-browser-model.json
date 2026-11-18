@@ -1,0 +1,181 @@
+{
+  "source_receiver": "38d98b0e2af5e54a8feb23eff0663cb658d84935",
+  "evidence": "LOCAL_BROWSER_MODELED_CAF_AND_HA_ONLY",
+  "real_caf": false,
+  "real_ha": false,
+  "hardware": false,
+  "results": [
+    {
+      "lang": "en",
+      "width": 1920,
+      "height": 1080,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "A shared musical moment.",
+        "lang": "en",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "en",
+      "width": 1200,
+      "height": 1920,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "A shared musical moment.",
+        "lang": "en",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "nl",
+      "width": 1920,
+      "height": 1080,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "Een gedeeld muzikaal moment.",
+        "lang": "nl",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "nl",
+      "width": 1200,
+      "height": 1920,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "Een gedeeld muzikaal moment.",
+        "lang": "nl",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "de",
+      "width": 1920,
+      "height": 1080,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "Ein gemeinsamer musikalischer Moment.",
+        "lang": "de",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "de",
+      "width": 1200,
+      "height": 1920,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "Ein gemeinsamer musikalischer Moment.",
+        "lang": "de",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "fr",
+      "width": 1920,
+      "height": 1080,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "Un moment musical partag\u00e9.",
+        "lang": "fr",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "fr",
+      "width": 1200,
+      "height": 1920,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "Un moment musical partag\u00e9.",
+        "lang": "fr",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "es",
+      "width": 1920,
+      "height": 1080,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "Un momento musical compartido.",
+        "lang": "es",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    },
+    {
+      "lang": "es",
+      "width": 1200,
+      "height": 1920,
+      "pass": true,
+      "shown": {
+        "title": "Browser qualification fixture",
+        "moment": "Un momento musical compartido.",
+        "lang": "es",
+        "firstSource": true,
+        "secondSource": true,
+        "overflow": false,
+        "sessionControl": false
+      },
+      "cleared": true,
+      "errors": []
+    }
+  ],
+  "browser": "installed Google Chrome, disposable Playwright context",
+  "network": "all requests aborted; no live CAF or HA"
+}

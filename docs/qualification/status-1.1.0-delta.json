@@ -1,0 +1,58 @@
+{
+  "build_version": "1.1.0",
+  "contracts_after": {
+    "broadcast_transport": "snapshot-event-v1",
+    "cast_handoff_versions": [
+      1
+    ],
+    "cast_status_versions": [
+      1
+    ],
+    "required_capabilities": {
+      "owner_controls": false,
+      "view_broadcast": true
+    }
+  },
+  "contracts_before": {
+    "broadcast_transport": "snapshot-event-v1",
+    "cast_handoff_versions": [
+      1
+    ],
+    "required_capabilities": {
+      "owner_controls": false,
+      "view_broadcast": true
+    }
+  },
+  "module_hashes": {
+    "cast-host.js": {
+      "changed": true,
+      "new": "b3b15f607735918f83d130b6afffb460f6d7a808e3c69228ece9b947816be52b",
+      "old": "bef7d14600761b9b84c3f20e9669fb38b4614d0a2886c94710539860a7013313"
+    },
+    "local-host.js": {
+      "changed": false,
+      "new": "d13b693b8c983db1e171f9a5373301bd7359f7f3de555819dc2931c08d317a0e",
+      "old": "d13b693b8c983db1e171f9a5373301bd7359f7f3de555819dc2931c08d317a0e"
+    },
+    "renderer.js": {
+      "changed": true,
+      "new": "f0455cbe8b294e55d9add12c9c1fff86578a0f7b8c403314fb7ce2a041c4d60c",
+      "old": "2f08d8f0a82db1749ef97ff5508dd64016b35f14878abdcd5f3475f27bfec276"
+    },
+    "style.css": {
+      "changed": false,
+      "new": "6f32448f84e06e5d2bb4241503af9247843b834f506f9f564402f8072d5b925e",
+      "old": "6f32448f84e06e5d2bb4241503af9247843b834f506f9f564402f8072d5b925e"
+    },
+    "template.html": {
+      "changed": false,
+      "new": "698eb9bc06fa5e14618f178996a612d10c514f1559026da12a32919e34c87ed6",
+      "old": "698eb9bc06fa5e14618f178996a612d10c514f1559026da12a32919e34c87ed6"
+    }
+  },
+  "new_cast": "cdd24ff51d0719d07d0929d7ab6c988df1b77e10b753f06028ad13b3caad9a14",
+  "old_cast": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701",
+  "source_revision": "d7396554cb6179c7cdce67c473bd9b069c4c9a92",
+  "verifier_after": "f24cd2814fc87557142e9892f816075c55d1ea93846274c2c2121dd26e30ba13",
+  "verifier_before": "3d43e0c159d6de3e2571de4279acd016cf24e4ddbde1547408dcb90cb9141ff0"
+}

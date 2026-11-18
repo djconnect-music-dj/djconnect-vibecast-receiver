@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "sourceSHA": "b4dcff6210714d3504fcebcf07aaa6b15e0372a1",
+  "runID": "38933359799",
+  "account": "efe77cadf8317a53832fca0848e3ae51",
+  "project": "vibecast-tv-bootstrap",
+  "zone": "14310b82eeb03876e6c551632a046e87",
+  "domain": "vibecast.tv",
+  "initialAddresses": [],
+  "initialDomainID": null,
+  "createdDomainID": null,
+  "createdRecordID": "d548e42ff358abe72ae62dd6d4a65974",
+  "pendingMutation": null,
+  "stage": "dns-before-association",
+  "complete": false
+}

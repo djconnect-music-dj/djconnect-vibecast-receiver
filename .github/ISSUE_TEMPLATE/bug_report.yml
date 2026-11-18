@@ -1,0 +1,9 @@
+name: Bug report
+description: Report a receiver runtime problem without sensitive data.
+labels: [bug]
+body:
+  - type: textarea
+    attributes: { label: What happened }
+    validations: { required: true }
+  - type: textarea
+    attributes: { label: Safe reproduction steps, description: Never include tokens, URLs or session data. }

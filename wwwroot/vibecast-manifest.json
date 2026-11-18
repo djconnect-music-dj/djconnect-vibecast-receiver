@@ -1,0 +1,33 @@
+{
+  "build_version": "1.1.4",
+  "contracts": {
+    "broadcast_transport": "snapshot-event-v1",
+    "cast_handoff_versions": [
+      1
+    ],
+    "cast_status_versions": [
+      1
+    ],
+    "required_capabilities": {
+      "owner_controls": false,
+      "view_broadcast": true
+    }
+  },
+  "files": {
+    "cast/index.html": "ecab0e2d491cfcd09856fd2c98dfee4ce8e6f6c9de26fa73035654c18b57ab76",
+    "local/vibecast.html": "5b2745f9cfedf345f24e249bbdca234980edfad10234275fd6754c1308579aa9"
+  },
+  "private_runtime_data_in_build": false,
+  "promotion": "explicit receiver-owner import; no automatic deployment",
+  "renderer_source_sha256": "867f4fcd15432126cd821af95e07acdd02884924f20d7271470fd79ffe4ac463",
+  "schema_version": 1,
+  "source_revision": "c91ee641da9314ce71a769aed45c7122e4b63aef",
+  "sources": {
+    "../brand/mark-40.png": "b07eb1d01fc37044eef22e3f376635b0f623eec384c18f89046a49c80bb8c257",
+    "cast-host.js": "b3b15f607735918f83d130b6afffb460f6d7a808e3c69228ece9b947816be52b",
+    "local-host.js": "3ad7033ca34badacaa3b0ca2d52e960fbeb5f130236d49050722441105314975",
+    "renderer.js": "867f4fcd15432126cd821af95e07acdd02884924f20d7271470fd79ffe4ac463",
+    "style.css": "f70190cd3d938b4f546466bdefe88d3a17b3c84948274bcb06b93cc358f156f5",
+    "template.html": "96e4c661ec687661a710d53679ab8005b2bf8fbd445d74f2ebe071c496b42041"
+  }
+}

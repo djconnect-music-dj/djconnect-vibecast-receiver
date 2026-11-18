@@ -1,0 +1,186 @@
+{
+  "scope": "READONLY_RENDERER_DISTRIBUTION_NOT_A_B_OR_HARDWARE",
+  "sourcePR": 27,
+  "reviewedSHA": "1f03371cdecb9a61fdac6a1ba14beca4b3d525d5",
+  "sourceMerge": "954cce58fb6fe0a209a6ea1812bdad5a92c6a4d8",
+  "reviewedAndMergeTree": "cd47d48676892f1dfe51f2c00b1e9af3ab755294",
+  "coreRevision": "6a3adbc8e66ab380dfea1726ca34728097d0c684",
+  "mainCI": 39086846662,
+  "projectionCI": 39086846661,
+  "prCI": 39086709418,
+  "tests": {
+    "Node": 66,
+    "Python": 10,
+    "browser": 54,
+    "newCastBrowserModeledCAFHA": 20
+  },
+  "preview": {
+    "id": "cd84aa35-e99e-48a1-948e-26baa0eb4593",
+    "readback": {
+      "origin": "https://cd84aa35.djconnect-vibecast-receiver.pages.dev",
+      "rows": [
+        {
+          "path": "/",
+          "final": "200 https://cd84aa35.djconnect-vibecast-receiver.pages.dev/",
+          "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+          "redirects": 0,
+          "exactBytes": true,
+          "typesPrivacy": true
+        },
+        {
+          "path": "/index.html",
+          "final": "200 https://cd84aa35.djconnect-vibecast-receiver.pages.dev/",
+          "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+          "redirects": 1,
+          "exactBytes": true,
+          "typesPrivacy": true
+        },
+        {
+          "path": "/index",
+          "final": "200 https://cd84aa35.djconnect-vibecast-receiver.pages.dev/",
+          "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+          "redirects": 1,
+          "exactBytes": true,
+          "typesPrivacy": true
+        },
+        {
+          "path": "/vibecast-manifest.json",
+          "final": "200 https://cd84aa35.djconnect-vibecast-receiver.pages.dev/vibecast-manifest.json",
+          "sha256": "ee18b3d9f45341ae522d2406a087c009da48a67a99d7da3e1cbbdf483a5a09d2",
+          "redirects": 0,
+          "exactBytes": true,
+          "typesPrivacy": true
+        }
+      ],
+      "scope": "actual HTTPS exact index/manifest content/privacy; not real CAF/HA/TV"
+    }
+  },
+  "production": {
+    "id": "4aa9e79d-b80f-46ec-b29c-40d475d03e45",
+    "sourceSHA": "954cce58fb6fe0a209a6ea1812bdad5a92c6a4d8",
+    "readbacks": [
+      {
+        "origin": "https://4aa9e79d.djconnect-vibecast-receiver.pages.dev",
+        "rows": [
+          {
+            "path": "/",
+            "final": "200 https://4aa9e79d.djconnect-vibecast-receiver.pages.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 0,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/index.html",
+            "final": "200 https://4aa9e79d.djconnect-vibecast-receiver.pages.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 1,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/index",
+            "final": "200 https://4aa9e79d.djconnect-vibecast-receiver.pages.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 1,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/vibecast-manifest.json",
+            "final": "200 https://4aa9e79d.djconnect-vibecast-receiver.pages.dev/vibecast-manifest.json",
+            "sha256": "ee18b3d9f45341ae522d2406a087c009da48a67a99d7da3e1cbbdf483a5a09d2",
+            "redirects": 0,
+            "exactBytes": true,
+            "typesPrivacy": true
+          }
+        ],
+        "scope": "actual HTTPS exact index/manifest content/privacy; not real CAF/HA/TV"
+      },
+      {
+        "origin": "https://receiver.djconnect.dev",
+        "rows": [
+          {
+            "path": "/",
+            "final": "200 https://receiver.djconnect.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 0,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/index.html",
+            "final": "200 https://receiver.djconnect.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 1,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/index",
+            "final": "200 https://receiver.djconnect.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 1,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/vibecast-manifest.json",
+            "final": "200 https://receiver.djconnect.dev/vibecast-manifest.json",
+            "sha256": "ee18b3d9f45341ae522d2406a087c009da48a67a99d7da3e1cbbdf483a5a09d2",
+            "redirects": 0,
+            "exactBytes": true,
+            "typesPrivacy": true
+          }
+        ],
+        "scope": "actual HTTPS exact index/manifest content/privacy; not real CAF/HA/TV"
+      },
+      {
+        "origin": "https://djconnect-vibecast-receiver.pages.dev",
+        "rows": [
+          {
+            "path": "/",
+            "final": "200 https://djconnect-vibecast-receiver.pages.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 0,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/index.html",
+            "final": "200 https://djconnect-vibecast-receiver.pages.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 1,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/index",
+            "final": "200 https://djconnect-vibecast-receiver.pages.dev/",
+            "sha256": "cf4421778d093e130b46866b98ca1ab72b142e5359a1a6d43ea082c1e79e9fab",
+            "redirects": 1,
+            "exactBytes": true,
+            "typesPrivacy": true
+          },
+          {
+            "path": "/vibecast-manifest.json",
+            "final": "200 https://djconnect-vibecast-receiver.pages.dev/vibecast-manifest.json",
+            "sha256": "ee18b3d9f45341ae522d2406a087c009da48a67a99d7da3e1cbbdf483a5a09d2",
+            "redirects": 0,
+            "exactBytes": true,
+            "typesPrivacy": true
+          }
+        ],
+        "scope": "actual HTTPS exact index/manifest content/privacy; not real CAF/HA/TV"
+      }
+    ]
+  },
+  "independentPreviewReadback": "4 routes PASS",
+  "independentProductionReadback": "root/manifest on3origins PASS",
+  "rollback": "DISPOSABLE_ROOT_PRIOR_STATUS_PIN_AND_REAPPLY_PASS;NO_LIVE_ROLLBACK",
+  "bootstrap": "vibecast.tv index unchanged SHA256be902b2e92d5f5d69dd49f0ed4b191e558e7f5ae276576a857585ab5806aa255",
+  "A": "NOT_FROZEN_NO_RUNTIME_GO",
+  "B": "NOT_INSTALLED_IN_CORE_OBSERVED_HA_DEV",
+  "CAF_native_physical_TV": "NOT_RUN",
+  "finalization": "separate candidate pending at preparation; owning10 reconciles exact protected result"
+}

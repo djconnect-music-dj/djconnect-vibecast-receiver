@@ -1,0 +1,10 @@
+{
+  "release": "djc-rendezvous/1-implementation.1",
+  "source": "2dade83f338ae5f931856934ab0c23b6f6c66f05",
+  "finalization": "661e5770eb5249b1b02bbdc2426ba7e575fc8881",
+  "receipt": "https://github.com/pcvantol/djconnect-api/issues/90#issuecomment-6272409413",
+  "release_manifest_sha256": "189e71aca07ac49cc6f7db225d3acb10a3a9fc357be02a9eaacb8f30a798c596",
+  "core_route": "6e560061cbee3bed86c50fc0deee7d74b9bfee9b",
+  "service_qualified": false,
+  "public_activation": false
+}
