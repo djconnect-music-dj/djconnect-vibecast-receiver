@@ -5,10 +5,9 @@ test('artifact verification rejects tampered bytes, source identity, unexpected 
 
 test('explicit owner self-review retains mandatory owner approval and all other protection',()=>{const x=valid();x.environment.protection_rules[0].prevent_self_review=false;assert.doesNotThrow(()=>guard(x));x.environment.protection_rules[0].reviewers.push({type:'User',reviewer:{login:'other',id:1}});assert.throws(()=>guard(x));});
 
-test('promotion accepts the legacy name only when the artifact run has the same legacy name', () => {
+test('promotion rejects the former owner even for a matching artifact run', () => {
  const input = valid();
  input.repository = 'pcvantol/djconnect-vibecast-receiver';
- assert.throws(() => guard(input), /Untrusted or failed artifact run/);
  input.run.repository.full_name = input.repository;
- assert.doesNotThrow(() => guard(input));
+ assert.throws(() => guard(input), /Wrong repository/);
 });

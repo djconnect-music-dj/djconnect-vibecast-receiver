@@ -71,7 +71,7 @@ test('requires an owner-confirmed Access review for the exact SHA and digest in 
   const legacyRepository = 'pcvantol/djconnect-vibecast-receiver';
   const legacyComment = { ...comment, issue_url: `https://api.github.com/repos/${legacyRepository}/issues/10` };
   assert.doesNotThrow(() => requireAccessReview(comment, sha, digest, repository));
-  assert.doesNotThrow(() => requireAccessReview(legacyComment, sha, digest, legacyRepository));
+  assert.throws(() => requireAccessReview(legacyComment, sha, digest, legacyRepository));
   assert.throws(() => requireAccessReview(legacyComment, sha, digest, repository), /issue 10/);
   assert.throws(() => requireAccessReview(comment, 'e'.repeat(40), digest, repository), /exact owner/);
   assert.throws(() => requireAccessReview({ ...comment, issue_url: comment.issue_url + '0' }, sha, digest, repository), /issue 10/);

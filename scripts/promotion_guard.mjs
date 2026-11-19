@@ -1,13 +1,15 @@
 import {execFileSync} from 'node:child_process';
 
 export const receiverRepositoryId = 1324916521;
-const receiverNames = new Set([
- 'pcvantol/djconnect-vibecast-receiver',
- 'djconnect-music-dj/djconnect-vibecast-receiver',
-]);
+const receiverName = 'djconnect-music-dj/djconnect-vibecast-receiver';
 
 export function isReceiverRepositoryName(name) {
- return receiverNames.has(name);
+ return name === receiverName;
+}
+
+// Historical failed runs retain their original recorded repository name.
+export function isHistoricalReceiverRepositoryName(name) {
+ return name === 'pcvantol/djconnect-vibecast-receiver' || isReceiverRepositoryName(name);
 }
 
 export function guardTrustedRun({repository,branch,sha,checkoutSHA,currentMain,run}) {
