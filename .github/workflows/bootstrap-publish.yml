@@ -1,0 +1,110 @@
+name: Publish VibeCast bootstrap
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact reviewed and effect-approved protected main SHA
+        required: true
+        type: string
+      artifact_run_id:
+        description: Successful Verify receiver push/main run for that SHA
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: vibecast-bootstrap-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.repository_id == '1324916521' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: vibecast-production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24
+      - name: Verify trusted source, CI and protected effect approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/promotion_guard.mjs
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: bootstrap-${{ inputs.candidate_sha }}
+          path: dist/bootstrap
+          run-id: ${{ inputs.artifact_run_id }}
+          github-token: ${{ github.token }}
+      - run: npm ci --ignore-scripts
+      - name: Verify exact tested artifact
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        run: node scripts/verify_bootstrap.mjs dist/bootstrap "$CANDIDATE_SHA"
+      - run: node scripts/readback_cast.mjs
+      - name: Recheck fixed target and DNS inventory before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_DNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
+        run: node scripts/cloudflare_readiness.mjs initial-publication
+      - name: Recheck stale-run fence and publish isolated target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          node scripts/promotion_guard.mjs
+          npx --no-install wrangler pages deploy dist/bootstrap --project-name=vibecast-tv-bootstrap --branch=main --commit-hash="$CANDIDATE_SHA" > bootstrap-deploy.log
+      - name: Verify immutable deployment
+        run: |
+          node -e "const fs=require('fs'); const log=fs.readFileSync('bootstrap-deploy.log','utf8'); const url=log.match(/https:\/\/[a-z0-9]+\.vibecast-tv-bootstrap\.pages\.dev/); if(!url)throw Error('No immutable deployment URL'); fs.writeFileSync('immutable-url.txt',url[0]);"
+          node scripts/wait_bootstrap.mjs dist/bootstrap/build-manifest.json "$(cat immutable-url.txt)" > immutable-readback.json
+      - run: node scripts/readback_cast.mjs
+      - name: Associate only the fixed root after immutable qualification
+        id: bind
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_DNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
+        run: node scripts/cloudflare_domain.mjs bind
+      - name: Verify production HTTPS bytes and headers
+        run: node scripts/wait_bootstrap.mjs dist/bootstrap/build-manifest.json > root-readback.json
+      - run: node scripts/readback_cast.mjs
+      - name: Restore only this run created root binding on failure
+        if: ${{ failure() && hashFiles('domain-receipt.json') != '' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_DNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
+        run: node scripts/cloudflare_domain.mjs rollback
+      - name: Retain sanitized publication or failure evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: bootstrap-publication-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            cloudflare-readiness.json
+            cloudflare-read-observation.json
+            cloudflare-failure.json
+            immutable-url.txt
+            immutable-readback.json
+            domain-receipt.json
+            domain-rollback.json
+            root-readback.json
+            dist/bootstrap/build-manifest.json
+          if-no-files-found: warn
+          retention-days: 2

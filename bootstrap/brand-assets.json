@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "producer": "pcvantol/djconnect",
+  "sourceSHA": "97a20fa17d60aa32cf92dc106707d70540ee479e",
+  "finalizationSHA": "e390c5a81e2d2d272a46cc720c83cc4667c355c1",
+  "sourceTree": "857661c128a6b4a9522d032b7b11f113d1ac6c92",
+  "manifest": "docs/brand-v2/core-manifest.json",
+  "manifestSHA256": "3fbdfe2a3ae326900a721c6bca1ebfd95c3f4a19d48c938efb86b0fad4cef56f",
+  "ingestion": "exact protected source Git blobs plus byte-equal complete74-file producer ZIP",
+  "protectedArchive": {
+    "sha256": "080ddbc078c320eab745c719dfb6f8cf77e1ae0448701578224e602fe84dcf8b",
+    "downloadStatus": "VERIFIED_SHARED_MACHINE_PRODUCER_ARCHIVE",
+    "supplyingHandoff": "https://github.com/pcvantol/djconnect-vibecast-receiver/issues/29#issuecomment-6293460473"
+  },
+  "assets": {
+    "bootstrap/public/brand-mark-16.png": "assets/djconnect/brand-v2/mark-16.png",
+    "bootstrap/public/brand-mark-32.png": "assets/djconnect/brand-v2/mark-32.png",
+    "bootstrap/public/brand-mark-40.png": "assets/djconnect/brand-v2/mark-40.png",
+    "bootstrap/public/brand-mark-128.png": "assets/djconnect/brand-v2/mark-128.png",
+    "docs/brand-v2/wordmark-primary-light.png": "assets/djconnect/brand-v2/wordmark-primary-light.png",
+    "docs/brand-v2/wordmark-primary-dark.png": "assets/djconnect/brand-v2/wordmark-primary-dark.png",
+    "docs/brand-v2/wordmark-compact-light.png": "assets/djconnect/brand-v2/wordmark-compact-light.png",
+    "docs/brand-v2/wordmark-compact-dark.png": "assets/djconnect/brand-v2/wordmark-compact-dark.png",
+    "bootstrap/public/brand-wordmark-primary-dark.png": "assets/djconnect/brand-v2/wordmark-primary-dark.png",
+    "bootstrap/public/brand-wordmark-compact-dark.png": "assets/djconnect/brand-v2/wordmark-compact-dark.png"
+  },
+  "renderer": "NOT_IMPORTED; full independently pinned build required",
+  "socialPreview": "NOT_SUPPLIED; settings unchanged"
+}

@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "scope": "LOCAL_HTTP_QUALIFICATION_PIN_PICKUP_ONLY",
+  "sourcePR": 38,
+  "reviewedSHA": "5bb34536aae21b821922838615e6090c22c0ccde",
+  "reviewedTree": "21674028551a63d53137b8277549134b0f8b2832",
+  "sourceMain": "dd34c92dbcda2606840b49c690025c0533c17113",
+  "prCI": 39428889067,
+  "prProjection": 39428889035,
+  "mainCI": 39429190209,
+  "mainProjection": 39429190138,
+  "apiSource": "379d70b558508f747d578d7b7d90a665bad7ffc8",
+  "apiFinalization": "https://github.com/pcvantol/djconnect-api/issues/90#issuecomment-6291539736",
+  "runtimeSHA256": "27e9f5ae2a7b7350f3ae51352cf4efb023ec17f79bc8f42968cc3bdfbfe34854",
+  "pinnedFiles": 279,
+  "delta": {
+    "old": "828fbaf300ca369dcc753b676295e84094d5e8c6",
+    "new": "379d70b558508f747d578d7b7d90a665bad7ffc8",
+    "changed": [
+      "docs/rendezvous/ENROLLMENT_POLICY_AVAILABILITY_V1.md",
+      "docs/rendezvous/deployment-preparation-v1.json",
+      "docs/rendezvous/enrollment-policy-build-observations-v1.json",
+      "docs/rendezvous/enrollment-policy-shared-observations-v1.json",
+      "docs/rendezvous/enrollment-policy-source-delta-v1.json",
+      "qualification/rendezvous/challenge-budget.check.mjs",
+      "qualification/rendezvous/enrollment-key-state.check.mjs",
+      "qualification/rendezvous/enrollment-key-state.ts",
+      "qualification/rendezvous/local-native-runtime.mjs"
+    ],
+    "old_count": 275,
+    "new_count": 279
+  },
+  "actualMainReceiptSHA256": "01907fbb2e54c26af8c79070017386bc573953fbfd5e4aeaad18ef049cf959e6",
+  "httpArchiveDigest": "8059ab881a06173f413af4a150882ec9d4b544c7efdc2e0d8ad7540b9bd9a36c",
+  "bootstrapManifestSHA256": "efa825ae29bbd996c466d6e90097e368fc0f3c57422e67f5c5bc573e625bd0d6",
+  "bootstrapArchiveDigest": "e0f4276b8749aebccf61a2325262e1830565cac0151a9e14fbbc3bd045375fd0",
+  "cases": [
+    {
+      "engine": "chromium",
+      "ui": {
+        "state": "unavailable",
+        "states": [
+          "creating",
+          "waiting",
+          "unavailable"
+        ],
+        "navigations": 0,
+        "overflow": false,
+        "localStorage": 0,
+        "sessionStorage": 0
+      },
+      "qr": "INDEPENDENT_CANVAS_DECODE_CANONICAL_SERVICE",
+      "trace": [
+        {
+          "method": "OPTIONS",
+          "route": "/create",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/create",
+          "status": 201
+        },
+        {
+          "method": "OPTIONS",
+          "route": "/poll",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/poll",
+          "status": 200
+        },
+        {
+          "method": "OPTIONS",
+          "route": "/cancel",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/cancel",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "ui": {
+        "state": "unavailable",
+        "states": [
+          "creating",
+          "waiting",
+          "unavailable"
+        ],
+        "navigations": 0,
+        "overflow": false,
+        "localStorage": 0,
+        "sessionStorage": 0
+      },
+      "qr": "INDEPENDENT_CANVAS_DECODE_CANONICAL_SERVICE",
+      "trace": [
+        {
+          "method": "OPTIONS",
+          "route": "/create",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/create",
+          "status": 201
+        },
+        {
+          "method": "OPTIONS",
+          "route": "/poll",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/poll",
+          "status": 200
+        },
+        {
+          "method": "OPTIONS",
+          "route": "/cancel",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/cancel",
+          "status": 200
+        }
+      ]
+    }
+  ],
+  "outbound": 0,
+  "tests": {
+    "node": 99,
+    "python": 10,
+    "existingBrowserCI": 84,
+    "newActualHTTPBrowser": 2
+  },
+  "bootstrapPayloadHashesEqualPublishedHero": true,
+  "publicBootstrapSourceStill": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+  "productionActivation": false,
+  "bootstrapPublishDispatch": "NOT_RUN",
+  "nativeEnrollmentRace": "NOT_EXECUTED_BY_RECEIVER",
+  "historical828Evidence": "UNCHANGED_AT_RECEIVER_9cfe13a",
+  "acceptance": {
+    "SOURCE": "PROTECTED_LOCAL_PIN_PICKUP",
+    "CI": "PR_AND_SOURCE_MAIN_PASS",
+    "PAGES": "PRIOR_DELIVERY_NO_NEW_DISPATCH",
+    "DOMAIN_TLS": "FINAL_READBACK_PENDING",
+    "RENDEZVOUS": "LOCAL_HTTP_ONLY_PUBLIC_OFF",
+    "APPLE_HA_E2E": "OPEN",
+    "PHYSICAL_TV": "NOT_RUN"
+  },
+  "timer": "OFF"
+}

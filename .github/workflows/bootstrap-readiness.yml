@@ -1,0 +1,82 @@
+name: Verify VibeCast Cloudflare access
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Read-only inspect or restore the exact confirmed failed-run binding
+        type: choice
+        options: [inspect, restore-run38933359799, restore-run38934680867]
+        default: inspect
+      candidate_sha:
+        description: Exact protected main SHA
+        required: true
+        type: string
+      artifact_run_id:
+        description: Successful Verify receiver push/main run for that SHA
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: vibecast-bootstrap-production
+  cancel-in-progress: false
+jobs:
+  inspect:
+    if: github.repository_id == '1324916521' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: vibecast-production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24
+      - name: Read fixed Pages project and bounded DNS inventory
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_DNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
+        run: node scripts/cloudflare_readiness.mjs
+      - name: Download only the exact failed publication receipt
+        if: inputs.operation == 'restore-run38933359799'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: bootstrap-publication-b4dcff6210714d3504fcebcf07aaa6b15e0372a1-38933359799
+          path: prior-publication
+          run-id: 38933359799
+          github-token: ${{ github.token }}
+      - name: Download only the exact second failed publication receipt
+        if: inputs.operation == 'restore-run38934680867'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: bootstrap-publication-2363ae88adec172c440c0381ae8bf7b4c54ceb96-38934680867
+          path: prior-publication
+          run-id: 38934680867
+          github-token: ${{ github.token }}
+      - name: Restore only the exact failed-run owned binding
+        if: inputs.operation == 'restore-run38933359799' || inputs.operation == 'restore-run38934680867'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_DNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DNS_API_TOKEN }}
+          RECOVERY_OPERATION: ${{ inputs.operation }}
+        run: node scripts/reconcile_initial_binding.mjs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: cloudflare-readiness-${{ github.sha }}
+          path: |
+            cloudflare-readiness.json
+            cloudflare-read-observation.json
+            cloudflare-failure.json
+            domain-reconciliation.json
+          if-no-files-found: error
+          retention-days: 2

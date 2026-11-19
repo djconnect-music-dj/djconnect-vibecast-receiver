@@ -1,0 +1,18 @@
+{
+  "assignment": "DJC-VIBECAST-CAST-STATUS-ADOPTION-V1-20261010",
+  "bundle_file": "vendor/core/vibecast-status-d7396554.tar.gz",
+  "bundle_sha256": "939ab00f70d1122410559b6f0eaedf5dd831240e65d04d15a24a58497d5cd74a",
+  "bundle_url": "https://github.com/pcvantol/djconnect/releases/download/internal-ha-c41b6079ed54eb40b0027a6666b0f784bb48f703/vibecast-status-d7396554.tar.gz",
+  "manifest_sha256": "b401cb5e02e7a34b2674c4432c3f79675df6819bb667685124b928915839350a",
+  "parent_assignment": "DJC-VIBECAST-CAST-RECEIVER-ADOPTION-V1-20261009",
+  "renderer_sha256": "f0455cbe8b294e55d9add12c9c1fff86578a0f7b8c403314fb7ce2a041c4d60c",
+  "schema_version": 1,
+  "source_finalization": "ffaa4df0ea1a184669622a6c98d9f0f5aae7a4f2",
+  "source_merge": "c41b6079ed54eb40b0027a6666b0f784bb48f703",
+  "source_repository": "pcvantol/djconnect",
+  "source_revision": "d7396554cb6179c7cdce67c473bd9b069c4c9a92",
+  "status_schema_file": "vendor/core/1.1.0/status.schema.json",
+  "status_schema_sha256": "585d4771f2b38aa3228522a1d0f9872a2ee0149e6f1129c804c1e4840e2e83ae",
+  "verifier_file": "vendor/core/1.1.0/build_vibecast.py",
+  "verifier_sha256": "f24cd2814fc87557142e9892f816075c55d1ea93846274c2c2121dd26e30ba13"
+}

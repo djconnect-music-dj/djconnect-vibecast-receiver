@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "assignment": "vibecast.tv official Brand2.0.1 and canonical responsive wordmark",
+  "source_pr": 42,
+  "reviewed_candidate": "f0cee8bfbbae37748824ada5cf43c2337744db0d",
+  "source_merge": "57938b72cdfdf7dc269d6dc9f838c79afef12953",
+  "reviewed_merge_tree": "3a2b6d686e3b8235f2ed290c530284c7b5058ea4",
+  "reviews": "TWO_INDEPENDENT_EXACT_SOURCE_EFFECT_GO_NO_P1_P2",
+  "producer_source": "97a20fa17d60aa32cf92dc106707d70540ee479e",
+  "producer_finalization": "e390c5a81e2d2d272a46cc720c83cc4667c355c1",
+  "pr_ci": {
+    "run": 39448189899,
+    "result": "SUCCESS_ATTEMPT2",
+    "attempt1": "EXTERNAL_MICROSOFT_APT_MIRROR_403_BEFORE_BROWSER_TESTS"
+  },
+  "earlier_candidate_ci": {
+    "run": 39446654254,
+    "result": "FAIL_WEBKIT_LOST_CREATE_UNSAFE_CAUSE_UNDETERMINED",
+    "production_validation_relaxed": false,
+    "test_only_diagnostics_added": true
+  },
+  "main_ci": 39448970156,
+  "main_projection": 39448970159,
+  "main_ci_result": "SUCCESS_FIRST_ATTEMPT",
+  "local": {
+    "node": 99,
+    "python": 11,
+    "browser": 102,
+    "actual_http_ui_engines": 2,
+    "source_visual_previews": 16,
+    "live_https_browser_cases": 4
+  },
+  "bootstrap_artifact": {
+    "id": 12277158884,
+    "provider_archive_digest": "sha256:3778d82fae501515379c065a3fe30957c79201af97abad67c6b11069e67e9862",
+    "manifest_sha256": "a5965b1a3945990eb24b46a95fa8a17ba8057ea43c5f42bf919e9cf9245fbe1b",
+    "all_bytes_and_source_binding": "VERIFIED"
+  },
+  "http_artifact": {
+    "id": 12275769605,
+    "provider_archive_digest": "sha256:0a6ad19e4c7fabe643da5a250b3f12bc2d2d7d80d1aa9ccc0b95c81a94646ef3",
+    "receipt_sha256": "7689089dec29078de403b301e3898d7466e159996c4b03a1d8d8738fa3aacfcb",
+    "api_source": "379d70b558508f747d578d7b7d90a665bad7ffc8",
+    "result": "PASS_TWO_ENGINES"
+  },
+  "publication": {
+    "workflow": 39449321318,
+    "result": "SUCCESS",
+    "exact_owner_environment_review": "APPROVED_EXISTING_REQUIRED_GATE_NO_BYPASS",
+    "preview": "f29d7a1d-5b3d-411b-9a27-c49c3a128dd2",
+    "production": "8f5d0fb4-8178-4bd7-a15f-6584daa21cc5",
+    "immutable": "https://8f5d0fb4.vibecast-tv-bootstrap.pages.dev",
+    "root": "https://vibecast.tv",
+    "stage": "qualified",
+    "receipt_sha256": "9592baf71a4ab6f9bf05a008e31aba9bd2a7e4b70c003215f8d4f53b316a8ec0",
+    "artifact_id": 12277740705,
+    "provider_archive_digest": "sha256:39171229db431203692e38f1940f3ffb42c1f755ece8d8327f5f796d1535da93"
+  },
+  "independent_readback": {
+    "full_root_and_immutable": "PASS_HTTPS_ALL_HASHES_TYPES_HEADERS_404",
+    "receipt_sha256": "f8920c22b0de701be1bc2c13540926f0b211461664eda31a00f7d262d3358e19",
+    "actual_live_browser": "PASS_CHROMIUM_WEBKIT_390_1920_NO_SCRIPT_ERRORS_NO_EXTERNAL_REQUESTS",
+    "browser_receipt_sha256": "b9506f13f2d781efe99ab0bb03d6f256ea95658daa955d877b3adcc8201ec751"
+  },
+  "rollback": {
+    "prior_production": "220f0e59-6bc7-4088-9928-a72a742968c5",
+    "prior_source": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+    "prior_manifest_sha256": "875bf51f82d6e6a66d1f401148c6eefd9caa16b591f43650b51673d2beb3d600",
+    "retained_prior_artifact_all_hashes": "VERIFIED",
+    "owned_rollback_model_tests": "PASS",
+    "actual_public_rollback": "NOT_RUN_NOT_REQUIRED_SUCCESSFUL_PUBLICATION"
+  },
+  "cast": {
+    "source": "97a20fa17d60aa32cf92dc106707d70540ee479e",
+    "source_main_production": "cea73a1d-b1d3-4127-858f-780d8b43e019",
+    "root_immutable_pages_privacy_six_checks": "PASS_UNCHANGED_113",
+    "modified": false
+  },
+  "acceptance": {
+    "SOURCE": "PROTECTED_DELIVERED",
+    "CI": "PASS",
+    "PAGES": "PASS",
+    "DOMAIN_TLS": "PASS",
+    "RENDEZVOUS": "PUBLIC_UNQUALIFIED_UNAVAILABLE",
+    "APPLE_HA_E2E": "OPEN",
+    "PHYSICAL_TV": "NOT_RUN"
+  },
+  "finalization_at_preparation": "PENDING_OWN_INDEPENDENT_REVIEWS_PROTECTED_MERGE_FINAL_MAIN_RECONCILIATION",
+  "timer": "OFF"
+}

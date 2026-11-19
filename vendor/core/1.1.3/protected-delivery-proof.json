@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "admission": "PROTECTED_SOURCE_AND_SEPARATE_FINALIZATION_RECONCILED",
+  "source_revision": "97a20fa17d60aa32cf92dc106707d70540ee479e",
+  "source_pr": 1236,
+  "reviewed_source_sha": "9272dccac3b79defde198887c0b34af8e9cab130",
+  "source_owner_authorization": 39436017365,
+  "source_candidate_checks": {
+    "SUCCESS": 33,
+    "SKIPPED": 5
+  },
+  "source_full_tree_equal": true,
+  "finalization_revision": "e390c5a81e2d2d272a46cc720c83cc4667c355c1",
+  "finalization_pr": 1237,
+  "reviewed_finalization_sha": "4fb08124034adb48fe6d80a4d69de824bd943630",
+  "finalization_owner_authorization": 39440006163,
+  "finalization_candidate_checks": {
+    "SUCCESS": 32,
+    "SKIPPED": 5
+  },
+  "finalization_full_tree_equal": true,
+  "original_build_time_receipts": "UNCHANGED_PENDING_FINALIZATION_LABEL_PRESERVED",
+  "original_verifier": "PASS",
+  "independent_source_documentary_package_reviews": "GO_NO_P1_P2",
+  "hostverify": "EXIT0_MATCH_AFTER_EXACT_OWNER_APPROVED_FIVE_AND_FOUR",
+  "source_main_product_security_tests": "PASS",
+  "source_main_codeql": "SUCCESS_39436582084",
+  "source_main_validation_overall": "FAILURE_39436582067_ONLY_CLEANUP_JOB_GITHUB_API_JSON_ERROR",
+  "consumer_adoption_publication": "OPEN",
+  "native_installed_live_ha_caf_hardware": "NOT_RUN",
+  "narration_quality": "NO_GO_PRESERVED_WIP0163",
+  "new_provider_attempts": 0
+}

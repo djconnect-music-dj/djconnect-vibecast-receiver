@@ -1,0 +1,80 @@
+name: Verify receiver
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: npm run build:bootstrap
+      - run: npm run build:bootstrap:qa
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test:browser
+      - run: node scripts/verify_bootstrap.mjs dist/bootstrap "$GITHUB_SHA"
+      - run: node scripts/verify_bootstrap_qa.mjs dist/bootstrap-qa "$GITHUB_SHA"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: bootstrap-qa-${{ github.sha }}
+          path: dist/bootstrap-qa/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: bootstrap-${{ github.sha }}
+          path: dist/bootstrap/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: failure()
+        with:
+          name: bootstrap-browser-failure-${{ github.sha }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  local-http-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: djconnect-music-dj/djconnect-api
+          ref: 379d70b558508f747d578d7b7d90a665bad7ffc8
+          path: .qa/api
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 26
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install the pinned API qualification toolchain without lifecycle scripts
+        run: npm ci --prefix .qa/api --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Actual receiver UI and two-origin loopback HTTP, no public activation
+        run: npm run test:http-ui -- .qa/api
+        env:
+          NODE_OPTIONS: ''
+          DEBUG: ''
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: receiver-http-ui-${{ github.sha }}
+          path: artifacts/http-ui/receipt.json
+          if-no-files-found: error
+          retention-days: 2

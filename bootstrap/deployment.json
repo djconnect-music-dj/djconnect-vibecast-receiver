@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "project": "vibecast-tv-bootstrap",
+  "account_id": "efe77cadf8317a53832fca0848e3ae51",
+  "production_origin": "https://vibecast.tv",
+  "environment": "vibecast-production",
+  "status": "QUALIFIED",
+  "readiness": {
+    "run_id": 38927449565,
+    "source_sha": "d0107eacb02b33f170dd24c7a13b740808102058",
+    "receipt_sha256": "88039d6e727abeeb394bc3ece2cc4c0eaa5db18b37bfa541a0aafa657c7d8a3a",
+    "read_access": "PASS",
+    "initial_dns_records": 0,
+    "write_access": "NOT_TESTED_UNTIL_PUBLICATION"
+  },
+  "publication_mode": "INITIAL_BINDING_ONLY"
+}

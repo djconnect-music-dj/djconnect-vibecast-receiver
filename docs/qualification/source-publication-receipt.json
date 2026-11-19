@@ -1,0 +1,282 @@
+{
+  "acceptance": {
+    "APPLE_SENDER_QUAL": "OPEN",
+    "BUILD_ADOPTION": "PASS",
+    "DISTRIBUTION_BROWSER_QUAL": "PARTIAL_LOCAL_MODELED_BROWSER_AND_REAL_STATIC_HTTPS",
+    "GOOGLE_CAST_TV_QUAL": "NOT_RUN",
+    "PAGES_DEPLOYMENT": "PASS",
+    "REAL_CAF_QUAL": "NOT_RUN"
+  },
+  "approved_candidate": "fcc686a3909209f5d62ca9bcc7842013f2b2255e",
+  "assignment": "DJC-VIBECAST-CAST-RECEIVER-ADOPTION-V1-20261009",
+  "build_version": "1.0.0",
+  "checks": [
+    {
+      "conclusion": "success",
+      "id": 114105486310,
+      "name": "Cloudflare Pages",
+      "url": "https://df57f5e4.djconnect-vibecast-receiver.pages.dev/"
+    },
+    {
+      "conclusion": "success",
+      "id": 114105443914,
+      "name": "validate-projection",
+      "url": "https://github.com/pcvantol/djconnect-vibecast-receiver/actions/runs/38015735992/job/114105443914"
+    },
+    {
+      "conclusion": "success",
+      "id": 114105443907,
+      "name": "test",
+      "url": "https://github.com/pcvantol/djconnect-vibecast-receiver/actions/runs/38015735979/job/114105443907"
+    }
+  ],
+  "preview": [
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "6cb80bb1.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/",
+      "result": "200 https://6cb80bb1.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "6cb80bb1.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index.html",
+      "result": "200 https://6cb80bb1.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "6cb80bb1.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index",
+      "result": "200 https://6cb80bb1.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "6cb80bb1.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/vibecast-manifest.json",
+      "result": "200 https://6cb80bb1.djconnect-vibecast-receiver.pages.dev/vibecast-manifest.json application/json",
+      "sha256": "72239b476e793fe5bb5493d2be5720fcd1f6e64ea83e012c77573732a58c7898"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "codex-djc-vibecast-cast-rece.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/",
+      "result": "200 https://codex-djc-vibecast-cast-rece.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "codex-djc-vibecast-cast-rece.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index.html",
+      "result": "200 https://codex-djc-vibecast-cast-rece.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "codex-djc-vibecast-cast-rece.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index",
+      "result": "200 https://codex-djc-vibecast-cast-rece.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "codex-djc-vibecast-cast-rece.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/vibecast-manifest.json",
+      "result": "200 https://codex-djc-vibecast-cast-rece.djconnect-vibecast-receiver.pages.dev/vibecast-manifest.json application/json",
+      "sha256": "72239b476e793fe5bb5493d2be5720fcd1f6e64ea83e012c77573732a58c7898"
+    }
+  ],
+  "production": [
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "receiver.djconnect.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/",
+      "result": "200 https://receiver.djconnect.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "receiver.djconnect.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index.html",
+      "result": "200 https://receiver.djconnect.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "receiver.djconnect.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index",
+      "result": "200 https://receiver.djconnect.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "receiver.djconnect.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/vibecast-manifest.json",
+      "result": "200 https://receiver.djconnect.dev/vibecast-manifest.json application/json",
+      "sha256": "72239b476e793fe5bb5493d2be5720fcd1f6e64ea83e012c77573732a58c7898"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/",
+      "result": "200 https://djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index.html",
+      "result": "200 https://djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index",
+      "result": "200 https://djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/vibecast-manifest.json",
+      "result": "200 https://djconnect-vibecast-receiver.pages.dev/vibecast-manifest.json application/json",
+      "sha256": "72239b476e793fe5bb5493d2be5720fcd1f6e64ea83e012c77573732a58c7898"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "df57f5e4.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/",
+      "result": "200 https://df57f5e4.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "df57f5e4.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index.html",
+      "result": "200 https://df57f5e4.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "df57f5e4.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/index",
+      "result": "200 https://df57f5e4.djconnect-vibecast-receiver.pages.dev/ text/html; charset=utf-8",
+      "sha256": "060b6f140a766e218593d0574949cdc8a5cd74cdca21483565cf5cd8dc152701"
+    },
+    {
+      "exact_bytes": true,
+      "exit": 0,
+      "host": "df57f5e4.djconnect-vibecast-receiver.pages.dev",
+      "no_referrer": true,
+      "no_store": true,
+      "nosniff": true,
+      "pass": true,
+      "path": "/vibecast-manifest.json",
+      "result": "200 https://df57f5e4.djconnect-vibecast-receiver.pages.dev/vibecast-manifest.json application/json",
+      "sha256": "72239b476e793fe5bb5493d2be5720fcd1f6e64ea83e012c77573732a58c7898"
+    }
+  ],
+  "reviewed_tree_equal": true,
+  "source_main": "32e409b2d190db7e06754cc6e153dc991be4b8d3",
+  "source_main_tree": "4b1f4a736f0ef372e0e0923ae7fbf89623d54479",
+  "source_pr": "https://github.com/pcvantol/djconnect-vibecast-receiver/pull/11",
+  "supplying_revision": "7460ef5e1d4c15888569b857d7c636620ace7e37"
+}

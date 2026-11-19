@@ -1,0 +1,54 @@
+{
+  "schema_version": "djconnect-core-vibecast-renderer-handoff/1",
+  "source_repository": "pcvantol/djconnect",
+  "supplying_revision": "6a3adbc8e66ab380dfea1726ca34728097d0c684",
+  "source_pr": 1202,
+  "source_merge": "5f36abd23a95dea0aeb8bdb9d22a9bccf28a1a4b",
+  "finalization_pr": 1203,
+  "finalization_merge": "6a3adbc8e66ab380dfea1726ca34728097d0c684",
+  "build_version": "1.1.0",
+  "assets": {
+    "vibecast-readonly-6a3adbc8.tar.gz": {
+      "url": "https://github.com/pcvantol/djconnect/releases/download/internal-ha-6a3adbc8e66ab380dfea1726ca34728097d0c684/vibecast-readonly-6a3adbc8.tar.gz",
+      "sha256": "205eccf041fa56d0fb72c0168499d99644fb28587d51d72c551679bd73efbf34"
+    },
+    "vibecast-verifier-6a3adbc8.py": {
+      "url": "https://github.com/pcvantol/djconnect/releases/download/internal-ha-6a3adbc8e66ab380dfea1726ca34728097d0c684/vibecast-verifier-6a3adbc8.py",
+      "sha256": "f24cd2814fc87557142e9892f816075c55d1ea93846274c2c2121dd26e30ba13"
+    },
+    "vibecast-status-schema-6a3adbc8.json": {
+      "url": "https://github.com/pcvantol/djconnect/releases/download/internal-ha-6a3adbc8e66ab380dfea1726ca34728097d0c684/vibecast-status-schema-6a3adbc8.json",
+      "sha256": "585d4771f2b38aa3228522a1d0f9872a2ee0149e6f1129c804c1e4840e2e83ae"
+    }
+  },
+  "manifest_sha256": "ee18b3d9f45341ae522d2406a087c009da48a67a99d7da3e1cbbdf483a5a09d2",
+  "renderer_sha256": "6738ebd1676c82fbd07b435508052f87aae22f1bdd97e46485f91cf1622b7b7d",
+  "verifier_source": "https://github.com/pcvantol/djconnect/blob/6a3adbc8e66ab380dfea1726ca34728097d0c684/scripts/build_vibecast.py",
+  "status_schema_source": "https://github.com/pcvantol/djconnect/blob/6a3adbc8e66ab380dfea1726ca34728097d0c684/examples/client_contracts/vibecast_cast_status/status.schema.json",
+  "baseline_revision": "d7396554cb6179c7cdce67c473bd9b069c4c9a92",
+  "delta": {
+    "renderer.js": "Retire receiver end_grant storage, end-button translations/state/listener and POST. Ignore injected legacy grant; preserve server-end idle.",
+    "style.css": "Remove retired end-button styles only.",
+    "template.html": "Remove retired end-button element only.",
+    "cast-host.js": "UNCHANGED",
+    "local-host.js": "UNCHANGED",
+    "supplying_verifier": "UNCHANGED",
+    "cast_status_schema": "UNCHANGED"
+  },
+  "qualification": {
+    "build_reproducible": true,
+    "protected_source_bytes_match": true,
+    "owning_build_renderer_status_tests": 12,
+    "node_status_contracts": 13,
+    "receiver_import_rehearsal": "PASS_DISPOSABLE_ROOT_ONLY",
+    "actual_caf_sdk": "NOT_RUN",
+    "native_sender": "NOT_RUN",
+    "physical_tv": "NOT_RUN",
+    "receiver_deployment": "NOT_PERFORMED"
+  },
+  "no_personal_dj_wip_included": true,
+  "private_runtime_data_in_build": false,
+  "separate_display_admission_b": "NOT_INSTALLED_IN_OBSERVED_HA_DEV;NOT_GRANTED_BY_THIS_BUNDLE",
+  "rendezvous_a": "NOT_GRANTED_OR_FROZEN_BY_THIS_BUNDLE",
+  "promotion": "Existing receiver owner performs fresh admission/import/delta review; no automatic Pages or Cast changes."
+}

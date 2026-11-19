@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "sourceSHA": "0097f8d2e7f541401b7b5a6c533dc8074836ec56",
+  "runID": "39312997951",
+  "account": "efe77cadf8317a53832fca0848e3ae51",
+  "project": "vibecast-tv-bootstrap",
+  "prior": {
+    "id": "6c5dc927-78d3-41bc-b030-3701d488c5ed",
+    "origin": "https://6c5dc927.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "8953171899c47ab54585a626d4041d822822c81e",
+    "environment": "production"
+  },
+  "stage": "qualified",
+  "production": {
+    "id": "17bf0173-c70e-431c-884f-a9b8b04f2bca",
+    "origin": "https://17bf0173.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "0097f8d2e7f541401b7b5a6c533dc8074836ec56",
+    "environment": "production"
+  },
+  "preview": {
+    "id": "0ef5ed5a-c52f-47cc-99f6-9e1f4e8e08c6",
+    "origin": "https://0ef5ed5a.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "0097f8d2e7f541401b7b5a6c533dc8074836ec56",
+    "environment": "preview"
+  },
+  "immutable": {
+    "origin": "https://17bf0173.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "0097f8d2e7f541401b7b5a6c533dc8074836ec56",
+    "outcome": "PASS",
+    "attempt": 1
+  },
+  "root": {
+    "origin": "https://vibecast.tv",
+    "sourceSHA": "0097f8d2e7f541401b7b5a6c533dc8074836ec56",
+    "outcome": "PASS",
+    "attempt": 2
+  },
+  "scope": "logo palette background and previously finalized dormant adapter artifact, public entry unavailable",
+  "reviewedSHA": "bf6e9215c32e1274917ad54209d193c2a294ef69",
+  "reviewedTree": "c69cd2e84c623a57adf7780a40e22f23520115f4",
+  "sourcePR": 32,
+  "mainCI": 39312707178,
+  "projectionCI": 39312707356,
+  "prCI": 39312371391,
+  "manifestSHA256": "a4b530a2fc1e50fe7193a9eadb5237681055907a3006d04b3febac64a68d67eb",
+  "artifactDigest": "c179dabc445132e70618c42bf24c976d1b48949dd659bc10dae85f77a05d08ea",
+  "styleSHA256": "6da264a9395a67baef4832df40209bb1d3c348b2a26d137b4b04600962f8e5b4",
+  "independentReadback": [
+    {
+      "origin": "https://vibecast.tv",
+      "sourceSHA": "0097f8d2e7f541401b7b5a6c533dc8074836ec56",
+      "outcome": "PASS"
+    },
+    {
+      "origin": "https://17bf0173.vibecast-tv-bootstrap.pages.dev",
+      "sourceSHA": "0097f8d2e7f541401b7b5a6c533dc8074836ec56",
+      "outcome": "PASS"
+    }
+  ],
+  "liveBrowser": {
+    "cases": 4,
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "widths": [
+      390,
+      1920
+    ],
+    "result": "PASS",
+    "scope": "actual HTTPS; no mocks; not physical TV"
+  },
+  "rollback": {
+    "actual": "NOT_REQUIRED_NOT_RUN",
+    "modeledSafetyTests": 8,
+    "priorPreserved": true,
+    "crashUnknownOutcome": "MANUAL_RECONCILIATION"
+  },
+  "acceptance": {
+    "SOURCE": "PROTECTED_DELIVERED",
+    "CI": "PASS",
+    "PAGES": "PASS",
+    "DOMAIN_TLS": "PASS_EXISTING_BINDING",
+    "RENDEZVOUS": "IMPLEMENTED_SOURCE_ONLY_NOT_LIVE_QUALIFIED",
+    "APPLE_HA_E2E": "OPEN",
+    "PHYSICAL_TV": "NOT_RUN"
+  },
+  "timer": "OFF"
+}

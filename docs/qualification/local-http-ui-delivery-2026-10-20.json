@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "scope": "PROTECTED_LOCAL_RECEIVER_UI_HTTP_QUALIFICATION_ONLY",
+  "sourcePR": 36,
+  "reviewedSHA": "e8148933b01fc6718cf87ed61b43948e8124920e",
+  "reviewedTree": "957296517922da201e2c91e578e213d6354a2233",
+  "sourceMain": "0f484aceebe7905ead846738a5752d10c15ac23f",
+  "prCI": 39409384785,
+  "prProjection": 39409384826,
+  "mainCI": 39409666468,
+  "mainProjection": 39409666474,
+  "apiSource": "828fbaf300ca369dcc753b676295e84094d5e8c6",
+  "apiFinalization": "https://github.com/pcvantol/djconnect-api/issues/90#issuecomment-6288860618",
+  "runtimeSHA256": "27e9f5ae2a7b7350f3ae51352cf4efb023ec17f79bc8f42968cc3bdfbfe34854",
+  "pinnedProducerFiles": 275,
+  "actualMainHTTPReceiptSHA256": "8ec71ddb72038ad1132e839df8b92f2fd38d9019743cf8b971d475a00e6fdcc4",
+  "httpArtifactArchiveDigest": "2d7e0ef8c87d008850c6a8c45654c5504d894baa5bb03696fb7bcf345162fa2b",
+  "bootstrapManifestSHA256": "8e2b3c55c92ec1182db722c73d719371466e8762aa79c8a6d27466e3e4a60c13",
+  "bootstrapArchiveDigest": "50af25c915a24f30169402f9656088f8996ea2b9cbaa8a1c534c74a7192ff9f2",
+  "allBootstrapPayloadHashesEqualPriorHeroArtifact": true,
+  "mainCases": [
+    {
+      "engine": "chromium",
+      "ui": {
+        "state": "unavailable",
+        "states": [
+          "creating",
+          "waiting",
+          "unavailable"
+        ],
+        "navigations": 0,
+        "overflow": false,
+        "localStorage": 0,
+        "sessionStorage": 0
+      },
+      "qr": "INDEPENDENT_CANVAS_DECODE_CANONICAL_SERVICE",
+      "trace": [
+        {
+          "method": "OPTIONS",
+          "route": "/create",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/create",
+          "status": 201
+        },
+        {
+          "method": "OPTIONS",
+          "route": "/poll",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/poll",
+          "status": 200
+        },
+        {
+          "method": "OPTIONS",
+          "route": "/cancel",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/cancel",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "ui": {
+        "state": "unavailable",
+        "states": [
+          "creating",
+          "waiting",
+          "unavailable"
+        ],
+        "navigations": 0,
+        "overflow": false,
+        "localStorage": 0,
+        "sessionStorage": 0
+      },
+      "qr": "INDEPENDENT_CANVAS_DECODE_CANONICAL_SERVICE",
+      "trace": [
+        {
+          "method": "OPTIONS",
+          "route": "/create",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/create",
+          "status": 201
+        },
+        {
+          "method": "OPTIONS",
+          "route": "/poll",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/poll",
+          "status": 200
+        },
+        {
+          "method": "OPTIONS",
+          "route": "/cancel",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "route": "/cancel",
+          "status": 200
+        }
+      ]
+    }
+  ],
+  "outbound": 0,
+  "localTests": {
+    "node": 99,
+    "python": 10,
+    "existingBrowser": 84,
+    "newActualHTTPBrowser": 2
+  },
+  "sourceCastDeployment": "02a42a0f-8932-414f-80d8-8d59ea178e29",
+  "castReadback": "SIX_HTTPS_BYTES_TYPE_PRIVACY_PASS",
+  "actualBootstrapSourceStill": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+  "actualBootstrapProductionStill": "220f0e59-6bc7-4088-9928-a72a742968c5",
+  "publicBootstrapReadback": "ROOT_AND_IMMUTABLE_FULL_HASH_HEADER_404_PASS",
+  "bootstrapPublishDispatch": "NOT_RUN",
+  "productionAppCSPWireCastPin": "UNCHANGED",
+  "rollback": "NOT_REQUIRED_NOT_RUN_NO_NEW_BOOTSTRAP_DEPLOYMENT",
+  "acceptance": {
+    "SOURCE": "PROTECTED_LOCAL_HARNESS_DELIVERED",
+    "CI": "PR_AND_SOURCE_MAIN_PASS",
+    "PAGES": "PRIOR_DELIVERY_PRESERVED",
+    "DOMAIN_TLS": "PRIOR_BINDING_HTTPS_READBACK_PASS",
+    "RENDEZVOUS": "LOCAL_HTTP_ONLY_PUBLIC_OFF",
+    "APPLE_HA_E2E": "OPEN",
+    "PHYSICAL_TV": "NOT_RUN"
+  },
+  "timer": "OFF"
+}

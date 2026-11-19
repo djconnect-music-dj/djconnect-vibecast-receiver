@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "assignment": "receiver29 shared renderer1.1.3 adoption",
+  "source_pr": 40,
+  "candidate": "2e6d20b40a9a42d025fadb45df13836ce1a08f4f",
+  "source_merge": "048c877c4eacad9186ef6fc85830681a8982ca3d",
+  "reviewed_and_merge_tree": "3a6ae0323dae64a087556c2be5fdb98b8e36b9cc",
+  "reviews": {
+    "technical_privacy": "EXACT_SOURCE_EFFECT_GO_NO_P1_P2",
+    "product_ux": "EXACT_SOURCE_EFFECT_GO_NO_P1_P2"
+  },
+  "producer_source": "97a20fa17d60aa32cf92dc106707d70540ee479e",
+  "producer_finalization": "e390c5a81e2d2d272a46cc720c83cc4667c355c1",
+  "producer_overall_source_main": "FAILURE_ONLY_RETENTION_JOB_JSON_ERROR_NOT_RELABELLED",
+  "pr_ci": 39442071945,
+  "pr_projection": 39442071947,
+  "source_main_ci": 39442451516,
+  "source_main_projection": 39442451585,
+  "source_main_ci_result": "SUCCESS",
+  "local_tests": {
+    "node": 99,
+    "python": 11,
+    "browser": 92,
+    "http_ui_engines": 2
+  },
+  "source_bootstrap_artifact": {
+    "id": 12275017414,
+    "archive_digest": "sha256:cadb6480ba57d986e855af25549ffcd24ac6ee8469a5097c3313d770c45fe359",
+    "manifest_sha256": "39884d6b77ae450d0a72369a2e5236a79f920ae13ef2cc5cff751efc076c45c1",
+    "all_hashes_and_source": "VERIFIED",
+    "payload_equals_published_f5c": "PASS"
+  },
+  "source_http_artifact": {
+    "id": 12273732865,
+    "archive_digest": "sha256:5da7a4a0b668f0163f5093b797daf534ea79a3635bae78c39db46f2a93709982",
+    "receipt_sha256": "f887face936a6e794865a8f602023058b7d75b939acf6a0a8544890b2d27393e",
+    "receiver_sha": "048c877c4eacad9186ef6fc85830681a8982ca3d",
+    "api_source": "379d70b558508f747d578d7b7d90a665bad7ffc8",
+    "result": "PASS_TWO_ENGINES"
+  },
+  "preview": "65948568-863d-474f-a236-5f063a5e0c3a",
+  "source_production": "f94fbbef-01e5-4437-8f59-91d61bff9ebe",
+  "cast_readback": {
+    "result": "PASS_SIX_HTTPS_HASH_TYPE_PRIVACY_CHECKS",
+    "receipt_sha256": "7c3ac0a277ae530dafc2949d787623ea4cd49e57e1eade2c15b3de6767a381b9",
+    "html_sha256": "7dcdb263551bb2e68a0f5dc553f99ef6a6d2241e47fa56d507a86b0fc5220bab",
+    "manifest_sha256": "cec063af0a3d0238353f227518c6693858c1fcb05d4f2fdd717011294d4f0204"
+  },
+  "bootstrap_publication": {
+    "changed": false,
+    "production": "220f0e59-6bc7-4088-9928-a72a742968c5",
+    "source": "f5c72a5d913b870209ca33ccb45254012da9de9c",
+    "complete_live_immutable_hash_header_404_readback": "PASS"
+  },
+  "rollback": {
+    "prior_production": "c2332613-1427-45cd-8d45-a167e95601d5",
+    "prior_source_lock": "vibecast-source-lock-readonly-6a3adbc8.json",
+    "exact_local_restore_reapply": "PASS",
+    "public_rollback": "NOT_RUN"
+  },
+  "acceptance": {
+    "SOURCE": "PROTECTED_DELIVERED",
+    "CI": "PASS",
+    "PAGES": "CAST_113_PASS_BOOTSTRAP_UNCHANGED",
+    "DOMAIN_TLS": "PASS_FIXED_ORIGINS",
+    "RENDEZVOUS": "PUBLIC_UNQUALIFIED_UNAVAILABLE",
+    "APPLE_HA_E2E": "OPEN",
+    "PHYSICAL_TV": "NOT_RUN",
+    "ACTUAL_OLD_ENGINE_CAF": "NOT_RUN"
+  },
+  "finalization": {
+    "status_at_preparation": "PENDING_OWN_TWO_REVIEWS_PROTECTED_MERGE_FINAL_MAIN_ARTIFACTS_AND_READBACK",
+    "terminal_register": "receiver10 plus receiver29/16 and Core1101 only after actual reconciliation"
+  },
+  "timer": "OFF"
+}

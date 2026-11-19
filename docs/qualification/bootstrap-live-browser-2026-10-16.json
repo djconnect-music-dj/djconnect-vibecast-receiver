@@ -1,0 +1,287 @@
+{
+  "origin": "https://vibecast.tv",
+  "sourceSHA": "8953171899c47ab54585a626d4041d822822c81e",
+  "outcome": "PASS_WITH_WARNINGS",
+  "diagnostics": [
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "text": "Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' does not appear in the style-src directive of the Content Security Policy.",
+      "scope": "native select; independently also reproduced with application JavaScript disabled"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "text": "Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' does not appear in the style-src directive of the Content Security Policy.",
+      "scope": "native select; independently also reproduced with application JavaScript disabled"
+    }
+  ],
+  "results": [
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "en",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "nl",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "de",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "fr",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "es",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "en",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "nl",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "de",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "fr",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "es",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "en",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "nl",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "de",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "fr",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "locale": "es",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "en",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "nl",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "de",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "fr",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "width": 320,
+        "height": 740
+      },
+      "locale": "es",
+      "state": "unavailable",
+      "qr": "hidden",
+      "storage": "empty",
+      "layout": "PASS",
+      "tls": "normal browser verification"
+    }
+  ]
+}

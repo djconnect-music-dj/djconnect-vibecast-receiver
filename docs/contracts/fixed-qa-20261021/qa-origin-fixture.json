@@ -1,0 +1,12 @@
+{
+  "kind": "FIXED_QA_ONLY_NOT_PRODUCT_OR_OPERATIONAL_ADMISSION",
+  "source_sha": "9a87fb2f3cc821c0a2482e8fa6b88c2340179e78",
+  "service": "djconnect-api-vibecast-qa",
+  "service_origin": "https://api-vibecast-qa.djconnect.dev",
+  "browser_origin": "https://qa.vibecast.tv",
+  "wire_schema_sha256": "24ab72719195f7971e070e56c52ceea7e67e02ee1bd7c6946eca99883194505f",
+  "worker_sha256": "ed335d516613e40cddd84067742b4efa24dee1559c77144eef79e06b45138a90",
+  "activation_allowed": false,
+  "current_apple_profile": null,
+  "operational_admission": null
+}
