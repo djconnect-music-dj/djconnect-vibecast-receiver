@@ -4,7 +4,7 @@ async function fixture(mutate=()=>{}){
  const directory='dist/readback-fixture';await build(directory,'a'.repeat(40));
  const source=await readFile(directory+'/_headers','utf8');
  const policy=Object.fromEntries(source.split('\n').slice(1).filter(line=>line.includes(':')).map(line=>{const i=line.indexOf(':');return[line.slice(0,i).trim().toLowerCase(),line.slice(i+1).trim()];}));
- return async url=>{const route=url.pathname;const file=['/','/index','/index.html'].includes(route)?'index.html':route==='/__vibecast_missing__'?'404.html':route.slice(1);const headers={...policy,'content-type':file.endsWith('.png')?'image/png':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.mjs')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.json')?'application/json':'text/plain'};mutate(headers,route);return new Response(await readFile(directory+'/'+file),{status:route==='/__vibecast_missing__'?404:200,headers});};
+ return async url=>{const route=url.pathname;const file=['/','/index','/index.html'].includes(route)?'index.html':route==='/join'?'join.html':route==='/__vibecast_missing__'?'404.html':route.slice(1);const headers={...policy,'content-type':file.endsWith('.png')?'image/png':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.mjs')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.json')?'application/json':'text/plain'};mutate(headers,route);return new Response(await readFile(directory+'/'+file),{status:route==='/__vibecast_missing__'?404:200,headers});};
 }
 test('HTTPS readback checks every exact asset, entry, manifest and real error page',async()=>{const fetcher=await fixture();assert.equal((await readback('dist/readback-fixture/build-manifest.json','https://bootstrap.example',fetcher)).outcome,'PASS');});
 test('HTTPS readback rejects each missing required header and partial CSP/permissions',async()=>{
@@ -15,7 +15,7 @@ test('HTTPS readback rejects each missing required header and partial CSP/permis
   const fetcher=await fixture(headers=>headers[key]=value);await assert.rejects(readback('dist/readback-fixture/build-manifest.json','https://bootstrap.example',fetcher),/Header policy mismatch/);
  }
 });
-test('manifest, clean entry and error routes must also carry the full policy',async()=>{for(const target of ['/build-manifest.json','/index','/__vibecast_missing__']){const fetcher=await fixture((headers,route)=>{if(route===target)delete headers['content-security-policy'];});await assert.rejects(readback('dist/readback-fixture/build-manifest.json','https://bootstrap.example',fetcher),/Header policy mismatch/);}});
+test('manifest, clean entry, native landing and error routes must also carry the full policy',async()=>{for(const target of ['/build-manifest.json','/index','/join','/__vibecast_missing__']){const fetcher=await fixture((headers,route)=>{if(route===target)delete headers['content-security-policy'];});await assert.rejects(readback('dist/readback-fixture/build-manifest.json','https://bootstrap.example',fetcher),/Header policy mismatch/);}});
 
 test('inert checksum download MIME is explicit; executable and document MIME checks remain strict',async()=>{
  const download=await fixture((headers,route)=>{if(route==='/SHA256SUMS')headers['content-type']='application/octet-stream';});

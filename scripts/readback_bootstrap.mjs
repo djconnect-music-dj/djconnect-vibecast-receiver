@@ -36,11 +36,12 @@ export async function readback(manifestPath, originString, fetcher = fetch) {
  for (const [file, digest] of Object.entries(manifest.files)) {
   if (file === '_headers' || file === '404.html') continue;
   const type = file.endsWith('.png') ? 'image/png' : file.endsWith('.svg') ? 'image/svg+xml' : file.endsWith('.mjs') ? 'javascript' : file.endsWith('.css') ? 'text/css' : file.endsWith('.html') ? 'text/html' : 'application/json';
-  await check(file === 'index.html' ? '/' : '/' + file, digest, type);
+  await check(file === 'index.html' ? '/' : '/' + file, digest, type, 200, file === 'join.html' ? '/join' : null);
  }
  await check('/build-manifest.json', hash(manifestBytes), 'application/json');
  await check('/SHA256SUMS', hash(await readFile(path.join(directory,'SHA256SUMS'))), 'checksum');
  for (const route of ['/index.html','/index']) await check(route, manifest.files['index.html'], 'text/html', 200, '/');
+ if (manifest.files['join.html']) await check('/join', manifest.files['join.html'], 'text/html');
  // Qualify Pages' actual error response; never count a SPA root fallback as 404.
  await check('/__vibecast_missing__', manifest.files['404.html'], 'text/html', 404);
  return {origin:origin.origin, sourceSHA:manifest.sourceSHA, outcome:'PASS'};
