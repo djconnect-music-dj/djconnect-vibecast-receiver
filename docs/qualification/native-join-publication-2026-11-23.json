@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "increment": "receiver-native-join-20261123",
+  "reviewed_head": "d71842a0ddd56fb4ac90fc885a3233d547083f66",
+  "source_pr": 70,
+  "source_main": "a560756f11531f725e047edce670c76b8a59c0e4",
+  "reviewed_tree_equality": "PASS",
+  "source_ci": 45263435807,
+  "main_ci": 45268052289,
+  "main_ci_outcome": "SUCCESS",
+  "artifact_name": "bootstrap-a560756f11531f725e047edce670c76b8a59c0e4",
+  "artifact_files": 26,
+  "artifact_manifest_sha256": "cd89a4beecd73f55545cf6c5c8bb9da42dc2d59b5eb8147abcdf7be6f98159fa",
+  "production_workflow": 45268870064,
+  "production_workflow_outcome": "SUCCESS",
+  "production_environment_review": "ordinary protected approval; explicit owner production authorization; protections unchanged",
+  "workflow_receipt_sha256": "f780fd63391fba1f42d2b2eefbe93ac28164381f5f2d0b257eac13daf821cddd",
+  "publication": {
+    "schema": 1,
+    "sourceSHA": "a560756f11531f725e047edce670c76b8a59c0e4",
+    "runID": "45268870064",
+    "account": "efe77cadf8317a53832fca0848e3ae51",
+    "project": "vibecast-tv-bootstrap",
+    "prior": {
+      "id": "71043d3a-cb6e-4352-8bb4-7541ffac9ad9",
+      "origin": "https://71043d3a.vibecast-tv-bootstrap.pages.dev",
+      "sourceSHA": "553239288cf580293a12ecacee0ab2b5696a22fb",
+      "environment": "production"
+    },
+    "stage": "qualified",
+    "production": {
+      "id": "fd9efffd-e751-43fe-bff9-3ab692cf2acb",
+      "origin": "https://fd9efffd.vibecast-tv-bootstrap.pages.dev",
+      "sourceSHA": "a560756f11531f725e047edce670c76b8a59c0e4",
+      "environment": "production"
+    },
+    "preview": {
+      "id": "e62f3004-30d3-409f-99f5-e029e380eaeb",
+      "origin": "https://e62f3004.vibecast-tv-bootstrap.pages.dev",
+      "sourceSHA": "a560756f11531f725e047edce670c76b8a59c0e4",
+      "environment": "preview"
+    },
+    "immutable": {
+      "origin": "https://fd9efffd.vibecast-tv-bootstrap.pages.dev",
+      "sourceSHA": "a560756f11531f725e047edce670c76b8a59c0e4",
+      "outcome": "PASS",
+      "attempt": 1
+    },
+    "root": {
+      "origin": "https://vibecast.tv",
+      "sourceSHA": "a560756f11531f725e047edce670c76b8a59c0e4",
+      "outcome": "PASS",
+      "attempt": 1
+    }
+  },
+  "independent_provider_readback": [
+    {
+      "project": "vibecast-tv-bootstrap",
+      "id": "a815fc66-5fc2-49d3-812f-28b7401b6643",
+      "production_branch": "main",
+      "deployment": {
+        "id": "fd9efffd-e751-43fe-bff9-3ab692cf2acb",
+        "url": "https://fd9efffd.vibecast-tv-bootstrap.pages.dev",
+        "status": "success",
+        "source": "a560756f11531f725e047edce670c76b8a59c0e4",
+        "branch": "main"
+      }
+    },
+    {
+      "project": "djconnect-vibecast-receiver-org",
+      "id": "e96ab1d1-6ef9-4613-a4c5-5d2158b7bc80",
+      "production_branch": "main",
+      "deployment": {
+        "id": "871b086b-a321-4b16-9a75-191c51a20a82",
+        "url": "https://871b086b.djconnect-vibecast-receiver-org.pages.dev",
+        "status": "success",
+        "source": "a560756f11531f725e047edce670c76b8a59c0e4",
+        "branch": "main"
+      }
+    }
+  ],
+  "independent_https_readback": {
+    "immutable": "PASS all manifest bytes/types/privacy/redirects/404 and clean /join",
+    "root": "PASS all manifest bytes/types/privacy/redirects/404 and clean /join"
+  },
+  "live_browser_smoke": {
+    "outcome": "4/4 PASS",
+    "engines": [
+      "Chromium1254",
+      "WebKit2388"
+    ],
+    "viewports": [
+      "1280x720",
+      "390x844"
+    ],
+    "invitation": "declared synthetic nonredeemable locator",
+    "native_launch": "NOT_RUN",
+    "admission": "NOT_RUN"
+  },
+  "cast_readback": "PASS exact unchanged bytes/privacy",
+  "renderer_adoption": "unchanged1.1.4; no WIP import",
+  "product_acceptance": {
+    "installed_native_app_open": "NOT_RUN",
+    "real_QR_scan": "NOT_RUN",
+    "Core_admission": "NOT_RUN",
+    "physical_Cast": "NOT_RUN"
+  },
+  "separate_finalization": {
+    "state": "PREPARED_FOR_EXACT_REVIEW",
+    "protected_merge": "PENDING",
+    "final_main_ci": "PENDING"
+  },
+  "release": "No repository release automation/version policy for this increment; no invented semver tag"
+}

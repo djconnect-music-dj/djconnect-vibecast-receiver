@@ -1,3 +1,19 @@
+# Native VibeCast Live join landing delivered — 2026-11-23
+
+SourcePR70 protected `a560756f11531f725e047edce670c76b8a59c0e4` equals reviewed
+`d71842a0` by complete-tree comparison. PR/main CI and independent review PASS.
+Protected bootstrap update45268870064 SUCCESS; production `fd9efffd`, full
+immutable/root bytes/types/privacy/404 and clean `/join` independently PASS.
+Four actual live-page browser smokes PASS with synthetic nonredeemable locators.
+[Separate Finalization](docs/qualification/2026-11-23-native-join-finalization.md)
+records the exact artifact, unchanged owner-review gate and rollback71043d3a;
+its own exact review/protected merge/final-main reconciliation remains pending.
+Renderer1.1.4 unchanged; no WIP Core renderer import. Physical scan/native opening,
+Core admission and real Cast acceptance remain NOT_RUN. Sole receiver writer;
+no timer, API/Core/Apple write or invented version/tag. Historical records follow.
+
+---
+
 # Isolated QA source delivered — 2026-10-22
 
 SourcePR44 protected29fd9c576d52d14947ef2ea00e8ff8c75c18c84a, exact twice
