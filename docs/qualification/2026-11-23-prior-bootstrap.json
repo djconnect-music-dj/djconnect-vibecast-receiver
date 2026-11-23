@@ -1,0 +1,19 @@
+{
+  "sourceSHA": "553239288cf580293a12ecacee0ab2b5696a22fb",
+  "manifestSHA256": "120093adc3ebc7161766cc6684c8d1fbdc71b5b2cb22ce479b66b5417f89cc47",
+  "projectID": "a815fc66-5fc2-49d3-812f-28b7401b6643",
+  "deploymentID": "71043d3a-cb6e-4352-8bb4-7541ffac9ad9",
+  "immutable": {
+    "origin": "https://71043d3a.vibecast-tv-bootstrap.pages.dev",
+    "sourceSHA": "553239288cf580293a12ecacee0ab2b5696a22fb",
+    "outcome": "PASS"
+  },
+  "root": {
+    "origin": "https://vibecast.tv",
+    "sourceSHA": "553239288cf580293a12ecacee0ab2b5696a22fb",
+    "outcome": "PASS"
+  },
+  "files": 23,
+  "verification": "PASS",
+  "publications": "NOT_RUN"
+}

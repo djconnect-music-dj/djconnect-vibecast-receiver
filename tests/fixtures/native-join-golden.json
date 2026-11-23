@@ -1,0 +1,13 @@
+{
+  "contract": "VIBECAST_NATIVE_GUEST_UI_V1",
+  "classification": "SYNTHETIC_NOT_REDEEMABLE",
+  "fields": {
+    "v": "1",
+    "ha_url": "https://ha.example.org",
+    "issuer_epoch": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+    "invitation_id": "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII",
+    "invitation_secret": "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+  },
+  "accepted_origins": ["https://ha.example.org", "https://ha.example.org/", "https://ha.example.org:8443"],
+  "rejected_origins": ["http://ha.example.org", "https://user:pass@ha.example.org", "https://ha.example.org/path", "https://ha.example.org?token=x", "https://ha.example.org#x", "https://ha.example.org/../", "https://ha.example.org/%2e%2e", "https://ha.example.org\\path", " https://ha.example.org", "https://ha.example.org\n", "javascript:alert(1)", "https://ha.example.org:443", "https://HA.EXAMPLE.ORG"]
+}
