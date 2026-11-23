@@ -30,7 +30,7 @@ test('native handoff is explicit, single-use and never extends the original memo
 });
 function pageFixture({origin='https://vibecast.tv',search='',historyFailure=false,language='nl'}={}){
  const elements=new Map(),callbacks=new Map(),documentCallbacks=new Map(),navigations=[];
- const element=id=>{if(!elements.has(id))elements.set(id,{textContent:'',disabled:true,events:new Map(),addEventListener(name,fn){this.events.set(name,fn);}});return elements.get(id);};
+ const element=id=>{if(!elements.has(id))elements.set(id,{textContent:'',disabled:true,events:new Map(),addEventListener(name,fn){this.events.set(name,fn);},setAttribute(name,value){this[name]=value;},removeAttribute(name){delete this[name];}});return elements.get(id);};
  const document={documentElement:{lang:'en'},hidden:false,getElementById:element,addEventListener:(name,fn)=>documentCallbacks.set(name,fn)};
  let timer;
  const window={navigator:{language},location:{origin,pathname:'/join',hash:fragment(),search},history:{replaceState(_state,_title,path){if(historyFailure)throw Error('history disabled');window.location.hash='';window.location.search='';window.location.pathname=path;}},addEventListener:(name,fn)=>callbacks.set(name,fn),setTimeout(fn){timer=fn;return 1;},clearTimeout(){timer=null;}};
@@ -51,7 +51,14 @@ test('expiry, hidden page, pagehide, history refusal and foreign origins fail cl
  }
  for(const options of [{origin:'https://qa.vibecast.tv'},{origin:'https://evil.example'},{search:'?ha_url=untrusted'},{historyFailure:true}]){
   const p=pageFixture(options);assert.equal(p.elements.get('join-open').disabled,true);p.elements.get('join-open').events.get('click')();assert.equal(p.navigations.length,0);
+  if(options.historyFailure)assert.equal(p.elements.get('join-install').href,undefined);
  }
+});
+test('history refusal at the final app or store boundary prevents external navigation',()=>{
+ const p=pageFixture();p.window.history.replaceState=()=>{throw Error('history now unavailable');};
+ p.elements.get('join-open').events.get('click')();assert.equal(p.navigations.length,0);
+ let prevented=false;p.elements.get('join-install').events.get('click')({preventDefault(){prevented=true;}});
+ assert.equal(prevented,true);assert.equal(p.elements.get('join-open').disabled,true);
 });
 test('a new camera scan in the same tab accepts a new invitation without renewing the previous one',()=>{
  const p=pageFixture();p.window.location.hash=fragment();p.callbacks.get('hashchange')();

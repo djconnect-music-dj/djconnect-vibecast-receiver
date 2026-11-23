@@ -50,7 +50,7 @@ export function startNativeJoinPage({window, document, navigate = url => window.
  document.title = copy.title;
  for (const key of ['title','intro','open','install','rescan','privacy','note']) document.getElementById('join-'+key).textContent = copy[key];
  const button = document.getElementById('join-open'), status = document.getElementById('join-status');
- const install = document.getElementById('join-install'); install.href = appStoreURL;
+ const install = document.getElementById('join-install');
  let invitation = null, timer, lastInvitationKey;
  function clear() {
   invitation?.clear(); invitation = null; button.disabled = true;
@@ -59,11 +59,13 @@ export function startNativeJoinPage({window, document, navigate = url => window.
  }
  function receive() {
   clear();
+  install.removeAttribute('href'); install.setAttribute('aria-disabled','true');
   try {
    const fragment = window.location.hash;
    // Erase the entire input before validation, displaying links or navigation.
    const allowed = window.location.origin === 'https://vibecast.tv' && window.location.pathname === '/join' && !window.location.search;
    window.history.replaceState(null,'','/join');
+   install.href = appStoreURL; install.removeAttribute('aria-disabled');
    if (!allowed) throw Error('invalid_invitation');
    const locator = parseNativeJoinFragment(fragment), key = locator.issuer_epoch+':'+locator.invitation_id;
    // An equivalent fragment must not renew an exposed/spent invitation.
@@ -75,8 +77,15 @@ export function startNativeJoinPage({window, document, navigate = url => window.
  }
  receive();
  button.addEventListener('click',() => {
+  // Recheck erasure at the actual external-navigation boundary as well.
+  if (window.location.hash || window.location.search) { receive(); return; }
+  try { window.history.replaceState(null,'','/join'); } catch { clear(); return; }
   const link = invitation?.take(); clear();
   if (link) navigate(link);
+ });
+ install.addEventListener('click',event => {
+  try { window.history.replaceState(null,'','/join'); } catch { event.preventDefault(); }
+  clear();
  });
  window.addEventListener('pagehide',clear);
  // A camera scan can reuse an existing tab and change only its fragment.
