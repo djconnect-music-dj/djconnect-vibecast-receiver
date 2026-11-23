@@ -1,3 +1,5 @@
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {api,guardSource,isHistoricalReceiverRepositoryName,receiverRepositoryId} from './promotion_guard.mjs';
@@ -16,7 +18,7 @@ export function guardRecovery(run,raw,recoveryPin=recovery) {
  if(receipt.sourceSHA!==recovery.sourceSHA||receipt.runID!==recovery.runID||receipt.createdRecordID!==recovery.recordID||receipt.createdDomainID!==null||receipt.initialDomainID!==null||receipt.pendingMutation!==null||receipt.complete!==false||receipt.stage!=='dns-before-association'||!Array.isArray(receipt.initialAddresses)||receipt.initialAddresses.length!==0)throw Error('Unexpected recovery scope');
  return receipt;
 }
-if(process.argv[1]===new URL(import.meta.url).pathname) {
+if(path.resolve(process.argv[1]??'')===fileURLToPath(import.meta.url)) {
  try {
   const repository=process.env.GITHUB_REPOSITORY,sha=process.env.CANDIDATE_SHA;
   guardSource({repository,branch:process.env.GITHUB_REF,sha,checkoutSHA:process.env.GITHUB_SHA,currentMain:api(`repos/${repository}/commits/main`).sha,run:api(`repos/${repository}/actions/runs/${process.env.ARTIFACT_RUN_ID}`),environment:api(`repos/${repository}/environments/vibecast-production`)});

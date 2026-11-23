@@ -1,3 +1,4 @@
+import {fileURLToPath} from 'node:url';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
@@ -46,4 +47,4 @@ export async function readback(manifestPath, originString, fetcher = fetch) {
  await check('/__vibecast_missing__', manifest.files['404.html'], 'text/html', 404);
  return {origin:origin.origin, sourceSHA:manifest.sourceSHA, outcome:'PASS'};
 }
-if (process.argv[1] === new URL(import.meta.url).pathname) process.stdout.write(JSON.stringify(await readback(process.argv[2],process.argv[3]))+'\n');
+if (path.resolve(process.argv[1]??'') === fileURLToPath(import.meta.url)) process.stdout.write(JSON.stringify(await readback(process.argv[2],process.argv[3]))+'\n');
