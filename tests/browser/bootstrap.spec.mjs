@@ -9,8 +9,15 @@ for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:192
  await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect(page.locator('html')).toHaveAttribute('data-state','unavailable');
  await expect(page.locator('#qr-panel')).toBeHidden();await expect(page.locator('#state-title')).not.toHaveText('');
  await expect(page.locator('#effects')).toHaveCount(0);
+ await expect(page.locator('#privacy')).toHaveCount(0);
  await page.locator('#language').focus();
  await expect(page.locator('#language')).toBeFocused();
+ await expect(page.locator('#language')).toHaveCSS('border-top-left-radius','32px');
+ if(viewport.width===1920){
+  const language=await page.locator('#language').boundingBox(),mode=await page.locator('#screen-mode').boundingBox();
+  expect(language.x+language.width).toBeLessThan(mode.x);
+  expect(Math.abs(language.y+language.height/2-mode.y-mode.height/2)).toBeLessThan(1);
+ }
  await expect(page.locator('#retry')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);expect(external).toEqual([]);expect(page.url()).toBe('http://127.0.0.1:4186/');
 });
@@ -24,8 +31,8 @@ test('every genuine UI state is localized and withdraws old QR pixels',async({pa
   expect(result.iconVisible).toBe(result.state==='waiting');
   if(result.language==='nl'&&result.state==='waiting'){
    expect(result.title).toBe("Kies 'VibeCast sessie starten' in de app.");
-   expect(result.description).toBe('Scan TV-QR-code');
   }
+  expect(result.description.length>0).toBe(result.state!=='waiting');
   expect(result.title.length).toBeGreaterThan(5);expect(result.visible).toBe(['waiting','confirming'].includes(result.state));if(!result.visible)expect(result.pixels).toBe(0);if(result.quiet)expect(result.quiet).toEqual([255,255,255,255]);}
 });
 for(const state of ['waiting','confirming'])for(const size of [21,177])test(`QR ${state}/${size} stays sharp and within the viewport after orientation changes`,async({page})=>{
