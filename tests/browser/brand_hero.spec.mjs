@@ -34,7 +34,11 @@ test('the waiting row animates the vector avatar and trailing dots on iPhone wid
  const status = page.locator('#screen-status');
  const avatarDots = page.locator('.waiting-avatar-dots');
  await expect(status).toHaveText('Wachten op een sessie');
- await expect(page.locator('svg.waiting-avatar')).toBeVisible();
+ const avatar = page.locator('svg.waiting-avatar');
+ await expect(avatar).toBeVisible();
+ await expect(avatar).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
+ await expect(avatar.locator(':scope > :not(defs)')).toHaveCount(1);
+ await expect(avatar.locator(':scope > .waiting-avatar-mark')).toHaveCount(1);
  await expect(avatarDots).toHaveCSS('animation-name','waiting-avatar-pulse');
  const trailingAnimation = () => status.evaluate(node => getComputedStyle(node,'::after').animationName);
  expect(await trailingAnimation()).toBe('waiting-dots');
