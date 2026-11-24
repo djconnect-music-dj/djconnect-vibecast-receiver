@@ -127,7 +127,7 @@ class ImmediateReadonlyRollbackTest(unittest.TestCase):
             importer.adopt(ROOT/'vibecast-source-lock.json',root=root,check=True)
 
 class LocalHostBoundaryTest(unittest.TestCase):
-    def test_cast_adapter_unchanged_local_transport_preserved_and_shared_renderer(self):
+    def test_frozen_legacy_cast_adapter_and_shared_renderer_boundaries(self):
         import runpy
         old=json.loads((ROOT/'vibecast-source-lock-1.0.0.json').read_text())
         new=json.loads((ROOT/'vibecast-source-lock.json').read_text())
@@ -144,14 +144,19 @@ class LocalHostBoundaryTest(unittest.TestCase):
             import re
             for pattern in [r'  let stopped[\s\S]*?      panel.innerHTML', r'      panel.hidden = false;[\s\S]*']:
                 self.assertEqual(re.search(pattern,scripts[0][1]).group(),re.search(pattern,scripts[1][1]).group())
-            for old_folder,new_folder in [(previous,current)]:
-                cast_scripts=[]
-                prior=Path(temp)/'prior-readonly';prior.mkdir()
-                rollback=json.loads((ROOT/'vibecast-source-lock-readonly-6a3adbc8.json').read_text())
-                importer.extract(ROOT/rollback['bundle_file'],prior)
-                for folder in [prior,new_folder]:
-                    host_parser=core['InlineScripts']();host_parser.feed((folder/'cast/index.html').read_text());cast_scripts.append(host_parser.scripts[-1])
-                self.assertEqual(cast_scripts[0],cast_scripts[1])
+            legacy_scripts = []
+            for lock_name in (
+                'vibecast-source-lock-readonly-6a3adbc8.json',
+                'vibecast-source-lock-1.1.4.json',
+            ):
+                legacy_folder = Path(temp) / lock_name.removesuffix('.json')
+                legacy_folder.mkdir()
+                legacy = json.loads((ROOT / lock_name).read_text())
+                importer.extract(ROOT / legacy['bundle_file'], legacy_folder)
+                host_parser = core['InlineScripts']()
+                host_parser.feed((legacy_folder / 'cast/index.html').read_text())
+                legacy_scripts.append(host_parser.scripts[-1])
+            self.assertEqual(legacy_scripts[0], legacy_scripts[1])
             self.assertNotIn('gstatic.com',(current/'local/vibecast.html').read_text())
             self.assertNotIn('DJC_VIBECAST_MODE = "cast"',scripts[1][0])
             parser=core['InlineScripts']();parser.feed((current/'cast/index.html').read_text())
