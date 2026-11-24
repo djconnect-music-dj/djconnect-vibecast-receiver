@@ -24,7 +24,7 @@
   "promotion": "explicit receiver-owner import; no automatic deployment",
   "renderer_source_sha256": "aa985bd975b7bf5656ba8a6a03c3b399d79c45a8732dd311aba0d614f8b39272",
   "schema_version": 1,
-  "source_revision": "b29c7f3ea05af02f7e247ac3775107fb8015e9bf",
+  "source_revision": "c9e88042043288427f7b26a8208b17958243a2f8",
   "sources": {
     "../brand/mark-40.png": "b07eb1d01fc37044eef22e3f376635b0f623eec384c18f89046a49c80bb8c257",
     "cast-host.js": "998ec87918aa6eee9f464aa2086c49ae33f6d0a52ce2ebfb8b7ed8d447e7bdc9",
