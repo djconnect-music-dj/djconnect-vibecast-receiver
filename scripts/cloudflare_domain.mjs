@@ -1,3 +1,5 @@
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {readFile,writeFile} from 'node:fs/promises';
 import {inspectStable as inspect,target,safeReadFailure} from './cloudflare_readiness.mjs';
 import {api,guard} from './promotion_guard.mjs';
@@ -103,7 +105,7 @@ export async function rollbackDomain(options,receipt,{sourceSHA,runID}) {
  return {schema:1,sourceSHA,runID,domain:target.domain,rollback:'PASS',scope:'only this run created root binding; Pages artifact retained'};
 }
 
-if(process.argv[1]===new URL(import.meta.url).pathname) {
+if(path.resolve(process.argv[1]??'')===fileURLToPath(import.meta.url)) {
  try {
   const options={pagesToken:process.env.CLOUDFLARE_API_TOKEN,dnsToken:process.env.CLOUDFLARE_DNS_API_TOKEN,account:process.env.CLOUDFLARE_ACCOUNT_ID,observe:observation=>writeFile('cloudflare-read-observation.json',JSON.stringify(observation,null,2)+'\n')};
   if(options.account!==target.account||!options.pagesToken||!options.dnsToken)throw Error('Missing scoped credentials');

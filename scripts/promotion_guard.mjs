@@ -1,3 +1,5 @@
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 
 export const receiverRepositoryId = 1324916521;
@@ -27,7 +29,7 @@ export function guard(input) {
  if(config.publication_mode!=='INITIAL_BINDING_ONLY'||config.project!=='vibecast-tv-bootstrap'||config.production_origin!=='https://vibecast.tv'||config.status!=='QUALIFIED'||!config.account_id||config.account_id!==account)throw Error('Unqualified deployment target');
 }
 export function api(route){return JSON.parse(execFileSync('gh',['api',route],{encoding:'utf8'}));}
-if(process.argv[1]===new URL(import.meta.url).pathname){
+if(path.resolve(process.argv[1]??'')===fileURLToPath(import.meta.url)){
  const {readFile}=await import('node:fs/promises');
  const repository=process.env.GITHUB_REPOSITORY,sha=process.env.CANDIDATE_SHA;
  const run=api(`repos/${repository}/actions/runs/${process.env.ARTIFACT_RUN_ID}`);

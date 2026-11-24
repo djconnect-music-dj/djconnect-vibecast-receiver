@@ -1,3 +1,17 @@
+# Review candidate: validation CLIs with spaces — 2026-11-24
+
+The existing sole receiver branch `codex/receiver-cli-space-paths-20261123`
+repairs actual command execution under filesystem paths containing spaces.
+[Scope and validation](docs/qualification/2026-11-24-cli-space-paths.md) record
+the unchanged guard semantics, seven causal regressions and fresh complete
+142 Node / 11 Python PASS. Product checkpoint37880855; only this source repair
+and documentary closeout are review candidates. No new Core asset import,
+bootstrap/runtime change, publication, merge or deployment is claimed.
+Source/Finalization delivery and current production remain separate; historical
+records below retain their original freeze-time scope.
+
+---
+
 # Native VibeCast Live join landing delivered — 2026-11-23
 
 SourcePR70 protected `a560756f11531f725e047edce670c76b8a59c0e4` equals reviewed

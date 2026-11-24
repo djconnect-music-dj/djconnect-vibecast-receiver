@@ -1,3 +1,5 @@
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {writeFile} from 'node:fs/promises';
 import {api,guardSource} from './promotion_guard.mjs';
 
@@ -70,7 +72,7 @@ export function safeReadFailure(error) {
  return {outcome:'FAIL',reason:known.has(error?.message)?error.message:'Unclassified local failure'};
 }
 
-if(process.argv[1]===new URL(import.meta.url).pathname) {
+if(path.resolve(process.argv[1]??'')===fileURLToPath(import.meta.url)) {
  try {
   const repository=process.env.GITHUB_REPOSITORY,sha=process.env.CANDIDATE_SHA;
   guardSource({repository,branch:process.env.GITHUB_REF,sha,checkoutSHA:process.env.GITHUB_SHA,currentMain:api(`repos/${repository}/commits/main`).sha,run:api(`repos/${repository}/actions/runs/${process.env.ARTIFACT_RUN_ID}`),environment:api(`repos/${repository}/environments/vibecast-production`)});

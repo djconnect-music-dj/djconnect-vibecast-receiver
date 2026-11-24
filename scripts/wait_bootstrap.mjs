@@ -1,3 +1,5 @@
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {readback} from './readback_bootstrap.mjs';
 export function checkedOrigin(value) {
  const origin=new URL(value);
@@ -16,7 +18,7 @@ export async function waitReadback(manifestPath,originString='https://vibecast.t
  }
  throw Error('HTTPS/artifact qualification did not complete: '+String(last?.message??'timeout'));
 }
-if(process.argv[1]===new URL(import.meta.url).pathname) {
+if(path.resolve(process.argv[1]??'')===fileURLToPath(import.meta.url)) {
  try {process.stdout.write(JSON.stringify(await waitReadback(process.argv[2],process.argv[3]))+'\n');}
  catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}
 }
