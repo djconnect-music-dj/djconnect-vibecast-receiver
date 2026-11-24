@@ -3,13 +3,15 @@ export function renderState(document, language, current) {
  const byId = id => document.getElementById(id);
  const copy = locales[language]; document.documentElement.lang = language;
  byId('language').value = language;
- byId('privacy').textContent = copy.privacy;
  byId('language-label').textContent = copy.language; byId('state-label').textContent = copy.stateLabel;
  const pairing = ['creating','waiting','confirming','received','redirecting','recovering'].includes(current.state);
  byId('hero-tagline').textContent = copy.heroTagline;
  byId('screen-mode').textContent = pairing ? copy.pairing : copy.idle;
  byId('screen-status').textContent = current.state === 'waiting' ? copy.waitingStatus : pairing ? copy[current.state][0] : copy.idleDetail;
- byId('state-title-text').textContent = copy[current.state][0]; byId('state-description').textContent = copy[current.state][1];
+ byId('state-title-text').textContent = copy[current.state][0];
+ const description = byId('state-description');
+ description.textContent = copy[current.state][1] ?? '';
+ description.hidden = !description.textContent;
  byId('qr-instruction-icon').toggleAttribute('hidden', current.state !== 'waiting');
  const visible = ['waiting','confirming'].includes(current.state) && !!current.challenge && !current.hideQR;
  const canvas = byId('qr'), ctx = visible ? canvas.getContext?.('2d') : null;
