@@ -1,3 +1,18 @@
+# Validation CLI repair delivered — separate Finalization prepared — 2026-11-24
+
+SourcePR72 merged normally as `a634e1f79b3b47a37c9e6f09189f3bcd3ac26a6f`;
+its complete tree equals reviewed `12a2a3fc`. Source-mainCI45365616297 and
+projection45365616407 PASS. All three own-main artifact ZIPs have matching
+provider digests; existing immutable bootstrap/QA verifiers and the two-engine
+loopback HTTP-UI receipt PASS. [Separate Finalization](docs/qualification/2026-11-24-cli-space-paths-finalization.md)
+and [machine proof](docs/qualification/cli-space-paths-source-2026-11-24.json)
+await their own protected merge and exact final-main reconciliation. No new
+Core Cast B import, release/tag mechanism, publication dispatch, deployment,
+HA update or physical-device acceptance is claimed. Historical records below
+remain byte-preserved; sole receiver writer, no timer or broad cleanup.
+
+---
+
 # Review candidate: validation CLIs with spaces — 2026-11-24
 
 The existing sole receiver branch `codex/receiver-cli-space-paths-20261123`
