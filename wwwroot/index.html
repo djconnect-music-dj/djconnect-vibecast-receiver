@@ -60,6 +60,14 @@ header { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); g
 #vibescape-scene[hidden],#live-guest-count[hidden] { display:none }
 .vibescape-mode .session-panels { display:none }
 #live-guest-count { white-space:nowrap; font-size:clamp(.85rem,1.7vw,1.2rem); letter-spacing:normal }
+#live-indicator { display:inline-flex; flex:none; align-items:center; gap:.4em; color:#fff; white-space:nowrap }
+#live-indicator[hidden],.guest-participation[hidden] { display:none }
+#live-indicator svg { width:1.3em; height:1.3em; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
+.guest-participation {
+  position:fixed; right:calc(1.5rem + env(safe-area-inset-right,0px)); bottom:calc(2.75rem + env(safe-area-inset-bottom,0px));
+  z-index:40; margin:0; padding:.55rem; border-radius:.75rem; background:#17172de8;
+}
+.guest-participation img { display:block; width:min(128px,25vw); height:auto; background:#fff }
 #session-change-popup[hidden] { display:none }
 #session-change-popup { position:fixed; z-index:45; top:18vh; left:50%; transform:translateX(-50%);
   display:flex; align-items:center; gap:1rem; padding:1rem 1.5rem; border-radius:2rem;
@@ -298,7 +306,8 @@ progress { height:.7rem; border-radius:1rem; overflow:hidden }
   display:grid; grid-template-columns:minmax(0,1fr);
   width:min(100%,86rem); margin-inline:auto; padding:.5rem;
   align-content:safe center; align-items:center; justify-items:center;
-  gap:clamp(1.25rem,2vw,2rem); opacity:1; overflow-y:auto; scrollbar-width:thin;
+  gap:clamp(.75rem,2vh,1.5rem) clamp(1.25rem,2vw,2rem);
+  opacity:1; overflow-y:auto; scrollbar-width:thin;
 }
 .idle .now-playing { display:contents }
 .idle .now-playing > :not(.waiting-brand):not(.waiting-status) { display:none }
@@ -307,10 +316,10 @@ progress { height:.7rem; border-radius:1rem; overflow:hidden }
 .waiting-avatar { display:none }
 .idle .waiting-status {
   display:flex; grid-column:1/-1; order:1; align-items:center; justify-content:center;
-  gap:.55rem; margin-block-start:clamp(1.75rem,8vh,5rem);
+  gap:.55rem;
 }
 .idle .track { margin:0; text-align:center }
-.idle .waiting-avatar { display:block; flex:none; width:clamp(6rem,8vw,7rem) }
+.idle .waiting-avatar { display:block; flex:none; width:clamp(3.75rem,9vh,6rem) }
 .idle #title::after {
   content:""; display:inline-block; width:1.05em; height:.24em; margin-inline-start:.14em;
   background:radial-gradient(circle closest-side,currentColor 66%,transparent 78%) left center / calc(100% / 3) 100% repeat-x;
@@ -354,7 +363,9 @@ body {
   padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
 }
 main { height:auto; min-width:0 }
-.renderer-footer { position:relative; z-index:1; display:flex; flex-wrap:wrap; justify-content:space-between; gap:.35rem 1rem; padding:.65rem 1.25rem; color:#b6b6c5; font-size:.8rem }
+.idle main { grid-template-rows:auto minmax(0,1fr); padding-block-end:0 }
+.idle main > footer { display:none }
+.renderer-footer { position:relative; z-index:1; display:flex; flex-wrap:wrap; justify-content:space-between; gap:.35rem 1rem; padding:.4rem 1.25rem; background:transparent; color:#b6b6c5; font-size:.8rem }
 .renderer-footer a { display:inline-flex; align-items:center; gap:.35em; color:inherit; text-decoration:none }
 .renderer-footer a svg { flex:none; width:1.15em; height:1.15em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round }
 .renderer-footer a:focus { outline:2px solid #fff; outline-offset:3px }
@@ -371,11 +382,8 @@ main { height:auto; min-width:0 }
   .waiting-wordmark { font-size:1rem }
   .idle .handoff:not([hidden]):has(> .handoff-code) { min-block-size:0; gap:0 }
   .idle .handoff > .handoff-code { margin-block-start:0 }
-  .idle .waiting-status { margin-block-start:0 }
   .idle .waiting-status .track { max-width:none; font-size:clamp(1rem,5vw,1.4rem) }
   .idle .waiting-avatar { width:clamp(3.25rem,16vw,5.5rem) }
-  .idle main { padding-block-end:0; grid-template-rows:auto minmax(0,1fr) }
-  .idle main > footer { display:none }
   .renderer-footer { padding-block-start:0; padding-inline:.8rem }
 }
 @media (forced-colors:active) {
@@ -611,7 +619,13 @@ main { height:auto; min-width:0 }
   <rect x="33" y="47" width="4" height="12" rx="2"/><rect x="40.5" y="41" width="4" height="24" rx="2"/>
   <rect x="48" y="36" width="4" height="34" rx="2"/><rect x="55.5" y="41" width="4" height="24" rx="2"/>
   <rect x="63" y="47" width="4" height="12" rx="2"/>
-</svg><span class="receiver-brand-label">DJConnect VibeCast</span></span><div class="header-clock">
+</svg><span class="receiver-brand-label">DJConnect VibeCast</span><span id="live-indicator" hidden>LIVE
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path id="sharing-hand" d="M2 2.5h9c.7 0 1.1.2 1.6.5l6.2 3.6a1.5 1.5 0 0 1-1.5 2.6l-3.5-2M2 2.5v5.8a5 5 0 0 0 6.7 0h3.7a1.4 1.4 0 0 0 0-2.8H8.3"/>
+    <use href="#sharing-hand" transform="rotate(180 12 12)"/>
+    <path d="M12 14.6l-2.2-2.2a1.55 1.55 0 0 1 2.2-2.2 1.55 1.55 0 0 1 2.2 2.2z"/>
+  </svg>
+</span></span><div class="header-clock">
   <button type="button" id="display-view-flow" class="display-view-button" aria-pressed="true" hidden>Flow</button>
   <div><time id="clock" aria-label=""></time><time id="clock-date"></time></div>
   <button type="button" id="display-view-vibescape" class="display-view-button" aria-pressed="false" hidden>VibeScape</button>
@@ -793,7 +807,7 @@ main { height:auto; min-width:0 }
 </aside>
 </div></section><footer><section id="up-next" class="up-next" hidden><img id="next-art" alt=""><div><span id="next-label" class="up-next-label"></span><strong id="next-title"></strong><span id="next-artist"></span></div></section><progress id="progress" max="1" value="0" hidden></progress><div class="meta"><span id="time"></span></div></footer></main>
 <footer class="renderer-footer">
-  <span id="renderer-build"><span id="renderer-build-label">VibeCast versie</span> 4.1.0 (bb3b847a)</span>
+  <span id="renderer-build"><span id="renderer-build-label">VibeCast versie</span> 4.1.0 (2790e473)</span>
   <a href="https://djconnect.dev/" rel="noreferrer">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m9 15 6-6m-5 0h5v5"/></svg>
     djconnect.dev
@@ -972,6 +986,7 @@ main { height:auto; min-width:0 }
   const reactionTimers=new Map();
   let guestCounter=null;
   function clearLiveStatus(){
+    e("live-indicator").hidden=true;
     if(guestCounter){guestCounter.hidden=true;guestCounter.textContent="";guestCounter.removeAttribute("aria-label");}
     for(const [node,timer] of reactionTimers){window.clearTimeout(timer);node.remove();}
     reactionTimers.clear();seenReactions.clear();
@@ -1016,6 +1031,7 @@ main { height:auto; min-width:0 }
     if(!displayHost || !detail)return;
     const enabled=detail.live_enabled===true;
     if(!enabled)clearLiveStatus();
+    e("live-indicator").hidden=!enabled;
     if(!guestCounter){
       guestCounter=document.createElement("span");guestCounter.id="live-guest-count";
       document.querySelector(".session-status").appendChild(guestCounter);
@@ -1644,6 +1660,7 @@ main { height:auto; min-width:0 }
   }
   function render(animate=false) {
     const languageChanged=useLanguage(); updateClock();
+    e("state").hidden=displayHost && snapshotAccepted && !ended;
     if (snapshotAccepted && !ended) e("state").textContent=text.live;
     renderSessionIcons();
     renderSessionChange();
@@ -2046,8 +2063,8 @@ window.DJCDisplayHost=function(transport){
     for(const reference of artwork.keys())removeArtwork(reference);
     publishArtwork();
   }
-  const participationLabels={en:["Scan to join the music conversation","Guest invitation"],nl:["Scan om mee te praten over de muziek","Gastuitnodiging"],de:["Scannen und über die Musik mitreden","Gasteinladung"],fr:["Scanne pour parler de la musique","Invitation des invités"],es:["Escanea para hablar de la música","Invitación para invitados"]};
-  let guestPanel=null,guestQR=null,guestCaption=null,guestPollGeneration=-1,guestQRDeadline=0;
+  const participationLabels={en:"Scan to join the music conversation",nl:"Scan om mee te praten over de muziek",de:"Scannen und über die Musik mitreden",fr:"Scanne pour parler de la musique",es:"Escanea para hablar de la música"};
+  let guestPanel=null,guestQR=null,guestPollGeneration=-1,guestQRDeadline=0;
   let sharedPhoto=null,sharedPhotoWanted=null,failedSharedPhotoRevision=null;
   function clearSharedPhoto(){
     sharedPhotoWanted=null;
@@ -2120,12 +2137,9 @@ window.DJCDisplayHost=function(transport){
       if(!guestPanel){
         guestPanel=document.createElement("aside");guestPanel.className="guest-participation";
         guestQR=document.createElement("img");guestQR.width=128;guestQR.height=128;
-        guestCaption=document.createElement("p");guestPanel.append(guestQR,guestCaption);document.body.append(guestPanel);
-        const style=document.createElement("style");style.textContent=".guest-participation{position:fixed;right:1.5rem;bottom:2.5rem;z-index:40;max-width:13rem;padding:.75rem;border-radius:1rem;background:#17172de8;color:white;text-align:center}.guest-participation img{max-width:100%;height:auto;background:white}.guest-participation p{font:500 .85rem/1.3 system-ui;margin:.5rem 0 0}.guest-participation[hidden]{display:none}";document.head.append(style);
+        guestPanel.append(guestQR);document.body.append(guestPanel);
       }
-      const labels=participationLabels[effectiveLocale]||participationLabels.en;
-      guestPanel.style.top="5.5rem";guestPanel.style.bottom="auto";guestPanel.style.maxWidth="9rem";
-      guestCaption.textContent=labels[0];guestQR.alt=labels[1];
+      guestQR.alt=participationLabels[effectiveLocale]||participationLabels.en;
       if(guestQR.getAttribute("src")!==invitation.qr_data_uri)guestQR.src=invitation.qr_data_uri;
       guestQRDeadline=started+invitation.expires_in*1000;guestPanel.hidden=now()>=guestQRDeadline;
       later(()=>{if(guestPanel && now()>=guestQRDeadline){guestPanel.hidden=true;guestQR.removeAttribute("src");}},Math.max(1,guestQRDeadline-now()));
