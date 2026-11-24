@@ -14,7 +14,8 @@ for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:192
  });
  await page.goto('/cast-readonly');
  await expect(page.locator('.waiting-brand')).toBeVisible();
- await expect(page.locator('.receiver-brand img')).toBeVisible();
+ await expect(page.locator('.receiver-brand svg')).toBeVisible();
+ await expect(page.locator('.receiver-brand-label')).toHaveText('DJConnect VibeCast');
  await expect(page.locator('#handoff')).toBeHidden();
  expect(await page.evaluate(()=>window.testSockets.length)).toBe(0);
  await page.evaluate(locale=>{
