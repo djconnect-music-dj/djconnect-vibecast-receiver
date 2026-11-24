@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "increment": "receiver-cli-space-paths-20261124",
+  "scope": "SOURCE_SOFTWARE_AND_DOCUMENTARY_FINALIZATION_NOT_DEPLOYMENT",
+  "source_pr": 72,
+  "reviewed_head": "12a2a3fc8946753d29364d3af6f1257c25be4d7d",
+  "source_main": "a634e1f79b3b47a37c9e6f09189f3bcd3ac26a6f",
+  "complete_git_tree": "2a951148bf33d680f254b21d5643aaccaff6db5a",
+  "reviewed_tree_equality": "PASS",
+  "source_pr_ci": 45356786178,
+  "source_pr_projection": 45356786060,
+  "source_main_ci": 45365616297,
+  "source_main_projection": 45365616407,
+  "source_main_ci_outcome": "SUCCESS",
+  "artifacts": [
+    {
+      "name": "bootstrap-a634e1f79b3b47a37c9e6f09189f3bcd3ac26a6f",
+      "artifact_id": 14907205948,
+      "provider_zip_sha256": "854737ed44044d98434b7da51b742592a29532ba8e8ccf4d1fefbf7c7ed0d827",
+      "files": 26,
+      "verification": "PASS",
+      "build_manifest_sha256": "8f49a54fb17e1ac6a8063c5905fc238f40da43d6b103f23be7ab2b3052f35b74"
+    },
+    {
+      "name": "bootstrap-qa-a634e1f79b3b47a37c9e6f09189f3bcd3ac26a6f",
+      "artifact_id": 14907230817,
+      "provider_zip_sha256": "f239b7f8930fa028145e9c625e3749f52ae01431d6bacebef6f19162ab54bf06",
+      "files": 20,
+      "verification": "PASS",
+      "build_manifest_sha256": "4c3f77be9b7b25e4ae0c9caa76b950f59b68f30305594b1f4410b913d916914b"
+    },
+    {
+      "name": "receiver-http-ui-a634e1f79b3b47a37c9e6f09189f3bcd3ac26a6f",
+      "artifact_id": 14907425036,
+      "provider_zip_sha256": "6cc82c12a2626da8fde8e5f9f2f7a7a121935dc0f4fa1e3b61d79e0313cdecd9",
+      "files": 1,
+      "verification": "PASS",
+      "scope": "REAL_RECEIVER_UI_LOOPBACK_HTTP_NOT_NATIVE_EDGE_TLS_HA_OR_PUBLIC"
+    }
+  ],
+  "source_changed_scope": "six CLI entrypoint checks, causal tests, documentation; renderer/bootstrap assets and provider/trust decisions unchanged",
+  "internal_release_and_tag_automation": "NOT_APPLICABLE; no existing workflow; no new mechanism introduced",
+  "production_update_dispatch": "NOT_RUN",
+  "qa_preview_dispatch": "NOT_RUN",
+  "new_cast_b_import": "NOT_RUN_SEPARATE_INCREMENT",
+  "device_provider_acceptance": "NOT_RUN",
+  "finalization_at_preparation": "PENDING_OWN_REVIEW_PROTECTED_MERGE_AND_FINAL_MAIN",
+  "workspace_cleanup": "retain source/ref/evidence; no broad cleanup"
+}
