@@ -1,7 +1,10 @@
 {
-  "build_version": "1.1.4",
+  "build_version": "4.1.0",
   "contracts": {
     "broadcast_transport": "snapshot-event-v1",
+    "cast_display_versions": [
+      1
+    ],
     "cast_handoff_versions": [
       1
     ],
@@ -14,20 +17,21 @@
     }
   },
   "files": {
-    "cast/index.html": "ecab0e2d491cfcd09856fd2c98dfee4ce8e6f6c9de26fa73035654c18b57ab76",
-    "local/vibecast.html": "5b2745f9cfedf345f24e249bbdca234980edfad10234275fd6754c1308579aa9"
+    "cast/index.html": "c54ad0944f2fd66353bdfd82bfe6e1b46881a8d27ada24442662adbe5fdd8f0e",
+    "local/vibecast.html": "e22e9fb068f647887de8093b2d716a607a1d5c3cd7e306358aba246c449c7711"
   },
   "private_runtime_data_in_build": false,
   "promotion": "explicit receiver-owner import; no automatic deployment",
-  "renderer_source_sha256": "867f4fcd15432126cd821af95e07acdd02884924f20d7271470fd79ffe4ac463",
+  "renderer_source_sha256": "aa985bd975b7bf5656ba8a6a03c3b399d79c45a8732dd311aba0d614f8b39272",
   "schema_version": 1,
-  "source_revision": "c91ee641da9314ce71a769aed45c7122e4b63aef",
+  "source_revision": "b29c7f3ea05af02f7e247ac3775107fb8015e9bf",
   "sources": {
     "../brand/mark-40.png": "b07eb1d01fc37044eef22e3f376635b0f623eec384c18f89046a49c80bb8c257",
-    "cast-host.js": "b3b15f607735918f83d130b6afffb460f6d7a808e3c69228ece9b947816be52b",
+    "cast-host.js": "998ec87918aa6eee9f464aa2086c49ae33f6d0a52ce2ebfb8b7ed8d447e7bdc9",
+    "display-host.js": "9dae6f0bd82256a02a779dd743e9a3b19447c3bf4533961717c6b242a2ecef71",
     "local-host.js": "3ad7033ca34badacaa3b0ca2d52e960fbeb5f130236d49050722441105314975",
-    "renderer.js": "867f4fcd15432126cd821af95e07acdd02884924f20d7271470fd79ffe4ac463",
-    "style.css": "f70190cd3d938b4f546466bdefe88d3a17b3c84948274bcb06b93cc358f156f5",
-    "template.html": "96e4c661ec687661a710d53679ab8005b2bf8fbd445d74f2ebe071c496b42041"
+    "renderer.js": "aa985bd975b7bf5656ba8a6a03c3b399d79c45a8732dd311aba0d614f8b39272",
+    "style.css": "159c909c590cbddad23d88ebc36593886d31fdce57b90448f976b63953ab5596",
+    "template.html": "1c50ad95f37c7a8c55d4efbd75ad643f571f490341bad01a1c39d20d54c53746"
   }
 }
