@@ -34,11 +34,12 @@ export function immutableFromLog(log) {
  return origins[0];
 }
 export async function downloadPrior({fetcher=fetch,directory=priorDirectory}={}) {
+ const cleanRoutes={'index.html':'/','join.html':'/join','404.html':'/__vibecast_missing__'};
  async function bytes(file) {
-  // Pages consumes _headers and canonicalizes index.html; neither is a raw file route.
+  // Pages consumes _headers and redirects HTML files to their canonical paths.
   if(file==='_headers')return execFileSync('gh',['api','-H','Accept: application/vnd.github.raw+json',
    `repositories/${receiverRepositoryId}/contents/bootstrap/public/_headers?ref=${baseline.sourceSHA}`]);
-  const route=file==='index.html'?'/':file==='404.html'?'/__vibecast_missing__':'/'+file;
+  const route=cleanRoutes[file]??'/'+file;
   const response=await fetcher(baseline.origin+route,{redirect:'error',signal:AbortSignal.timeout(20000)});
   if(response.status!==(file==='404.html'?404:200))throw Error('Prior artifact unavailable');
   const length=Number(response.headers.get('content-length'));
