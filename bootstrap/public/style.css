@@ -306,15 +306,22 @@ main:has(#qr-panel:not([hidden])) .screen-status { margin: 0 0 .5rem; }
 main:has(#qr-panel:not([hidden])) .waiting-avatar { width: clamp(3rem, 7vh, 5.25rem); }
 /* Match the Home Assistant waiting screen on wide displays. */
 @media (min-height: 761px) and (min-width: 901px) and (orientation: landscape) {
-  main {
+  .screen-header {
+    padding-block-start: calc(clamp(.5rem, 1.4vh, 1rem) + env(safe-area-inset-top, 0px));
+  }
+  #screen-date { margin-top: .1em; }
+  main, main:has(#qr-panel:not([hidden])) {
     margin-block: auto;
     row-gap: clamp(.75rem, 2vh, 1.5rem);
   }
-  .screen-status {
+  .screen-status, main:has(#qr-panel:not([hidden])) .screen-status {
     gap: .55rem;
     margin: 0;
   }
-  .waiting-avatar { width: clamp(3.75rem, 9vh, 6rem); }
+  .waiting-avatar, main:has(#qr-panel:not([hidden])) .waiting-avatar {
+    width: clamp(3.75rem, 9vh, 6rem);
+  }
+  .bottom-bar { margin-top: 0; }
 }
 @media (max-height: 760px) and (min-width: 901px) and (orientation: landscape) {
   html:has(#qr-panel:not([hidden])) #screen-time { font-size: clamp(2.5rem, 8vh, 4rem); }
