@@ -65,14 +65,27 @@ header { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); g
 #live-indicator svg { width:1.3em; height:1.3em; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
 .guest-participation {
   position:fixed; right:calc(1.5rem + env(safe-area-inset-right,0px)); bottom:calc(2.75rem + env(safe-area-inset-bottom,0px));
-  z-index:40; margin:0; padding:.55rem; border-radius:.75rem; background:#17172de8;
+  z-index:40; display:flex; align-items:center; gap:.75rem; margin:0; padding:.55rem; border-radius:.75rem; background:#17172de8;
 }
 .guest-participation img { display:block; width:min(128px,25vw); height:auto; background:#fff }
+.guest-manual-entry[hidden] { display:none }
+.guest-manual-entry { display:grid; gap:.3rem; padding-inline:.4rem; text-align:center; color:white }
+.guest-manual-entry strong { font:700 clamp(.85rem,1.75vw,1.4rem)/1.2 ui-monospace,monospace; white-space:nowrap }
+.guest-manual-entry span { max-width:18rem; font-size:.8rem; overflow-wrap:anywhere }
 #session-change-popup[hidden] { display:none }
-#session-change-popup { position:fixed; z-index:45; top:18vh; left:50%; transform:translateX(-50%);
-  display:flex; align-items:center; gap:1rem; padding:1rem 1.5rem; border-radius:2rem;
-  background:#141222e8; border:1px solid #ffffff55; font-size:clamp(1.1rem,2.5vw,2rem) }
-#session-change-popup .spotlight-avatar { display:block; width:96px; height:96px; flex:none }
+#session-change-popup {
+  position:fixed; z-index:45; bottom:2rem; bottom:calc(2rem + env(safe-area-inset-bottom,0px));
+  left:50%; transform:translateX(-50%); max-width:calc(100% - 2rem); pointer-events:none;
+  display:flex; align-items:center; gap:.45rem; padding:.35rem .7rem; border-radius:1rem;
+  background:rgba(20,18,34,.67); border:1px solid rgba(255,255,255,.16); font-size:.9rem; line-height:1.3;
+}
+#session-change-popup .spotlight-avatar { display:block; width:1.2rem; height:1.2rem; flex:none }
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more) {
+  #session-change-popup { background:#141222; border-color:currentColor }
+}
+@media (forced-colors:active) {
+  #session-change-popup { background:Canvas; color:CanvasText; border-color:CanvasText }
+}
 .live-reaction { position:fixed; bottom:12vh; z-index:50; pointer-events:none; font-size:clamp(2rem,6vw,5rem);
   animation:live-reaction-rise 4s ease-out both }
 @keyframes live-reaction-rise { from { opacity:0; transform:translateY(2rem) scale(.7) }
@@ -124,23 +137,10 @@ main {
 }
 header { align-items:center; min-height:4rem; margin-inline:calc(var(--header-inset) - var(--page-inset)) }
 .header-clock { grid-column:2; justify-self:center; text-align:center }
-.header-clock:has(.display-view-button:not([hidden])) {
-  display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
-  align-items:center; gap:clamp(.4rem,1.4vw,1.1rem);
-}
-.display-view-button {
-  color:#fff; background:#0003; border:1px solid #fff; border-radius:2rem;
-  padding:.36em .68em; font:inherit; letter-spacing:normal; white-space:nowrap; cursor:pointer;
-}
-.display-view-button[hidden] { display:none }
-.display-view-button:first-child { justify-self:end }
-.display-view-button:last-child { justify-self:start }
-.display-view-button[aria-pressed="true"],.display-view-button:hover { background:#fff3 }
-.display-view-button:focus-visible { outline:2px solid #fff; outline-offset:3px }
-.display-view-button:disabled { cursor:wait }
+#display-view-status { color:inherit; font-weight:600; letter-spacing:normal; text-transform:none; white-space:nowrap }
 @media (max-width:600px) {
-  .header-clock:has(.display-view-button:not([hidden])) { grid-column:1 / -1; grid-row:2 }
-  header:has(.display-view-button:not([hidden])) .session-status { grid-column:2 / -1; grid-row:1 }
+  header:has(#display-view-status:not([hidden])) .header-clock { grid-column:1 / -1; grid-row:2 }
+  header:has(#display-view-status:not([hidden])) .session-status { grid-column:2 / -1; grid-row:1 }
 }
 #clock { display:block; font-size:clamp(2.5rem,5.5vw,5rem); line-height:1.05; font-weight:850; letter-spacing:-.02em; font-variant-numeric:tabular-nums }
 #clock-date { display:block; margin-top:.1em; font-size:clamp(.875rem,1.45vw,1.2rem); letter-spacing:normal; text-transform:none; opacity:.78 }
@@ -276,6 +276,9 @@ progress { height:.7rem; border-radius:1rem; overflow:hidden }
 /* Shared VibeCast connect treatment: the receiver retains its actual host states. */
 .receiver-brand { display:flex; align-items:center; gap:.65rem; color:#f4f5ff; letter-spacing:-.02em; text-transform:none; font-size:1.1rem; font-weight:700 }
 .receiver-mark { display:block; flex:none; color:#fff }
+.receiver-mark-party,
+.receiver-mark-is-party .receiver-mark-waveform { display:none }
+.receiver-mark-is-party .receiver-mark-party { display:inline }
 @media (forced-colors:active) { .receiver-mark { color:CanvasText } }
 .browser-edge { display:none }
 .idle .atmosphere { background:radial-gradient(ellipse at 8% 22%,#34d2ff1c,transparent 46%),radial-gradient(ellipse at 16% 58%,#246bff40,transparent 58%),radial-gradient(ellipse at 92% 18%,#8b39ef45,transparent 52%),radial-gradient(ellipse at 72% 96%,#5148e533,transparent 56%),linear-gradient(135deg,#071027,#100b24); animation:none }
@@ -522,6 +525,14 @@ main { height:auto; min-width:0 }
 .horizon-panel h3 { margin:0; font-size:.86em }
 .horizon-panel section + section,.horizon-panel #horizon-notice { margin-top:.75em }
 .horizon-panel #horizon-notice { font-size:.8em; opacity:.82 }
+#horizon-preview:not([hidden]) + #horizon-card { margin-top:.7rem }
+.horizon-preview-track { display:flex; align-items:flex-start; gap:.65rem; overflow-wrap:anywhere }
+.horizon-preview-track > img { flex:none; width:clamp(3rem,6vw,5rem); aspect-ratio:1; object-fit:cover; border-radius:.65rem }
+#horizon-preview-title { display:block }
+#horizon-preview-artist { opacity:.78 }
+#horizon-preview-text { margin-top:.35em }
+#horizon-preview-source { margin-top:.45em; padding:.2em 0 }
+#horizon-preview-source img { width:clamp(4rem,8vw,6rem) }
 @media (max-width:600px) {
   html {
     --edge-top-size:max(16px,env(safe-area-inset-top,0px));
@@ -554,8 +565,8 @@ main { height:auto; min-width:0 }
   .browser-edge-top { top:0; height:var(--edge-top-size) }
   .browser-edge-bottom { bottom:0; height:var(--edge-bottom-size) }
   .session-panels { grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,2fr) minmax(0,1fr) }
-  .session-panels:not(:has(#horizon-card:not([hidden]))) { grid-template-rows:minmax(0,1fr) }
-  .horizon-panel:has(#horizon-card[hidden]) { display:none }
+  .session-panels:not(:has(.horizon-panel > article:not([hidden]))) { grid-template-rows:minmax(0,1fr) }
+  .horizon-panel:not(:has(> article:not([hidden]))) { display:none }
 }
 .flow-viewport { height:100%; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; overflow-anchor:none;
   -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 2.5rem),transparent 100%);
@@ -616,19 +627,24 @@ main { height:auto; min-width:0 }
   <path d="M13 57C8-4 92-4 87 57" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
   <circle cx="50" cy="53" r="28" fill="none" stroke="currentColor" stroke-width="4.5"/>
   <rect x="7" y="43" width="11" height="27" rx="5"/><rect x="82" y="43" width="11" height="27" rx="5"/>
-  <rect x="33" y="47" width="4" height="12" rx="2"/><rect x="40.5" y="41" width="4" height="24" rx="2"/>
-  <rect x="48" y="36" width="4" height="34" rx="2"/><rect x="55.5" y="41" width="4" height="24" rx="2"/>
-  <rect x="63" y="47" width="4" height="12" rx="2"/>
-</svg><span class="receiver-brand-label">DJConnect VibeCast</span><span id="live-indicator" hidden>LIVE
+  <g class="receiver-mark-waveform">
+    <rect x="33" y="47" width="4" height="12" rx="2"/><rect x="40.5" y="41" width="4" height="24" rx="2"/>
+    <rect x="48" y="36" width="4" height="34" rx="2"/><rect x="55.5" y="41" width="4" height="24" rx="2"/>
+    <rect x="63" y="47" width="4" height="12" rx="2"/>
+  </g>
+  <g class="receiver-mark-party">
+    <path d="M36 66l6-14c.7-1.6 2.5-2.1 3.9-.8l7 6.8c1.2 1.2.8 3.1-.8 3.8l-14 6.6c-1.5.7-2.8-.8-2.1-2.4z"/>
+    <path d="M47 45c.2 3.4 2.3 6.4 5.7 7.9M54 47c1.6-1 2.9-2.3 3.3-4.3M56 54c2.2-.4 4.2-.2 6 1.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="43" cy="44" r="1.7"/><circle cx="50" cy="41" r="2.1"/><circle cx="61" cy="40" r="1.5"/><circle cx="63" cy="49" r="1.9"/><circle cx="60" cy="60" r="1.5"/>
+  </g>
+</svg><span id="receiver-brand-label" class="receiver-brand-label">DJConnect VibeCast</span><span id="live-indicator" hidden>
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path id="sharing-hand" d="M2 2.5h9c.7 0 1.1.2 1.6.5l6.2 3.6a1.5 1.5 0 0 1-1.5 2.6l-3.5-2M2 2.5v5.8a5 5 0 0 0 6.7 0h3.7a1.4 1.4 0 0 0 0-2.8H8.3"/>
     <use href="#sharing-hand" transform="rotate(180 12 12)"/>
     <path d="M12 14.6l-2.2-2.2a1.55 1.55 0 0 1 2.2-2.2 1.55 1.55 0 0 1 2.2 2.2z"/>
   </svg>
 </span></span><div class="header-clock">
-  <button type="button" id="display-view-flow" class="display-view-button" aria-pressed="true" hidden>Flow</button>
-  <div><time id="clock" aria-label=""></time><time id="clock-date"></time></div>
-  <button type="button" id="display-view-vibescape" class="display-view-button" aria-pressed="false" hidden>VibeScape</button>
+  <time id="clock" aria-label=""></time><time id="clock-date"></time>
 </div><div class="session-status">
 <select id="display-language" class="display-language" aria-label="Language" hidden>
   <option value="en" lang="en">English</option>
@@ -637,6 +653,7 @@ main { height:auto; min-width:0 }
   <option value="fr" lang="fr">Français</option>
   <option value="es" lang="es">Español</option>
 </select>
+<span id="display-view-status" role="status" hidden></span>
 <span id="session-icons" class="session-icons" hidden>
   <svg id="session-mood-icon" viewBox="0 0 24 24" role="img" focusable="false" hidden><title id="session-mood-tooltip"></title><path/></svg>
   <svg id="session-persona-icon" viewBox="0 0 24 24" role="img" focusable="false" hidden><title id="session-persona-tooltip"></title><path/></svg>
@@ -772,6 +789,18 @@ main { height:auto; min-width:0 }
   <button id="flow-live" class="flow-live" type="button" hidden></button>
 </section>
 <aside class="horizon-panel" tabindex="0">
+  <article id="horizon-preview" class="flow-card mood-palette" hidden>
+    <h2 id="horizon-preview-label"></h2>
+    <div class="horizon-preview-track">
+      <img id="horizon-preview-art" alt="" hidden>
+      <div>
+        <strong id="horizon-preview-title"></strong>
+        <p id="horizon-preview-artist"></p>
+        <p id="horizon-preview-text"></p>
+        <a id="horizon-preview-source" class="spotify-source" target="_blank" rel="noopener noreferrer"></a>
+      </div>
+    </div>
+  </article>
   <article id="horizon-card" class="flow-card mood-palette" hidden>
     <div class="horizon-banner" aria-hidden="true">
       <svg viewBox="0 0 600 220" width="600" height="220" preserveAspectRatio="none" focusable="false">
@@ -807,7 +836,7 @@ main { height:auto; min-width:0 }
 </aside>
 </div></section><footer><section id="up-next" class="up-next" hidden><img id="next-art" alt=""><div><span id="next-label" class="up-next-label"></span><strong id="next-title"></strong><span id="next-artist"></span></div></section><progress id="progress" max="1" value="0" hidden></progress><div class="meta"><span id="time"></span></div></footer></main>
 <footer class="renderer-footer">
-  <span id="renderer-build"><span id="renderer-build-label">VibeCast versie</span> 4.1.0 (2790e473)</span>
+  <span id="renderer-build"><span id="renderer-build-label">VibeCast versie</span> 4.1.0 (b3cd19b7)</span>
   <a href="https://djconnect.dev/" rel="noreferrer">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m9 15 6-6m-5 0h5v5"/></svg>
     djconnect.dev
@@ -867,6 +896,7 @@ main { height:auto; min-width:0 }
   let placementCount=0, lastPlacedKey="";
   let playbackItem = "", current = null, previous = null, lastShownAt = -Infinity, lastArtwork = "", lastSequence = 0, snapshotSequence = 0, fieldSequences = {};
   const firstSeen = new Map();
+  const waitingMusicLabels={en:"Waiting for music",nl:"Wachten op muziek",de:"Warten auf Musik",fr:"En attente de musique",es:"Esperando música"};
   const previousSourceLabels={en:"MusicBrainz · earlier recording",nl:"MusicBrainz · eerdere opname",de:"MusicBrainz · frühere Aufnahme",fr:"MusicBrainz · enregistrement précédent",es:"MusicBrainz · grabación anterior"};
   const nextLabels={en:"Up next",nl:"Hierna",de:"Als Nächstes",fr:"À suivre",es:"A continuación"};
   const buildLabels={en:"VibeCast version",nl:"VibeCast versie",de:"VibeCast-Version",fr:"Version de VibeCast",es:"Versión de VibeCast"};
@@ -892,28 +922,23 @@ main { height:auto; min-width:0 }
   let sceneCanvas=null, sceneFrame=0, sceneLastFrame=0;
   const scenePalettes={chill:["#4da3ff","#7b61ff","#d184ff"],groove:["#06c7ad","#169bc8","#10b981"],
     energy:["#ddff00","#00b8ff","#39ff78"],party:["#ff287f","#aa38f5","#f43dce"]};
-  let displayViewRevision=-1, displayViewPending=false;
-  const displayViewModes=["flow","vibescape"];
-  function adoptDisplayView(view){
-    if(!view || !displayViewModes.includes(view.mode))return;
+  let displayViewRevision=-1;
+  function confirmedDisplayView(view){
+    if(!view || (view.mode!=="flow" && view.mode!=="vibescape"))return projection.view;
     if(Number.isSafeInteger(view.revision)){
-      if(view.revision<displayViewRevision)return;
+      if(view.revision<displayViewRevision)return projection.view;
       displayViewRevision=view.revision;
-    }else if(displayViewRevision>=0)return;
-    projection.view=view;
-    renderDisplayViewButtons();
-    renderScene();
+    }else if(displayViewRevision>=0)return projection.view;
+    return view;
   }
-  function renderDisplayViewButtons(){
+  function renderDisplayViewStatus(){
     if(!displayHost)return;
-    const available=snapshotAccepted && !ended && displayViewRevision>=0;
-    for(const mode of displayViewModes){
-      const button=e("display-view-"+mode);
-      if(!button)continue;
-      button.hidden=!available;
-      button.disabled=displayViewPending;
-      button.setAttribute("aria-pressed",String(!!projection.view && projection.view.mode===mode));
-    }
+    const status=e("display-view-status");
+    if(!status)return;
+    const view=snapshotAccepted && !ended && projection.view;
+    const label=view ? (view.mode==="vibescape" ? "VibeScape" : "Flow") : "";
+    if(status.textContent!==label)status.textContent=label;
+    status.hidden=!label;
   }
   function sceneActive(){return snapshotAccepted && !ended && projection.view && projection.view.mode==="vibescape";}
   function hideScene(){
@@ -922,45 +947,286 @@ main { height:auto; min-width:0 }
     if(sceneFrame)window.cancelAnimationFrame(sceneFrame);
     sceneFrame=0;
   }
+  const vibeScapeScenes = (() => {
+    const tau = Math.PI * 2;
+    const homeOrbs = [
+      [.18, -.48, .29, .94, -.4, .8],
+      [-.11, -.23, .24, .86, .6, 1.7],
+      [.14, .04, .166, .85, -.35, 2.8],
+      [-.31, .57, .34, .82, -.5, 3.3],
+      [.27, -.21, .047, .88, .5, 4.1],
+      [-.31, .12, .038, .87, -.4, 4.8],
+      [.28, .36, .072, .86, .2, 5.9],
+    ];
+
+    function gradient(ctx, x1, y1, x2, y2, stops) {
+      const paint = ctx.createLinearGradient(x1, y1, x2, y2);
+      for (const [offset, color] of stops) paint.addColorStop(offset, color);
+      return paint;
+    }
+
+    function orb(ctx, x, y, radius, shape, rotation, colors, metal) {
+      const [primary, secondary, accent] = colors;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.scale(radius, radius * shape);
+      ctx.beginPath();
+      ctx.arc(0, 0, 1, 0, tau);
+      ctx.clip();
+      const body = ctx.createRadialGradient(-.32, -.42, .05, 0, 0, 1.03);
+      body.addColorStop(0, metal ? "#d5dedd" : "#087969");
+      body.addColorStop(.44, metal ? "#586365" : "#103743");
+      body.addColorStop(.84, "#0b191e");
+      body.addColorStop(1, metal ? "#c9d4d4" : primary + "d4");
+      ctx.fillStyle = body;
+      ctx.fillRect(-1, -1, 2, 2);
+
+      ctx.globalCompositeOperation = "screen";
+      for (const [hx, hy, opacity, tint] of [
+        [-.42, -.35, "bd", primary], [.47, .08, "d0", secondary], [.16, -.76, "8a", accent],
+      ]) {
+        ctx.save();
+        ctx.translate(hx, hy);
+        ctx.rotate(-.55);
+        ctx.scale(1, .45);
+        const light = ctx.createRadialGradient(0, 0, 0, 0, 0, .62);
+        light.addColorStop(0, tint + opacity);
+        light.addColorStop(1, tint + "00");
+        ctx.fillStyle = light;
+        ctx.fillRect(-.62, -.62, 1.24, 1.24);
+        ctx.restore();
+      }
+      for (const [angle, thickness, tint] of [[1.05, .095, primary], [-.72, .065, secondary]]) {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, .98, .46, angle, 0, Math.PI);
+        ctx.strokeStyle = tint + "48";
+        ctx.lineWidth = thickness * 1.7;
+        ctx.stroke();
+        ctx.strokeStyle = tint + "d4";
+        ctx.lineWidth = thickness;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function home(ctx, aspect, t, dynamics, colors) {
+      const [primary, secondary, accent] = colors;
+      const waves = gradient(ctx, -aspect / 2, 0, aspect / 2, 0,
+        [[0, accent], [.48, primary], [1, secondary]]);
+      ctx.strokeStyle = waves;
+      for (let lane = 0; lane < 23; lane++) {
+        ctx.beginPath();
+        for (let point = 0; point <= 75; point++) {
+          const x = (point / 75 - .5) * aspect;
+          const wave = Math.sin(x * 5.3 + t) * .12 + Math.sin(x * 10.2 - t * .55) * .047;
+          const y = .11 + lane * .018 + wave * (.65 + dynamics * .6);
+          if (point === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.globalAlpha = .09 + Math.sin(lane / 22 * Math.PI) * .46;
+        ctx.lineWidth = .0016;
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      for (const [x, y, radius, shape, rotation, phase] of homeOrbs) {
+        const drift = .036 + dynamics * .044;
+        orb(ctx, x + Math.sin(t * .67 + phase) * drift, y + Math.cos(t * .53 + phase) * drift,
+          radius * (.96 + dynamics * .1), shape + Math.sin(t + phase) * .075,
+          rotation + Math.sin(t * .75 + phase) * .38, colors, false);
+      }
+    }
+
+    function chrome(ctx, length, colors) {
+      const [primary, secondary] = colors;
+      return gradient(ctx, -length, -length * .38, length, length * .55,
+        [[0, "#263032"], [.15, "#a1acad"], [.29, primary], [.38, "#e4e9e5"],
+          [.54, secondary], [.68, "#323c40"], [.84, "#cbd5cc"], [1, "#273034"]]);
+    }
+
+    function disk(ctx, x, y, radius, tilt, rotation, colors) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      const edge = chrome(ctx, radius, colors);
+      ctx.fillStyle = edge;
+      ctx.beginPath();
+      ctx.ellipse(.003, .019, radius + .004, radius * tilt + .004, 0, 0, tau);
+      ctx.fill();
+      ctx.fillStyle = gradient(ctx, -radius, -radius * .3, radius, radius * .14,
+        [[0, "#273032"], [.25, "#1b262b"], [.42, colors[1] + "b8"], [.52, colors[1]],
+          [.63, "#293940"], [.86, "#202729"], [1, "#464d4c"]]);
+      ctx.strokeStyle = edge;
+      ctx.lineWidth = .003;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, radius, radius * tilt, 0, 0, tau);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function orbit(ctx, radius, tilt, rotation, start, colors) {
+      ctx.save();
+      ctx.rotate(rotation);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, radius, radius * tilt, 0, start, start + 4.9);
+      ctx.strokeStyle = "#293335";
+      ctx.lineWidth = .022;
+      ctx.stroke();
+      ctx.strokeStyle = chrome(ctx, radius, colors);
+      ctx.lineWidth = .014;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function radio(ctx, aspect, t, dynamics, colors) {
+      const amplitude = .14 + .3 * dynamics;
+      ctx.translate(.018, .016);
+      orbit(ctx, .455, .62, .85 + Math.sin(t * .57) * amplitude, .6 + t * .3, colors);
+      disk(ctx, .18, -.105, .191, .39 + Math.sin(t + .9) * amplitude * .4, -.25 + t * .19, colors);
+      disk(ctx, -.13, -.19, .294, .55 + Math.sin(t * .79 + .3) * amplitude * .43, .55 + t * .22, colors);
+      orbit(ctx, .423, .76, -.48 + Math.cos(t * .53) * amplitude, 2.65 - t * .45, colors);
+      disk(ctx, .235, .198, .212, .57 + Math.cos(t * .93) * amplitude * .35, .71 - t * .25, colors);
+      orbit(ctx, .43, .23, -.99 + Math.sin(t * .45) * amplitude, 1.1 - t * .21, colors);
+      orb(ctx, .49 + Math.sin(t) * .064, -.09 + Math.cos(t * .73) * .05, .06, .96, t, colors, true);
+      orb(ctx, -.39 + Math.cos(t) * .042, .18, .033, .97, -t, colors, true);
+    }
+
+    function box(ctx, x, y, width, height, depth, yaw, roll, colors) {
+      const [primary, secondary, accent] = colors;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(roll);
+      const cosine = Math.cos(yaw), sine = Math.sin(yaw);
+      const vertices = [];
+      for (const z of [-depth / 2, depth / 2]) {
+        for (const [px, py] of [[-width/2,-height/2],[width/2,-height/2],
+          [width/2,height/2],[-width/2,height/2]]) {
+          const viewDepth = z * cosine - px * sine;
+          const scale = 1 / (1 - viewDepth * .36);
+          vertices.push([(px * cosine + z * sine) * scale, (py - viewDepth * .25) * scale, viewDepth]);
+        }
+      }
+      const faces = [[0,1,2,3],[4,5,6,7],[0,4,7,3],[1,5,6,2],[0,1,5,4],[2,3,7,6]];
+      faces.sort((a,b) => depthSum(a) - depthSum(b));
+      function depthSum(face) {
+        return face.reduce((total, vertex) => total + vertices[vertex][2], 0);
+      }
+      for (const [index, face] of faces.entries()) {
+        const [start, , end] = face.map(i => vertices[i]);
+        ctx.beginPath();
+        for (const [corner, i] of face.entries()) {
+          if (corner === 0) ctx.moveTo(vertices[i][0], vertices[i][1]);
+          else ctx.lineTo(vertices[i][0], vertices[i][1]);
+        }
+        ctx.closePath();
+        ctx.fillStyle = "#101916";
+        ctx.fill();
+        ctx.fillStyle = gradient(ctx, start[0], start[1], end[0], end[1],
+          [[0, accent + "a8"], [.11, "#222b25"], [.53, index === 4 ? secondary + "58" : primary + "55"],
+            [.91, "#0c1718"], [1, primary + "da"]]);
+        ctx.fill();
+        ctx.strokeStyle = gradient(ctx, start[0], start[1], end[0], end[1],
+          [[0, accent], [.5, "#273a36"], [1, primary]]);
+        ctx.lineWidth = .003;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function club(ctx, aspect, t, dynamics, colors) {
+      const [primary, secondary, accent] = colors;
+      ctx.fillStyle = gradient(ctx, 0, .25, 0, .5,
+        [[0, primary + "1e"], [.84, secondary + "0a"], [1, "#030709"]]);
+      ctx.fillRect(-aspect / 2, .25, aspect, .25);
+      const swing = (.1 + dynamics * .44) * Math.sin(t * .76);
+      for (const [x, y, size, phase] of [[.24, -.07, .47, .7], [-.03, .12, .59, -.17], [.38, -.18, .33, .51]]) {
+        const angle = phase + Math.sin(t + x * 6) * (.12 + dynamics * .28);
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.scale(1 - Math.abs(swing) * .35, 1);
+        ctx.strokeStyle = gradient(ctx, -size, size, size, -size,
+          [[0, primary], [.4, "#394a3c"], [.72, accent], [1, primary + "a8"]]);
+        ctx.lineWidth = .016;
+        ctx.strokeRect(-size / 2, -size * .56, size, size * 1.12);
+        ctx.strokeStyle = primary + "90";
+        ctx.lineWidth = .002;
+        ctx.strokeRect(-size / 2, -size * .56, size, size * 1.12);
+        ctx.restore();
+      }
+      for (let index = 0; index < 3; index++) {
+        box(ctx, -.13 + index * .13, -.1, .022, .34, .035, .4 + swing, .42 + swing, colors);
+      }
+      box(ctx, .01, -.36, .66, .056, .114, .45 + swing, -.13 + swing * .45, colors);
+      box(ctx, -.38, .078, .21, .77, .18, -.58 + swing, -.04 + swing * .2, colors);
+      box(ctx, .32, .22, .225, .4, .17, .47 - swing, .08 - swing * .24, colors);
+    }
+
+    function festival(ctx, aspect, t, dynamics, colors) {
+      const strands = 52, points = 74;
+      const pitch = 2.55 + dynamics * .22;
+      const radius = .21 + dynamics * .047;
+      ctx.globalCompositeOperation = "screen";
+      for (let layer = 0; layer < 2; layer++) {
+        for (let band = 0; band < colors.length; band++) {
+          ctx.fillStyle = colors[band] + (layer ? "e6" : "70");
+          ctx.beginPath();
+          for (let strand = band; strand < strands; strand += colors.length) {
+            const offset = strand / strands * tau;
+            for (let point = 1; point < points; point++) {
+              const height = point / points;
+              const angle = height * tau * pitch + offset + t * 1.7;
+              const wave = 1 + .24 * Math.sin(3 * angle - 2 * offset + t);
+              const depth = Math.sin(angle) * wave;
+              if (Number(depth > 0) !== layer) continue;
+              const taper = .44 + .56 * Math.pow(Math.sin(Math.PI * height), .65);
+              const glint = (strand * 11 + point * 17) % 109 === 0;
+              const size = (.00136 + .00047 * (1 + depth)) * taper * (glint ? 1.8 : 1);
+              const bend = (height - .5) * .24 + .038 * Math.sin(height * 10 - t * .4);
+              const x = Math.cos(angle) * radius * taper * wave + bend;
+              const y = (height - .49) * .94 + depth * (.067 + dynamics * .034);
+              ctx.rect(x - size, y - size, 2 * size, 2 * size);
+            }
+          }
+          ctx.fill();
+        }
+      }
+    }
+
+    const scenes = { home_dj: home, radio_dj: radio, club_dj: club, festival_dj: festival };
+    const backdrops = { home_dj: "#041315", radio_dj: "#0c1110", club_dj: "#0a1110", festival_dj: "#020505" };
+    return function drawVibeScape(ctx, width, height, settings, elapsed) {
+      const { persona, colors, dynamics, mood } = settings;
+      const unit = Math.min(height, width * .95);
+      const aspect = width / unit;
+      const speed = ({ chill: .66, energy: 1.16, party: 1.32 })[mood] || 1;
+      const time = elapsed * speed * (.19 + dynamics * .51);
+      ctx.save();
+      ctx.fillStyle = backdrops[persona] || backdrops.home_dj;
+      ctx.fillRect(0, 0, width, height);
+      ctx.translate(width / 2, height / 2);
+      ctx.scale(unit, unit);
+      (scenes[persona] || home)(ctx, aspect, time, dynamics, colors);
+      ctx.restore();
+    };
+  })();
   function drawScene(stamp=0){
     sceneFrame=0;
     if(!sceneActive() || document.hidden || !sceneCanvas)return;
     const still=reduceMotion();
     if(still || !document.body.classList.contains("vibescape-mode") || stamp-sceneLastFrame>=33){
       sceneLastFrame=stamp;
-      const width=Math.min(1280,window.innerWidth),height=Math.min(720,window.innerHeight);
+      const scale=Math.min(1,1280/window.innerWidth,720/window.innerHeight);
+      const width=Math.max(1,Math.round(window.innerWidth*scale));
+      const height=Math.max(1,Math.round(window.innerHeight*scale));
       if(sceneCanvas.width!==width || sceneCanvas.height!==height){sceneCanvas.width=width;sceneCanvas.height=height;}
       const ctx=sceneCanvas.getContext("2d");
       if(!ctx){hideScene();return;}
-      const settings=projection.view || {},colors=scenePalettes[settings.mood] || ["#3285ff","#843df5","#cb27f5"];
-      const persona=settings.persona,base={home_dj:.30,radio_dj:.24,club_dj:.20,festival_dj:.26}[persona] || .12;
-      const mood={chill:.6,energy:1.2,party:1.4}[settings.mood] || 1;
+      const settings=projection.view || {};
+      const colors=scenePalettes[settings.mood] || ["#3285ff","#843df5","#cb27f5"];
       const dynamics=Number.isFinite(settings.dynamics) ? Math.max(0,Math.min(1,settings.dynamics)) : .5;
-      const motion=.35+dynamics*1.3;
-      const time=still ? 0 : stamp*.0002*base*mood*motion;
-      ctx.fillStyle="#080b19";ctx.fillRect(0,0,width,height);
-      ctx.globalCompositeOperation="screen";
-      for(let i=0;i<7;i++){
-        const phase=time+i*Math.PI*2/7;
-        const x=width*(.5+(.18+.28*dynamics)*Math.sin(phase)),y=height*(.5+(.16+.24*dynamics)*Math.cos(phase*.8));
-        const glow=ctx.createRadialGradient(x,y,0,x,y,width*.43);
-        glow.addColorStop(0,colors[i%3]+"77");glow.addColorStop(1,colors[i%3]+"00");
-        ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);
-        ctx.strokeStyle=colors[i%3]+"88";ctx.lineWidth=1.5;
-        ctx.beginPath();
-        if(persona==="club_dj"){
-          ctx.moveTo(width*.1,height*(.2+i*.1));ctx.lineTo(x,y);ctx.lineTo(width*.9,height*(.8-i*.08));
-        }else if(persona==="festival_dj"){
-          ctx.moveTo(width*.5,height*.72);ctx.lineTo(x+Math.sin(phase)*width*.3,y-height*.4);
-        }else if(persona==="radio_dj"){
-          ctx.ellipse(width*.5,height*.5,width*(.16+i*.035),height*(.12+i*.025),Math.sin(phase)*.3,0,Math.PI*2);
-        }else{
-          ctx.moveTo(0,height*(.3+i*.06));
-          ctx.bezierCurveTo(width*.3,y,width*.7,height-y,width,height*(.5+i*.04));
-        }
-        ctx.stroke();
-      }
-      ctx.globalCompositeOperation="source-over";
+      vibeScapeScenes(ctx,width,height,{persona:settings.persona,mood:settings.mood,colors,dynamics},still ? 0 : stamp/1000);
       sceneCanvas.hidden=false;
       document.body.classList.add("vibescape-mode");
     }
@@ -985,7 +1251,14 @@ main { height:auto; min-width:0 }
   const seenReactions=new Map();
   const reactionTimers=new Map();
   let guestCounter=null;
+  function renderReceiverBrand(partyEnabled){
+    const label=e("receiver-brand-label");
+    const title=partyEnabled ? "VibeCast Party" : "DJConnect VibeCast";
+    if(label.textContent!==title)label.textContent=title;
+    document.body.classList.toggle("receiver-mark-is-party",partyEnabled);
+  }
   function clearLiveStatus(){
+    renderReceiverBrand(false);
     e("live-indicator").hidden=true;
     if(guestCounter){guestCounter.hidden=true;guestCounter.textContent="";guestCounter.removeAttribute("aria-label");}
     for(const [node,timer] of reactionTimers){window.clearTimeout(timer);node.remove();}
@@ -1028,9 +1301,10 @@ main { height:auto; min-width:0 }
     lastSessionPresentation=signature;
   }
   function renderLiveStatus(detail){
-    if(!displayHost || !detail)return;
+    if(!displayHost || !snapshotAccepted || ended || !detail)return;
     const enabled=detail.live_enabled===true;
-    if(!enabled)clearLiveStatus();
+    if(enabled)renderReceiverBrand(true);
+    else clearLiveStatus();
     e("live-indicator").hidden=!enabled;
     if(!guestCounter){
       guestCounter=document.createElement("span");guestCounter.id="live-guest-count";
@@ -1040,7 +1314,12 @@ main { height:auto; min-width:0 }
     guestCounter.hidden=!enabled;
     const labels={en:"Connected guests",nl:"Verbonden gasten",de:"Verbundene Gäste",fr:"Invités connectés",es:"Invitados conectados"};
     guestCounter.textContent="👥 "+count;guestCounter.setAttribute("aria-label",(labels[root.lang] || labels.en)+": "+count);
-    adoptDisplayView(detail.view);
+    const view=confirmedDisplayView(detail.view);
+    if(view!==projection.view){
+      projection.view=view;
+      renderDisplayViewStatus();
+      renderScene();
+    }
     const now=Date.now();
     for(const [id,until] of seenReactions)if(until<=now)seenReactions.delete(id);
     if(!enabled)return;
@@ -1366,10 +1645,49 @@ main { height:auto; min-width:0 }
     es:["Flujo de la sesión", "Volver al directo"]
   };
   let horizonExpiry, horizonContentKey;
+  let horizonPreviewExpiry;
+  function renderHorizonPreview(active) {
+    const card=e("horizon-preview");
+    if (!card) return;
+    window.clearTimeout(horizonPreviewExpiry);
+    const p=playback(), preview=active && !sceneActive() && projection.horizon_preview;
+    const track=preview && preview.track;
+    const expires=Date.parse(preview && preview.expires_at);
+    const visible=!!(track && p.state==="playing" && p.item_id && preview.current_item_id===p.item_id
+      && expires>Date.now() && typeof preview.text==="string" && preview.text
+      && typeof track.title==="string" && track.title && typeof track.artist==="string" && track.artist
+      && /^https:\/\/open\.spotify\.com\/track\/[A-Za-z0-9]{22}$/.test(track.source_url));
+    card.hidden=!visible;
+    e("horizon-preview-label").textContent=visible ? nextLabels[root.lang] || nextLabels.en : "";
+    e("horizon-preview-title").textContent=visible ? track.title : "";
+    e("horizon-preview-artist").textContent=visible ? track.artist : "";
+    e("horizon-preview-text").textContent=visible ? preview.text : "";
+    const source=e("horizon-preview-source"), image=e("horizon-preview-art");
+    const cover=visible && preview.artwork && displayArtwork.get(preview.artwork.reference);
+    if (cover && cover.item_id===track.item_id) {
+      if(image.getAttribute("src")!==cover.url)image.src=cover.url;
+      image.hidden=false;
+    } else {
+      image.hidden=true;
+      image.removeAttribute("src");
+    }
+    if (!visible) {
+      source.removeAttribute("href");
+      return;
+    }
+    card.dataset.mood=read(projection,["session","selected_mood"]) || "";
+    source.href=track.source_url;
+    if (!source.firstChild) {
+      const logo=e("spotify-source").querySelector("img");
+      if(logo)source.appendChild(logo.cloneNode());
+    }
+    horizonPreviewExpiry=window.setTimeout(()=>renderHorizonPreview(active),Math.max(0,expires-Date.now()));
+  }
   function renderHorizon(active) {
     const panels=e("session-panels"), card=e("horizon-card"), sections=e("horizon-sections");
     if (!panels || !card || !sections) return;
     panels.hidden=!active;
+    renderHorizonPreview(active);
     if (horizonExpiry) window.clearTimeout(horizonExpiry);
     const horizon=active && projection.horizon;
     const expires=Date.parse(horizon && horizon.valid_until);
@@ -1660,16 +1978,17 @@ main { height:auto; min-width:0 }
   }
   function render(animate=false) {
     const languageChanged=useLanguage(); updateClock();
-    e("state").hidden=displayHost && snapshotAccepted && !ended;
-    if (snapshotAccepted && !ended) e("state").textContent=text.live;
+    const sessionActive=snapshotAccepted && !ended;
+    e("state").hidden=sessionActive;
+    if (sessionActive) e("state").textContent=text.live;
     renderSessionIcons();
     renderSessionChange();
-    renderDisplayViewButtons();
+    renderDisplayViewStatus();
     renderScene();
     const p = playback(), mood = read(projection,["session","selected_mood"]);
-    document.body.classList.toggle("idle",!p.title);
+    document.body.classList.toggle("idle",!sessionActive && !p.title);
     e("mood").textContent = mood || text.ambient;
-    e("title").textContent = p.title || text.waiting;
+    e("title").textContent = p.title || (sessionActive ? waitingMusicLabels[root.lang] || waitingMusicLabels.en : text.waiting);
     e("artist").textContent = p.artist || "";
     e("album").textContent = p.album || "";
     const next=p.up_next;
@@ -1789,9 +2108,10 @@ main { height:auto; min-width:0 }
   function connect() {
     if (ended) return;
     snapshotAccepted=false; reportStatus("connecting");
+    e("state").hidden=false;
     e("state").textContent=text.connecting;
     const active = new WebSocket(url()); socket=active;
-    active.onopen=() => { if (active !== socket || ended) return; attempts=0; e("state").textContent=text.live; };
+    active.onopen=() => { if (active !== socket || ended) return; attempts=0; };
     active.onmessage=({data}) => {
       if (active !== socket || ended) return;
       try {
@@ -1833,7 +2153,7 @@ main { height:auto; min-width:0 }
   function stopHost() {
     clearLiveStatus();
     clearSessionChange();
-    displayViewRevision=-1; displayViewPending=false;
+    displayViewRevision=-1;
     reportStatus("stopped","host_stop"); snapshotAccepted=false; statusGeneration=null;
     ended=true; broadcastToken=null;
     if (reconnectTimer) window.clearTimeout(reconnectTimer); reconnectTimer=undefined;
@@ -1863,20 +2183,6 @@ main { height:auto; min-width:0 }
       window.addEventListener("djconnect-cast-legacy-mode",()=>{const wasDisplay=displayHost;stopHost();displayHost=false;if(wasDisplay)layoutDisplay(false);});
     }
     window.addEventListener("djconnect-live-status",({detail})=>renderLiveStatus(detail));
-    window.addEventListener("djconnect-display-view-result",({detail})=>{
-      displayViewPending=false;
-      adoptDisplayView(detail);
-      renderDisplayViewButtons();
-    });
-    for(const mode of displayViewModes){
-      const button=e("display-view-"+mode);
-      if(button)button.addEventListener("click",()=>{
-        if(button.hidden || displayViewPending || !projection.view || projection.view.mode===mode)return;
-        displayViewPending=true;
-        renderDisplayViewButtons();
-        window.dispatchEvent(new CustomEvent("djconnect-display-view-select",{detail:mode}));
-      });
-    }
     window.addEventListener("djconnect-display-locale",({detail}) => {
       displayLocale=typeof detail==="string" && /^(en|nl|de|fr|es)$/.test(detail) ? detail : "";
       const state=e("state");
@@ -1940,7 +2246,7 @@ main { height:auto; min-width:0 }
       const labels=detail.session_presentation || {};
       sessionId=detail.session.session_id; ended=false; snapshotAccepted=true;
       if(focusedOverlay && !(detail.shared_flow||[]).concat(detail.dj_moments||[]).some(item=>item.moment_id===focusedMomentId))clearSharedFocus();
-      apply({...detail,view:projection.view,session:{...detail.session,selected_mood:labels.mood,dj_persona:labels.persona,selected_presence:labels.presence}});
+      apply({...detail,view:confirmedDisplayView(detail.view),session:{...detail.session,selected_mood:labels.mood,dj_persona:labels.persona,selected_presence:labels.presence}});
       e("state").textContent=text.live;
     });
   }
@@ -1963,11 +2269,11 @@ window.DJCDisplayHost=function(transport){
 
   const language=(navigator.language || "en").slice(0,2);
   const words={
-    en:{approve:"Choose ‘Share VibeCast Screen’ in the app and enter the code below.",retry:"Try again",expired:"This screen’s access has expired. Approve it again in DJConnect.",unavailable:"Cannot reach DJConnect. Check the external HTTPS address and connection.",denied:"Screen access was withdrawn or the session ended.",reconnect:"Reconnecting…",capacity:"Too many screens or requests. Try again shortly."},
-    nl:{approve:"Kies 'VibeCast sessie starten' in de app.\nVul onderstaande code in.",retry:"Opnieuw proberen",expired:"De toegang van dit scherm is verlopen. Keur het opnieuw goed in DJConnect.",unavailable:"DJConnect is niet bereikbaar. Controleer het externe HTTPS-adres en de verbinding.",denied:"De schermtoegang is ingetrokken of de sessie is beëindigd.",reconnect:"Opnieuw verbinden…",capacity:"Te veel schermen of verzoeken. Probeer het zo opnieuw."},
-    de:{approve:"Wähle in der App „VibeCast-Bildschirm teilen“ und gib den unten stehenden Code ein.",retry:"Erneut versuchen",expired:"Der Zugriff dieses Bildschirms ist abgelaufen. Genehmige ihn erneut in DJConnect.",unavailable:"DJConnect ist nicht erreichbar. Prüfe die externe HTTPS-Adresse und die Verbindung.",denied:"Der Bildschirmzugriff wurde entzogen oder die Session beendet.",reconnect:"Verbindung wird wiederhergestellt…",capacity:"Zu viele Bildschirme oder Anfragen. Versuche es gleich erneut."},
-    fr:{approve:"Choisis « Partager l’écran VibeCast » dans l’app et saisis le code ci-dessous.",retry:"Réessayer",expired:"L’accès de cet écran a expiré. Autorisez-le à nouveau dans DJConnect.",unavailable:"DJConnect est inaccessible. Vérifiez l’adresse HTTPS externe et la connexion.",denied:"L’accès de l’écran a été retiré ou la session est terminée.",reconnect:"Reconnexion…",capacity:"Trop d’écrans ou de demandes. Réessayez dans un instant."},
-    es:{approve:"Elige «Compartir pantalla VibeCast» en la app e introduce el código que aparece abajo.",retry:"Volver a intentar",expired:"El acceso de esta pantalla ha caducado. Autorízala de nuevo en DJConnect.",unavailable:"No se puede acceder a DJConnect. Comprueba la dirección HTTPS externa y la conexión.",denied:"Se ha retirado el acceso de la pantalla o ha terminado la sesión.",reconnect:"Reconectando…",capacity:"Demasiadas pantallas o solicitudes. Vuelve a intentarlo en un momento."}
+    en:{approve:"Choose ‘Share VibeCast Screen’ in the app.",retry:"Try again",expired:"This screen’s access has expired. Approve it again in DJConnect.",unavailable:"Cannot reach DJConnect. Check the external HTTPS address and connection.",denied:"Screen access was withdrawn or the session ended.",reconnect:"Reconnecting…",capacity:"Too many screens or requests. Try again shortly."},
+    nl:{approve:"Kies 'VibeCast sessie starten' in de app.",retry:"Opnieuw proberen",expired:"De toegang van dit scherm is verlopen. Keur het opnieuw goed in DJConnect.",unavailable:"DJConnect is niet bereikbaar. Controleer het externe HTTPS-adres en de verbinding.",denied:"De schermtoegang is ingetrokken of de sessie is beëindigd.",reconnect:"Opnieuw verbinden…",capacity:"Te veel schermen of verzoeken. Probeer het zo opnieuw."},
+    de:{approve:"Wähle in der App „VibeCast-Bildschirm teilen“.",retry:"Erneut versuchen",expired:"Der Zugriff dieses Bildschirms ist abgelaufen. Genehmige ihn erneut in DJConnect.",unavailable:"DJConnect ist nicht erreichbar. Prüfe die externe HTTPS-Adresse und die Verbindung.",denied:"Der Bildschirmzugriff wurde entzogen oder die Session beendet.",reconnect:"Verbindung wird wiederhergestellt…",capacity:"Zu viele Bildschirme oder Anfragen. Versuche es gleich erneut."},
+    fr:{approve:"Choisis « Partager l’écran VibeCast » dans l’app.",retry:"Réessayer",expired:"L’accès de cet écran a expiré. Autorisez-le à nouveau dans DJConnect.",unavailable:"DJConnect est inaccessible. Vérifiez l’adresse HTTPS externe et la connexion.",denied:"L’accès de l’écran a été retiré ou la session est terminée.",reconnect:"Reconnexion…",capacity:"Trop d’écrans ou de demandes. Réessayez dans un instant."},
+    es:{approve:"Elige «Compartir pantalla VibeCast» en la app.",retry:"Volver a intentar",expired:"El acceso de esta pantalla ha caducado. Autorízala de nuevo en DJConnect.",unavailable:"No se puede acceder a DJConnect. Comprueba la dirección HTTPS externa y la conexión.",denied:"Se ha retirado el acceso de la pantalla o ha terminado la sesión.",reconnect:"Reconectando…",capacity:"Demasiadas pantallas o solicitudes. Vuelve a intentarlo en un momento."}
   };
   const outcomes={
     en:{newcode:"Access could not be confirmed. Request a new code and approve this screen again.",configuration:"Check the external HTTPS address in Home Assistant and reopen this screen from your paired DJConnect app."},
@@ -2007,6 +2313,7 @@ window.DJCDisplayHost=function(transport){
     if(handoff && !panel.hidden)show(...handoff);
   }
   listen(selector,"change",()=>{
+    if(selector.hidden){selector.value=effectiveLocale;return;}
     if(!validLocale(selector.value))return;
     preference=selector.value;
     if(!cast){
@@ -2064,7 +2371,7 @@ window.DJCDisplayHost=function(transport){
     publishArtwork();
   }
   const participationLabels={en:"Scan to join the music conversation",nl:"Scan om mee te praten over de muziek",de:"Scannen und über die Musik mitreden",fr:"Scanne pour parler de la musique",es:"Escanea para hablar de la música"};
-  let guestPanel=null,guestQR=null,guestPollGeneration=-1,guestQRDeadline=0;
+  let guestPanel=null,guestQR=null,guestManual=null,guestCode=null,guestAddress=null,guestPollGeneration=-1,guestQRDeadline=0;
   let sharedPhoto=null,sharedPhotoWanted=null,failedSharedPhotoRevision=null;
   function clearSharedPhoto(){
     sharedPhotoWanted=null;
@@ -2096,10 +2403,15 @@ window.DJCDisplayHost=function(transport){
     }catch(_){if(sharedPhoto===pending){failedSharedPhotoRevision=focus.focus_revision;clearSharedPhoto();}}
     finally{clearTimeout(timeout);requests.delete(controller);}
   }
+  function hideGuestInvitation(){
+    if(!guestPanel)return;
+    guestPanel.hidden=true;guestQR.removeAttribute("src");
+    guestCode.textContent="";guestAddress.textContent="";guestManual.hidden=true;
+  }
   function clearParticipation(){
     failedSharedPhotoRevision=null;clearSharedPhoto();
     guestQRDeadline=0;
-    if(guestPanel){guestPanel.hidden=true;guestQR.removeAttribute("src");}
+    hideGuestInvitation();
     window.dispatchEvent(new CustomEvent("djconnect-shared-focus",{detail:{focused_moment_id:null}}));
   }
   async function participationPost(action, fields={}){
@@ -2114,14 +2426,6 @@ window.DJCDisplayHost=function(transport){
     }finally{clearTimeout(timeout);requests.delete(controller);}
   }
   listen(window,"djconnect-display-return",()=>{if(!expired())void participationPost("return").catch(()=>{});});
-  listen(window,"djconnect-display-view-select",async ({detail:mode})=>{
-    const g=generation;
-    let view=null;
-    if(!expired() && (mode==="flow" || mode==="vibescape")){
-      try{view=(await participationPost("presentation",{mode})).view || null;}catch(_){}
-    }
-    if(g===generation && !expired())window.dispatchEvent(new CustomEvent("djconnect-display-view-result",{detail:view}));
-  });
   async function participationPoll(g){
     if(g!==generation || expired())return;
     const started=now();
@@ -2137,13 +2441,25 @@ window.DJCDisplayHost=function(transport){
       if(!guestPanel){
         guestPanel=document.createElement("aside");guestPanel.className="guest-participation";
         guestQR=document.createElement("img");guestQR.width=128;guestQR.height=128;
-        guestPanel.append(guestQR);document.body.append(guestPanel);
+        guestManual=document.createElement("div");guestManual.className="guest-manual-entry";guestManual.hidden=true;
+        guestCode=document.createElement("strong");guestAddress=document.createElement("span");
+        guestManual.append(guestCode,guestAddress);
+        guestPanel.append(guestManual,guestQR);document.body.append(guestPanel);
       }
+      let manualAddress="";
+      if(/^[2-9A-HJ-NP-Z]{4}(?:-[2-9A-HJ-NP-Z]{4}){2}$/.test(invitation.manual_code)){
+        try{
+          const address=new URL(invitation.manual_origin);
+          if(address.protocol==="https:" && address.origin===invitation.manual_origin)manualAddress=address.host;
+        }catch(_){}
+      }
+      guestCode.textContent=manualAddress?invitation.manual_code:"";
+      guestAddress.textContent=manualAddress;guestManual.hidden=!manualAddress;
       guestQR.alt=participationLabels[effectiveLocale]||participationLabels.en;
       if(guestQR.getAttribute("src")!==invitation.qr_data_uri)guestQR.src=invitation.qr_data_uri;
       guestQRDeadline=started+invitation.expires_in*1000;guestPanel.hidden=now()>=guestQRDeadline;
-      later(()=>{if(guestPanel && now()>=guestQRDeadline){guestPanel.hidden=true;guestQR.removeAttribute("src");}},Math.max(1,guestQRDeadline-now()));
-    }catch(_){if(g===generation && guestPanel){guestPanel.hidden=true;guestQR.removeAttribute("src");}}
+      later(()=>{if(now()>=guestQRDeadline)hideGuestInvitation();},Math.max(1,guestQRDeadline-now()));
+    }catch(_){if(g===generation)hideGuestInvitation();}
     finally{if(g===generation && !expired())later(()=>participationPoll(g),3000);}
   }
   function updateArtwork(snapshot){
@@ -2156,6 +2472,10 @@ window.DJCDisplayHost=function(transport){
       if(!existing || existing.until<until)wanted.set(cover.reference,{...cover,until});
     }
     add(snapshot.artwork,snapshot.playback?.item_id);
+    const preview=snapshot.horizon_preview;
+    if(preview && snapshot.playback?.state==="playing" && preview.current_item_id===snapshot.playback.item_id){
+      add(preview.artwork,preview.track?.item_id,Date.parse(preview.expires_at));
+    }
     if(Array.isArray(snapshot.shared_flow)){
       for(const item of snapshot.shared_flow.slice(-12).reverse()){
         if(item)add(item.artwork,item.playback_item_id,Date.parse(item.flow_expires_at));
@@ -2280,7 +2600,7 @@ window.DJCDisplayHost=function(transport){
     void fetch(displayURL("cancel"),{method:"POST",credentials:"omit",cache:"no-store",
       redirect:"error",keepalive:true,headers:{"Content-Type":"application/json"},body}).catch(()=>{});
   }
-  function terminal(message){if(cast)stop();else{cancelWork();releaseClaim();grant=null;lease=0;}show(message,"",!cast);notify("onTerminal",message);}
+  function terminal(message){if(cast)stop();else{cancelWork();releaseClaim();grant=null;lease=0;selector.hidden=false;}show(message,"",!cast);notify("onTerminal",message);}
   async function post(action,body,bearer=""){
     const controller=new AbortController(), started=now();requests.add(controller);
     // Bounds the whole browser DNS/TLS/request path, distinct from HA's fixed
@@ -2366,6 +2686,7 @@ window.DJCDisplayHost=function(transport){
           || !(value.lease_expires_in>0 && value.lease_expires_in<=60) || !value.capabilities || value.capabilities.owner_controls!==false
           || value.capabilities.session_end!==false)throw new Error("contract");
       grant=value;claim=null;
+      selector.hidden=true;
       lease=started+value.lease_expires_in*1000;sequence=0;connectionGeneration=0;
       if(expired())return terminal("expired");
       notify("onAdmitted",{issuer_epoch:value.issuer_epoch,display_id:value.display_id,
@@ -2383,7 +2704,7 @@ window.DJCDisplayHost=function(transport){
     stopped=false;selectLocale("");cancelWork();
     // The server decides when the original window ends, even if our timer fires early.
     if(claimCanResume)claim=null;else releaseClaim();
-    grant=null;lease=0;const g=generation;
+    grant=null;lease=0;selector.hidden=false;const g=generation;
     if(location.protocol!=="https:" || location.search || location.hash || !crypto.getRandomValues)return show("unavailable","",true);
     show("approve",null);
     try{
@@ -2419,7 +2740,7 @@ window.DJCDisplayHost=function(transport){
     }
     stopped=true;selectLocale("");cancelWork();
     if(preserveClaim && claimCanResume)claim=null;else releaseClaim();
-    grant=null;lease=0;panel.hidden=true;panel.textContent="";
+    grant=null;lease=0;selector.hidden=false;panel.hidden=true;panel.textContent="";
   }
   listen(window,"pagehide",()=>stop(true));
   listen(window,"djconnect-host-stop",()=>stop());
