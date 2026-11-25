@@ -159,13 +159,6 @@ main {
   align-items: flex-start;
   padding: clamp(1.15rem, 2.25vw, 2.9rem);
 }
-.eyebrow {
-  margin: 0 0 .7rem;
-  letter-spacing: .12em;
-  font-size: .78rem;
-  font-weight: 700;
-  color: #c4ddf7;
-}
 h2 {
   font-size: clamp(1.4rem, 1.68vw, 2.1rem);
   line-height: 1.16;
@@ -308,7 +301,6 @@ main:has(#qr-panel:not([hidden])) .hero-symbol {
   margin-bottom: clamp(.5rem, 1.7vh, 1.35rem);
 }
 main:has(#qr-panel:not([hidden])) #hero-tagline { margin-top: .65rem; }
-main:has(#qr-panel:not([hidden])) .eyebrow { margin-bottom: .4rem; }
 main:has(#qr-panel:not([hidden])) #state-description { margin: .45rem 0 .6rem; }
 main:has(#qr-panel:not([hidden])) .screen-status { margin: 0 0 .5rem; }
 main:has(#qr-panel:not([hidden])) .waiting-avatar { width: clamp(3rem, 7vh, 5.25rem); }

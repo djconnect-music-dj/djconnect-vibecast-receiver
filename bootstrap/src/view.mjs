@@ -3,7 +3,7 @@ export function renderState(document, language, current) {
  const byId = id => document.getElementById(id);
  const copy = locales[language]; document.documentElement.lang = language;
  byId('language').value = language;
- byId('language-label').textContent = copy.language; byId('state-label').textContent = copy.stateLabel;
+ byId('language-label').textContent = copy.language;
  const pairing = ['creating','waiting','confirming','received','redirecting','recovering'].includes(current.state);
  byId('hero-tagline').textContent = copy.heroTagline;
  byId('screen-mode').textContent = pairing ? copy.pairing : copy.idle;
