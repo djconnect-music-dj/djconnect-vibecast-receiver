@@ -36,11 +36,11 @@ export class NativeJoinInvitation {
 }
 
 export const joinCopy = Object.freeze({
- en: {title:'Join VibeCast Live',intro:'Open DJConnect to confirm joining this session as a guest.',open:'Open DJConnect',install:'Install DJConnect',rescan:'After installing the app, scan the current QR code on the TV again.',invalid:'Scan a new QR code on the TV to join.',privacy:'This page does not join the session or retain your invitation.',note:'Joining is confirmed in the app. No PIN is needed.'},
- nl: {title:'Deelnemen aan VibeCast Live',intro:'Open DJConnect om deelname aan deze sessie als gast te bevestigen.',open:'Open DJConnect',install:'Installeer DJConnect',rescan:'Scan na het installeren van de app opnieuw de actuele QR-code op de tv.',invalid:'Scan een nieuwe QR-code op de tv om deel te nemen.',privacy:'Deze pagina meldt je niet aan en bewaart je uitnodiging niet.',note:'Je bevestigt deelname in de app. Een pincode is niet nodig.'},
- de: {title:'VibeCast Live beitreten',intro:'Öffne DJConnect, um die Teilnahme an dieser Sitzung als Gast zu bestätigen.',open:'DJConnect öffnen',install:'DJConnect installieren',rescan:'Scanne nach der Installation der App erneut den aktuellen QR-Code auf dem Fernseher.',invalid:'Scanne einen neuen QR-Code auf dem Fernseher, um beizutreten.',privacy:'Diese Seite tritt der Sitzung nicht bei und speichert deine Einladung nicht.',note:'Du bestätigst die Teilnahme in der App. Eine PIN ist nicht nötig.'},
- fr: {title:'Rejoindre VibeCast Live',intro:'Ouvre DJConnect pour confirmer ta participation à cette session en tant qu’invité.',open:'Ouvrir DJConnect',install:'Installer DJConnect',rescan:'Après avoir installé l’app, scanne à nouveau le QR code actuel sur le téléviseur.',invalid:'Scanne un nouveau QR code sur le téléviseur pour participer.',privacy:'Cette page ne rejoint pas la session et ne conserve pas ton invitation.',note:'Tu confirmes ta participation dans l’app. Aucun code PIN n’est nécessaire.'},
- es: {title:'Unirse a VibeCast Live',intro:'Abre DJConnect para confirmar que deseas unirte a esta sesión como invitado.',open:'Abrir DJConnect',install:'Instalar DJConnect',rescan:'Después de instalar la app, vuelve a escanear el código QR actual del televisor.',invalid:'Escanea un nuevo código QR del televisor para unirte.',privacy:'Esta página no se une a la sesión ni guarda tu invitación.',note:'Confirmas que deseas unirte en la app. No se necesita PIN.'},
+ en: {title:'Join VibeCast Party',open:'Open DJConnect',install:'Install DJConnect',rescan:'Scan the TV QR code again after installation.',invalid:'Scan a new QR code on the TV.'},
+ nl: {title:'Deelnemen aan VibeCast Party',open:'Open DJConnect',install:'Installeer DJConnect',rescan:'Scan na installatie opnieuw de QR-code op de tv.',invalid:'Scan een nieuwe QR-code op de tv.'},
+ de: {title:'VibeCast Party beitreten',open:'DJConnect öffnen',install:'DJConnect installieren',rescan:'Scanne nach der Installation erneut den QR-Code auf dem Fernseher.',invalid:'Scanne einen neuen QR-Code auf dem Fernseher.'},
+ fr: {title:'Rejoindre VibeCast Party',open:'Ouvrir DJConnect',install:'Installer DJConnect',rescan:'Après l’installation, scanne à nouveau le code QR sur le téléviseur.',invalid:'Scanne un nouveau code QR sur le téléviseur.'},
+ es: {title:'Unirse a VibeCast Party',open:'Abrir DJConnect',install:'Instalar DJConnect',rescan:'Vuelve a escanear el código QR del televisor tras la instalación.',invalid:'Escanea un nuevo código QR del televisor.'},
 });
 
 export function startNativeJoinPage({window, document, navigate = url => window.location.assign(url)}) {
@@ -48,14 +48,18 @@ export function startNativeJoinPage({window, document, navigate = url => window.
  const copy = joinCopy[language] || joinCopy.en;
  document.documentElement.lang = Object.hasOwn(joinCopy,language) ? language : 'en';
  document.title = copy.title;
- for (const key of ['title','intro','open','install','rescan','privacy','note']) document.getElementById('join-'+key).textContent = copy[key];
+ document.getElementById('join-title').textContent = copy.title;
+ document.getElementById('join-open-label').textContent = copy.open;
+ document.getElementById('join-install-label').textContent = copy.install;
+ const rescan = document.getElementById('join-rescan');
+ rescan.textContent = copy.rescan;
  const button = document.getElementById('join-open'), status = document.getElementById('join-status');
  const install = document.getElementById('join-install');
  let invitation = null, timer, lastInvitationKey;
  function clear() {
   invitation?.clear(); invitation = null; button.disabled = true;
   if (timer) window.clearTimeout(timer);
-  timer = null; status.textContent = copy.invalid;
+  timer = null; status.textContent = copy.invalid; rescan.hidden = true;
  }
  function receive() {
   clear();
@@ -71,7 +75,7 @@ export function startNativeJoinPage({window, document, navigate = url => window.
    // An equivalent fragment must not renew an exposed/spent invitation.
    if (key === lastInvitationKey) return;
    invitation = new NativeJoinInvitation(fragment); lastInvitationKey = key;
-   button.disabled = false; status.textContent = '';
+   button.disabled = false; status.textContent = ''; rescan.hidden = false;
    timer = window.setTimeout(clear,120_000);
   } catch { clear(); }
  }

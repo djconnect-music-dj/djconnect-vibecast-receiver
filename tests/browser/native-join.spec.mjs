@@ -19,15 +19,27 @@ async function landing(page,locale='en'){
  });
  return{requests,errors};
 }
-for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:390,height:844},{width:1920,height:1080}])test(`VibeCast Live native landing ${locale} ${viewport.width}: no admission or locator leakage`,async({page},info)=>{
+for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:390,height:844},{width:1920,height:1080}])test(`VibeCast Party native landing ${locale} ${viewport.width}: no admission or locator leakage`,async({page},info)=>{
  await page.setViewportSize(viewport);const result=await landing(page,locale);
  const response=await page.goto('https://vibecast.tv/join'+fragment);
  await expect(page.locator('html')).toHaveAttribute('lang',locale);
  await expect(page.locator('#join-open')).toBeEnabled();
  expect(page.url()).toBe('https://vibecast.tv/join');
- await expect(page.locator('h1')).toContainText('VibeCast Live');
+ await expect(page.locator('h1')).toContainText('VibeCast Party');
  await expect(page.locator('#join-install')).toHaveAttribute('href','https://apps.apple.com/app/id6832635823');
- await expect(page.locator('#join-rescan')).not.toHaveText('');
+ await expect(page.locator('#join-status')).toBeHidden();
+ await expect(page.locator('#join-rescan')).toBeVisible();
+ const partyIcon=page.locator('.join-party-icon');
+ await expect(partyIcon.locator('use')).toHaveAttribute('href','#join-party-avatar');
+ for(const action of ['#join-open','#join-install']){
+  const icon=page.locator(action+' svg');
+  await expect(icon.locator('use')).toHaveAttribute('href','#join-djconnect-avatar');
+  await expect(icon).toHaveAttribute('aria-hidden','true');
+ }
+ for(const icon of [partyIcon,page.locator('#join-open svg'),page.locator('#join-install svg')]){
+  expect(await icon.evaluate(node=>node.getBBox().width)).toBeGreaterThan(0);
+  await expect(icon).toHaveCSS('color','rgb(255, 255, 255)');
+ }
  expect(await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,storage:[localStorage.length,sessionStorage.length]}))).toEqual({overflow:false,storage:[0,0]});
  expect(result.requests.every(request=>request.url.startsWith('https://vibecast.tv/'))).toBe(true);
  for(const request of result.requests)for(const secret of Object.values(golden.fields).filter(value=>value.length>30))expect(request.url+request.referrer).not.toContain(secret);
@@ -38,6 +50,7 @@ for(const locale of ['en','nl','de','fr','es'])for(const viewport of [{width:390
 for(const suffix of ['&v=1','&owner_token=synthetic','&invitation_secret=%ZZ'])test(`native landing refuses malformed invitation ${suffix}`,async({page})=>{
  const result=await landing(page);await page.goto('https://vibecast.tv/join'+fragment+suffix);
  await expect(page.locator('#join-open')).toBeDisabled();await expect(page.locator('#join-status')).not.toHaveText('');
+ await expect(page.locator('#join-rescan')).toBeHidden();
  expect(page.url()).toBe('https://vibecast.tv/join');expect(result.requests.every(request=>request.url.startsWith('https://vibecast.tv/'))).toBe(true);expect(result.errors).toEqual([]);
 });
 test('reload and pagehide cannot restore or retain a native join invitation',async({page})=>{

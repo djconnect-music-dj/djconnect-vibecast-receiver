@@ -3,21 +3,47 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="no-referrer"><meta name="color-scheme" content="dark"><meta name="theme-color" content="#191b3a">
-<title>Join VibeCast Live</title>
+<title>Join VibeCast Party</title>
 <link rel="icon" href="/brand-mark-32.png"><link rel="stylesheet" href="/join.css">
 <script type="module" src="/join.mjs"></script>
 </head>
 <body>
 <main>
- <img src="/brand-mark-32.png" alt="" width="48" height="48">
- <h1 id="join-title">Join VibeCast Live</h1>
- <p id="join-intro">Open DJConnect to confirm joining this session as a guest.</p>
- <button id="join-open" type="button" disabled>Open DJConnect</button>
+ <svg class="join-icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <defs>
+   <g id="join-headphones">
+    <path d="M13 57C8-4 92-4 87 57" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="50" cy="53" r="28" fill="none" stroke="currentColor" stroke-width="4.5"/>
+    <rect x="7" y="43" width="11" height="27" rx="5"/><rect x="82" y="43" width="11" height="27" rx="5"/>
+   </g>
+   <symbol id="join-party-avatar" viewBox="0 0 100 100">
+    <use href="#join-headphones"/>
+    <path d="M36 66l6-14c.7-1.6 2.5-2.1 3.9-.8l7 6.8c1.2 1.2.8 3.1-.8 3.8l-14 6.6c-1.5.7-2.8-.8-2.1-2.4z"/>
+    <path d="M47 45c.2 3.4 2.3 6.4 5.7 7.9M54 47c1.6-1 2.9-2.3 3.3-4.3M56 54c2.2-.4 4.2-.2 6 1.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="43" cy="44" r="1.7"/><circle cx="50" cy="41" r="2.1"/><circle cx="61" cy="40" r="1.5"/><circle cx="63" cy="49" r="1.9"/><circle cx="60" cy="60" r="1.5"/>
+   </symbol>
+   <symbol id="join-djconnect-avatar" viewBox="0 0 100 100">
+    <use href="#join-headphones"/>
+    <rect x="33" y="47" width="4" height="12" rx="2"/><rect x="40.5" y="41" width="4" height="24" rx="2"/>
+    <rect x="48" y="36" width="4" height="34" rx="2"/><rect x="55.5" y="41" width="4" height="24" rx="2"/>
+    <rect x="63" y="47" width="4" height="12" rx="2"/>
+   </symbol>
+  </defs>
+ </svg>
+ <svg class="join-party-icon" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#join-party-avatar"/></svg>
+ <h1 id="join-title">Join VibeCast Party</h1>
  <p id="join-status" role="status" aria-live="polite"></p>
- <p id="join-note">Joining is confirmed in the app. No PIN is needed.</p>
- <a id="join-install" role="link" aria-disabled="true" rel="noreferrer noopener">Install DJConnect</a>
- <p id="join-rescan">After installing the app, scan the current QR code on the TV again.</p>
- <p id="join-privacy">This page does not join the session or retain your invitation.</p>
+ <div class="join-actions">
+  <button id="join-open" type="button" disabled>
+   <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#join-djconnect-avatar"/></svg>
+   <span id="join-open-label">Open DJConnect</span>
+  </button>
+  <a id="join-install" role="link" aria-disabled="true" rel="noreferrer noopener">
+   <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#join-djconnect-avatar"/></svg>
+   <span id="join-install-label">Install DJConnect</span>
+  </a>
+ </div>
+ <p id="join-rescan" hidden>Scan the TV QR code again after installation.</p>
  <noscript>Open DJConnect, then scan the current QR code again. JavaScript is needed to transfer this invitation.</noscript>
 </main>
 </body>

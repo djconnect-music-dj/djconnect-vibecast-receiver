@@ -1,4 +1,4 @@
-# VibeCast Live native join landing
+# VibeCast Party native join landing
 
 This increment consumes Core's `docs/product/VIBECAST_NATIVE_GUEST_UI_V1.md`.
 Core remains the invitation issuer and admission authority. The receiver owns
