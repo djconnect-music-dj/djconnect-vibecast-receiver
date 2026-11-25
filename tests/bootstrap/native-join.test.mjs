@@ -40,9 +40,11 @@ function pageFixture({origin='https://vibecast.tv',search='',historyFailure=fals
 test('landing erases URL before rendering, never joins itself, and spends only on Open app',()=>{
  const p=pageFixture();assert.equal(p.window.location.hash,'');assert.equal(p.navigations.length,0);
  assert.equal(p.elements.get('join-install').href,appStoreURL);assert.equal(p.elements.get('join-open').disabled,false);
+ assert.equal(p.elements.get('join-rescan').hidden,false);
  assert.ok(!JSON.stringify([...p.elements.values()]).includes(golden.fields.invitation_secret));
  p.elements.get('join-open').events.get('click')();assert.deepEqual(p.navigations,['djconnect://join'+fragment()]);
  p.elements.get('join-open').events.get('click')();assert.equal(p.navigations.length,1);assert.equal(p.elements.get('join-open').disabled,true);
+ assert.equal(p.elements.get('join-rescan').hidden,true);
 });
 test('expiry, hidden page, pagehide, history refusal and foreign origins fail closed without restore',()=>{
  for(const trigger of ['expiry','hidden','pagehide']){
@@ -68,10 +70,10 @@ test('a new camera scan in the same tab accepts a new invitation without renewin
  assert.equal(p.elements.get('join-open').disabled,false);assert.equal(p.window.location.hash,'');
  p.elements.get('join-open').events.get('click')();assert.deepEqual(p.navigations,['djconnect://join'+next]);
 });
-test('VibeCast Live native landing has complete copy in all five app languages',()=>{
+test('VibeCast Party native landing has complete copy in all five app languages',()=>{
  const keys=Object.keys(joinCopy.en).sort();assert.deepEqual(Object.keys(joinCopy).sort(),['de','en','es','fr','nl']);
  for(const [language,copy]of Object.entries(joinCopy)){
-  assert.deepEqual(Object.keys(copy).sort(),keys);assert.ok(Object.values(copy).every(value=>typeof value==='string'&&value.length>5));assert.match(copy.title,/VibeCast Live/);
+  assert.deepEqual(Object.keys(copy).sort(),keys);assert.ok(Object.values(copy).every(value=>typeof value==='string'&&value.length>5));assert.match(copy.title,/VibeCast Party/);
   const p=pageFixture({language});assert.equal(p.document.documentElement.lang,language);assert.equal(p.document.title,copy.title);
  }
  assert.equal(pageFixture({language:'unknown'}).document.documentElement.lang,'en');
