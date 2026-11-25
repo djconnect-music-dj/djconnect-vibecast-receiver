@@ -305,12 +305,14 @@ main:has(#qr-panel:not([hidden])) #state-description { margin: .45rem 0 .6rem; }
 main:has(#qr-panel:not([hidden])) .screen-status { margin: 0 0 .5rem; }
 main:has(#qr-panel:not([hidden])) .waiting-avatar { width: clamp(3rem, 7vh, 5.25rem); }
 /* Match the Home Assistant waiting screen on wide displays. */
-@media (min-height: 761px) and (min-width: 901px) and (orientation: landscape) {
+@media (min-width: 901px) and (orientation: landscape) {
   .screen-header {
     padding-block-start: calc(clamp(.5rem, 1.4vh, 1rem) + env(safe-area-inset-top, 0px));
-    margin-block-end: 1.5rem;
   }
   #screen-date { margin-top: .1em; }
+}
+@media (min-height: 761px) and (min-width: 901px) and (orientation: landscape) {
+  .screen-header { margin-block-end: 1.5rem; }
   main, main:has(#qr-panel:not([hidden])) {
     margin-block: auto;
     row-gap: clamp(.75rem, 2vh, 1.5rem);
@@ -323,7 +325,6 @@ main:has(#qr-panel:not([hidden])) .waiting-avatar { width: clamp(3rem, 7vh, 5.25
     width: clamp(3.75rem, 9vh, 6rem);
   }
   .vibecast-hero { padding-block: 2rem 1.6rem; }
-  .hero-symbol { margin-bottom: 1rem; }
   .vibecast-hero h1 { margin-top: 0; }
   #hero-tagline { margin-top: 1.25rem; }
   .bottom-bar { margin-top: 0; }
