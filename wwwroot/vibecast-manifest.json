@@ -17,21 +17,21 @@
     }
   },
   "files": {
-    "cast/index.html": "9142f4c631535b9e4429e60a83dcd174c72edd3563bde23330db7efef0fa055c",
-    "local/vibecast.html": "bf4d8d39b2bb776aaa4a6f2e763325ec5011c459f0d08c05b8995691692619b3"
+    "cast/index.html": "512f63cd89a01266e45818bceef094aa9b3d5312572245be8cf52b1492ef926b",
+    "local/vibecast.html": "7bf55a956ba37d2f2ae7a94f7134abc569382c096666cc08795c16ff8748fbca"
   },
   "private_runtime_data_in_build": false,
   "promotion": "explicit receiver-owner import; no automatic deployment",
-  "renderer_source_sha256": "52ba5fb4ed440ebbfbcd27d72b0f2eb6d3b974ab776202e289bdc1e3f2e05051",
+  "renderer_source_sha256": "be35292f580026873187f2eece52a5bf923d91d43452581304a81523b9628005",
   "schema_version": 1,
-  "source_revision": "61bcdf14a388abb2835fb3838c6ceb8ab1954b32",
+  "source_revision": "748879aad3353e3608bebeb271a479283bc5ddde",
   "sources": {
     "../brand/mark-40.png": "b07eb1d01fc37044eef22e3f376635b0f623eec384c18f89046a49c80bb8c257",
     "cast-host.js": "998ec87918aa6eee9f464aa2086c49ae33f6d0a52ce2ebfb8b7ed8d447e7bdc9",
-    "display-host.js": "ac5d381e5620e865aef8ad3582304951adfe4d4a8645508194bed0c491937ffb",
+    "display-host.js": "0443de2fc9740787437d7afd34c650f80e5c00af10baa3a0f5e9a2afe73aab3a",
     "local-host.js": "3ad7033ca34badacaa3b0ca2d52e960fbeb5f130236d49050722441105314975",
-    "renderer.js": "52ba5fb4ed440ebbfbcd27d72b0f2eb6d3b974ab776202e289bdc1e3f2e05051",
-    "style.css": "747e644ec94150f28de08974493afdaa43e970894d0758212cfe395230047eda",
-    "template.html": "4d4df3051bed01030c4d5daa96c70dc38d743f3f49533aa15d99f07ac4aa32a3"
+    "renderer.js": "be35292f580026873187f2eece52a5bf923d91d43452581304a81523b9628005",
+    "style.css": "403274abd17cf682febb54f6bffc8548befa817e550a352cc23e2add0de1e225",
+    "template.html": "43045ef888ad5a53cbecd50f20187a22ce25f58fb6cfcbebca452d00ad709b5c"
   }
 }
