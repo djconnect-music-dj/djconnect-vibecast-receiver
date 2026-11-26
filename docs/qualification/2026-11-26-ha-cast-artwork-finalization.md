@@ -1,0 +1,9 @@
+## Home Assistant Cast artwork — receiver finalization
+
+Receiver [#84](https://github.com/djconnect-music-dj/djconnect-vibecast-receiver/pull/84) merged to `f87fa867f08b9697f48ed83f1fd1759b724c977e`. Its tree matches reviewed head `8099f1e9d70f65de45c7c715f448829b2238d574`. It imports the renderer built from protected [Core #1722](https://github.com/djconnect-music-dj/djconnect/pull/1722), source `748879aad3353e3608bebeb271a479283bc5ddde`. Core's original verifier checked the imported bundle and both generated distribution files.
+
+The receiver's required PR suite and Cloudflare preview passed. The separate bootstrap loopback job reached its Ubuntu dependency installation time limit on the first PR attempt. All jobs passed in the [exact receiver main CI](https://github.com/djconnect-music-dj/djconnect-vibecast-receiver/actions/runs/45805242675), including the two-browser loopback test.
+
+The [public Cast receiver](https://receiver.djconnect.dev/) served HTTP 200 and renderer `4.1.0 (4b590bd3)`. Root HTML SHA-256 is `512f63cd89a01266e45818bceef094aa9b3d5312572245be8cf52b1492ef926b` and the manifest SHA-256 is `6b344ba16458a9d098102d2251070f4c3f1492da3194c9c1f440a5d419c6d802`. Both responses matched the imported bytes and expected privacy headers. The index redirect stays on the fixed origin. Preview matched the same HTML and manifest. Rollback can restore the previous receiver pin to Core `61bcdf14a388abb2835fb3838c6ceb8ab1954b32` through protected source.
+
+HA-dev now serves the same renderer revision. The HA origin used by the Cast setup accepted the production receiver's artwork preflight over HTTPS. The Core browser test decoded an artwork image through that route in Chromium and WebKit. Physical TV and live CAF acceptance remain open. The VibeCast.tv bootstrap has a separate artifact and protected approval.
